@@ -29,7 +29,7 @@ var builder = {
         }
         else {
             // var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-            var targets = [Game.rooms['W18S21'].controller];
+            var targets = [Game.rooms['W16S22'].controller];
             if (targets.length) {
                 if (creep.upgradeController(targets[0]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(targets[0]);
