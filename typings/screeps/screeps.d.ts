@@ -650,3 +650,45 @@ declare enum Direction {
 
 declare var Game: Game;
 declare var Memory: Memory;
+
+
+declare var STRUCTURE_EXTENSION:number,
+            STRUCTURE_RAMPART:number,
+            STRUCTURE_ROAD:number,
+            STRUCTURE_SPAWN:number,
+            STRUCTURE_WALL:number,
+            STRUCTURE_LINK:number;
+
+declare var FIND_CREEPS:number,
+            FIND_MY_CREEPS:number,
+            FIND_HOSTILE_CREEPS:number,
+            FIND_MY_SPAWNS:number,
+            FIND_HOSTILE_SPAWNS:number,
+            FIND_SOURCES:number,
+            FIND_SOURCES_ACTIVE:number,
+            FIND_DROPPED_ENERGY:number,
+            FIND_STRUCTURES:number,
+            FIND_MY_STRUCTURES:number,
+            FIND_HOSTILE_STRUCTURES:number,
+            FIND_FLAGS:number,
+            FIND_CONSTRUCTION_SITES:number,
+            FIND_EXIT_TOP:number,
+            FIND_EXIT_RIGHT:number,
+            FIND_EXIT_BOTTOM:number,
+            FIND_EXIT_LEFT:number,
+            FIND_EXIT:number;
+
+//Result Codes:
+declare var OK:number,
+            ERR_NOT_OWNER:number,
+            ERR_BUSY:number,
+            ERR_INVALID_TARGET:number,
+            ERR_NOT_IN_RANGE:number,
+            ERR_NO_BODYPART:number;
+
+// body parts
+declare var WORK:string,
+            CARRY:string,
+            MOVE:string;
+
+declare var RESOURCE_ENERGY:number;

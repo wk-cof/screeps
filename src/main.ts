@@ -2,6 +2,7 @@
 /// <reference path="harvester.ts" />
 var harvester = require('harvester');
 var build = require('builder');
+
 var workerName = 'Worker';
 var workerIndex = 1;
 var builderName = 'Builder';
@@ -31,7 +32,7 @@ module.exports.loop = function () {
             build(creep, spawn1);
         }
         else if(creep.memory['role'] == 'worker') {
-            harvester(creep);
+            harvester(creep, spawn1);
         }
     }
     return null;
