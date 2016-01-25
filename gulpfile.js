@@ -2,7 +2,12 @@ var gulp = require('gulp');
 var ts = require('gulp-typescript');
 var https = require('https');
 var fs = require('fs');
-var secrets = require('./secrets.js')
+var secrets = require('./secrets.js');
+var del = require('del');
+
+gulp.task('clean', function () {
+    return del('dist/**');
+});
 
 gulp.task('compile', function () {
 	var tsResult = gulp.src(['src/**/*.ts', 'typings/**/*.d.ts'])

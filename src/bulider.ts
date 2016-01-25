@@ -1,9 +1,15 @@
 /// <reference path="../typings/tsd.d.ts" />
+
+export interface IBuilder{
+    buildRoad: () => void;
+    upgradeController:(creep:Creep, spawn:Spawn) => void;
+}
+
 var builder = {
     buildRoad: () => {
 
     },
-    upgradeController: (creep, spawn) => {
+    upgradeController : (creep:Creep, spawn:Spawn) => {
         if (creep.carry.energy == 0){// creep.carryCapacity) {
             if (spawn.transferEnergy(creep) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(spawn);

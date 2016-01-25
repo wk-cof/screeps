@@ -1,37 +1,70 @@
 /// <reference path="../typings/tsd.d.ts" />
 /// <reference path="harvester.ts" />
+import {IBuilder} from "./bulider";
 var harvester = require('harvester');
-var build = require('builder');
+var builder:IBuilder = require('builder');
 
-var workerName = 'Worker';
-var workerIndex = 1;
-var builderName = 'Builder';
-var builderIndex = 3;
+
+function buildCreep(bodyParts, spawnName, name, role) {
+    var result = Game.spawns[spawnName].createCreep(bodyParts, name);
+    // error
+    if (result < 0){
+        return result;
+    }
+    Game.creeps[name].memory['role'] = role;
+    return result;
+}
+
+function buildBuilder(spawnName, name) {
+    return buildCreep([WORK, WORK, CARRY, MOVE], spawnName, name, 'builder');
+}
+
+function isLegalCreepName(name){
+    return _.isUndefined(Memory.creeps[name]);
+}
+
+function buildWorker(spawnName) {
+    let templateName = 'Worker';
+    let index = 1;
+    while(!isLegalCreepName(templateName+index)){
+        index++;
+    }
+    let newName = templateName+index;
+    console.log('Found a new legal creep name: ' + newName);
+
+    if( _.isObject(buildCreep([WORK, CARRY, MOVE], spawnName, newName, 'worker')) ){
+        console.log('Successfully Created a new worker.');
+    }
+}
+
 module.exports.loop = function () {
-    // if (Game.creeps.Builder1.upgradeController(Game.rooms.W18S21.controller) === ERR_NOT_IN_RANGE) {
-    //     
-    // }
-    if (workerIndex < 3) {
-        if (Game.spawns['Spawn1'].createCreep([WORK, CARRY, MOVE], workerName + workerIndex) !== -6) {
-            Game.creeps[workerName + workerIndex].memory['role'] = 'worker';
-            workerIndex++;
-        }
+    var spawnNames:string[] = _.keys(Game.spawns);
+    let spawn1 = spawnNames[0];
+
+    // Find existing creeps
+    var existingCreepNames = _.keys(Game.creeps);
+
+    // Find creeps that we have in memory
+    if (!Memory.creeps) {
+        Memory.creeps = {};
     }
-    else {
-        if (builderIndex < 2 && Game.spawns['Spawn1'].createCreep([WORK, WORK, CARRY, MOVE], builderName + builderIndex) !== -6) {
-            Game.creeps[builderName + builderIndex].memory['role'] = 'builder';
-            builderIndex++;
-        }
+    let memoryCreeps = Memory.creeps;
+
+    let creepNames:string[] = _.keys(Memory.creeps);
+    let workers:string[] = _.filter(creepNames, (creepName) => creepName.match(/worker/i));
+    if (workers.length < 3) {
+        buildWorker(spawn1);
     }
-    
+
+
     // let creeps : MyCreeps = <MyCreeps> Game.creeps;
-    var spawn1 = Game.spawns['Spawn1'];
-    for (var name in Game.creeps) {
+    for (let name in Game.creeps) {
         var creep = Game.creeps[name];
-        if (creep.memory['role'] === 'builder') {
-            build(creep, spawn1);
-        }
-        else if(creep.memory['role'] == 'worker') {
+        //if (creep.memory['role'] === 'builder') {
+        //    builder.upgradeController(creep, spawn1);
+        //}
+        //else
+        if (creep.memory['role'] == 'worker') {
             harvester(creep, spawn1);
         }
     }
