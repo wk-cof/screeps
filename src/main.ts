@@ -5,18 +5,13 @@ var harvester = require('harvester');
 var builder:IBuilder = require('builder');
 
 
-function buildCreep(bodyParts, spawnName, name, role) {
-    var result = Game.spawns[spawnName].createCreep(bodyParts, name);
-    // error
-    if (result < 0){
-        return result;
-    }
-    Game.creeps[name].memory['role'] = role;
-    return result;
+function buildCreep(bodyParts, spawnName, name, memory) {
+    return Game.spawns[spawnName].createCreep(bodyParts, name, memory);
+
 }
 
 function buildBuilder(spawnName, name) {
-    return buildCreep([WORK, WORK, CARRY, MOVE], spawnName, name, 'builder');
+    return buildCreep([WORK, WORK, CARRY, MOVE], spawnName, name, {role: 'builder'});
 }
 
 function isLegalCreepName(name){
@@ -30,10 +25,9 @@ function buildWorker(spawnName) {
         index++;
     }
     let newName = templateName+index;
-    console.log('Found a new legal creep name: ' + newName);
 
-    if( _.isObject(buildCreep([WORK, CARRY, MOVE], spawnName, newName, 'worker')) ){
-        console.log('Successfully Created a new worker.');
+    if( _.isObject(buildCreep([WORK, CARRY, MOVE], spawnName, newName, {role: 'worker'})) ){
+        console.log('Successfully Created a new worker: ' + newName);
     }
 }
 

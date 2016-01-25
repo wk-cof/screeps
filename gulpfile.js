@@ -9,7 +9,7 @@ gulp.task('clean', function () {
     return del('dist/**');
 });
 
-gulp.task('compile', function () {
+gulp.task('compile', ['clean'], function () {
 	var tsResult = gulp.src(['src/**/*.ts', 'typings/**/*.d.ts'])
 		.pipe(ts({
 			noImplicitAny: false,
