@@ -1,31 +1,39 @@
 var gulp = require('gulp');
+var plugins = require('gulp-load-plugins')();
 var ts = require('gulp-typescript');
+var del = require('del');
+
 var https = require('https');
 var fs = require('fs');
 var secrets = require('./secrets.js');
-var del = require('del');
 
 gulp.task('clean', function () {
     return del('dist/**');
 });
 
 gulp.task('compile', ['clean'], function () {
-	var tsResult = gulp.src(['src/**/*.ts', 'typings/**/*.d.ts'])
-		.pipe(ts({
+	return 	gulp.src(['src/**/*.ts', 'typings/**/*.d.ts'])
+		.pipe(plugins.print())
+		.pipe(plugins.typescript({
 			noImplicitAny: false,
 			noExternalResolve: true,
 			target: 'ES5',
 			module: 'commonjs'
-		}));
-	return tsResult.js.pipe(gulp.dest('dist'));
+		}))
+		.pipe(gulp.dest('dist'));
+
 });
 gulp.task('upload-sim', ['compile'], function () {
-	console.log(secrets);
 	var email = secrets.email,
 		password = secrets.password,
 		data = {
-			branch: 'dev',
-			modules: { main: fs.readFileSync('./dist/main.js', {encoding: "utf8"}) }
+			branch: 'default',
+			modules: {
+				main: fs.readFileSync('./dist/main.js', {encoding: "utf8"}),
+				harvester: fs.readFileSync('./dist/harvester.js', {encoding: "utf8"}),
+				builder: fs.readFileSync('./dist/builder.js', {encoding: "utf8"})
+				//main: fs.readFileSync('./dist/main.js', {encoding: "utf8"}),
+			}
 		};
 	var req = https.request({
 		hostname: 'screeps.com',

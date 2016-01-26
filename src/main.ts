@@ -6,49 +6,57 @@ var builder:IBuilder = require('builder');
 
 
 module Build{
-     function buildCreep(bodyParts, spawnName, name, memory) {
+
+    export enum CreepTypes{
+        builder,
+        worker,
+        upgrader
+    }
+
+     function buildCreepInterface(bodyParts, spawnName, name, memory) {
         return Game.spawns[spawnName].createCreep(bodyParts, name, memory);
 
     }
 
-    function isLegalCreepName(name){
-        return _.isUndefined(Memory.creeps[name]);
-    }
-
-
-    function buildNamedCreepType(name, type, spawnName){
+    function buildCreep(name, type, spawnName){
+        console.log('Building creep: ' + name + ', Type: ' + type);
         // assign body parts based on type
         let bodyParts;
 
         switch (type){
-            case 'builder':
+            case CreepTypes.builder:
                 bodyParts = [WORK, WORK, CARRY, MOVE];
                 break;
-            case 'worker':
+            case CreepTypes.worker:
                 bodyParts = [WORK, CARRY, MOVE];
                 break;
-            case 'upgrader':
+            case CreepTypes.upgrader:
                 bodyParts = [WORK, CARRY, MOVE];
                 break;
             default:
                 bodyParts = [WORK, WORK, CARRY, MOVE];
         }
 
-        if( _.isObject(buildCreep(bodyParts, spawnName, name, {role: type})) ){
-            console.log('Successfully Created a new builder: ' + name);
+        if( _.isObject(buildCreepInterface(bodyParts, spawnName, name, {role: type})) ){
+            console.log('Successfully Created a new creep: ' + name + ' with body parts: ' + bodyParts.toString());
             return true;
         }
         return false;
     }
 
-    export function buildCreepType(type, spawnName){
+
+    function isLegalCreepName(name){
+        return _.isUndefined(Memory.creeps[name]);
+    }
+
+    export function buildCreepAutoName(type, spawnName){
         let templateName = type;
         let index = 1;
         while(!isLegalCreepName(templateName+index)){
             index++;
         }
         let newName = templateName+index;
-        return buildNamedCreepType(newName, type, spawnName);
+        return buildCreep(newName, type, spawnName);
 
     }
 
@@ -60,7 +68,8 @@ module Build{
         var creepNames:string[] = _.keys(Memory.creeps);
         for(let creep in creepNames){
             if(!isCreepAlive(creep)){
-                buildNamedCreepType(creep, Memory.creeps[creep], spawn);
+                console.log(creep + ' is ded');
+                buildCreep(creep, Memory.creeps[creep], spawn);
             }
         }
     }
@@ -89,11 +98,11 @@ module.exports.loop = function () {
     let upgraders:string[] = _.filter(creepNames, (creepName) => creepName.match(/upgrader/i));
 
     if (workers.length < 3) {
-        Build.buildCreepType('worker', spawn1);
+        Build.buildCreepAutoName(Build.CreepTypes.worker, spawn1);
     } else if (builders.length < 1) {
-        Build.buildCreepType('builder', spawn1);
+        Build.buildCreepAutoName(Build.CreepTypes.builder, spawn1);
     } else if (upgraders.length < 2) {
-        Build.buildCreepType('upgrader', spawn1);
+        Build.buildCreepAutoName(Build.CreepTypes.upgrader, spawn1);
     }
 
     // ============================== Creep rebuilding =================================================================
@@ -103,13 +112,13 @@ module.exports.loop = function () {
     // ============================== Creep functions ==================================================================
     for (let name in Game.creeps) {
         var creep = Game.creeps[name];
-        if (creep.memory['role'] === 'upgrader') {
+        if (creep.memory['role'] === Build.CreepTypes.upgrader) {
             builder.upgradeController(creep, Game.spawns[spawn1]);
         }
-        else if (creep.memory['role'] == 'worker') {
+        else if (creep.memory['role'] === Build.CreepTypes.worker) {
             harvester(creep, spawn1);
         }
-        else if (creep.memory['role'] == 'builder') {
+        else if (creep.memory['role'] === Build.CreepTypes.builder) {
             builder.buildRoad(creep, Game.spawns[spawn1]);
         }
     }
