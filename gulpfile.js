@@ -45,8 +45,9 @@ gulp.task('upload-sim', ['compile'], function () {
 			'Content-Type': 'application/json; charset=utf-8'
 		}
 	}, function(res) {
+		console.log('Server Response:');
 		console.log(res.headers);
-		console.log(res.statusCode + res.statusMessage);
+		console.log(res.statusCode, res.statusMessage);
 	});
 	req.write(JSON.stringify(data));
 	req.end();

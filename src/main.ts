@@ -1,6 +1,6 @@
 /// <reference path="../typings/tsd.d.ts" />
 /// <reference path="harvester.ts" />
-import {IBuilder} from "./bulider";
+import {IBuilder} from "./builder";
 var harvester = require('harvester');
 var builder:IBuilder = require('builder');
 
