@@ -55,11 +55,11 @@ module Build{
             case CreepTypes.builder:
                 templateName = 'builder';
                 break;
-            case CreepTypes.builder:
-                templateName = 'builder';
+            case CreepTypes.worker:
+                templateName = 'worker';
                 break;
-            case CreepTypes.builder:
-                templateName = 'builder';
+            case CreepTypes.upgrader:
+                templateName = 'upgrader';
                 break;
             default:
                 templateName = 'default';
