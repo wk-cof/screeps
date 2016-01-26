@@ -13,7 +13,7 @@ module Build{
         upgrader
     }
 
-     function buildCreepInterface(bodyParts, spawnName, name, memory) {
+    function buildCreepInterface(bodyParts, spawnName, name, memory) {
         return Game.spawns[spawnName].createCreep(bodyParts, name, memory);
 
     }
@@ -50,7 +50,20 @@ module Build{
     }
 
     export function buildCreepAutoName(type, spawnName){
-        let templateName = type;
+        let templateName:string;
+        switch (type) {
+            case CreepTypes.builder:
+                templateName = 'builder';
+                break;
+            case CreepTypes.builder:
+                templateName = 'builder';
+                break;
+            case CreepTypes.builder:
+                templateName = 'builder';
+                break;
+            default:
+                templateName = 'default';
+        }
         let index = 1;
         while(!isLegalCreepName(templateName+index)){
             index++;
@@ -66,12 +79,12 @@ module Build{
 
     export function maintainCreeps(spawn){
         var creepNames:string[] = _.keys(Memory.creeps);
-        for(let creep in creepNames){
+        _.each(creepNames, (creep) => {
             if(!isCreepAlive(creep)){
                 console.log(creep + ' is ded');
                 buildCreep(creep, Memory.creeps[creep], spawn);
             }
-        }
+        });
     }
 }
 
@@ -116,7 +129,7 @@ module.exports.loop = function () {
             builder.upgradeController(creep, Game.spawns[spawn1]);
         }
         else if (creep.memory['role'] === Build.CreepTypes.worker) {
-            harvester(creep, spawn1);
+            harvester(creep, Game.spawns[spawn1]);
         }
         else if (creep.memory['role'] === Build.CreepTypes.builder) {
             builder.buildRoad(creep, Game.spawns[spawn1]);

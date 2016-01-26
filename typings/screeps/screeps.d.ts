@@ -149,6 +149,7 @@ interface Creep {
 	repair(target: Spawn|Structure): number;
 	say(message: string): number;
 	suicide(): number;
+	transfer(target: Creep|Spawn|Structure, resourceType:number, amount?:number);
 	transferEnergy(target: Creep|Spawn|Structure, amount?: number): number;
 	unclaimController(target: Structure): number;
 	upgradeController(target: Structure): number;
