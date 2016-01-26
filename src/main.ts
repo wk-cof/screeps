@@ -15,6 +15,32 @@ module Build{
         return _.isUndefined(Memory.creeps[name]);
     }
 
+
+    function buildNamedCreepType(name, type, spawnName){
+        // assign body parts based on type
+        let bodyParts;
+
+        switch (type){
+            case 'builder':
+                bodyParts = [WORK, WORK, CARRY, MOVE];
+                break;
+            case 'worker':
+                bodyParts = [WORK, CARRY, MOVE];
+                break;
+            case 'upgrader':
+                bodyParts = [WORK, CARRY, MOVE];
+                break;
+            default:
+                bodyParts = [WORK, WORK, CARRY, MOVE];
+        }
+
+        if( _.isObject(buildCreep(bodyParts, spawnName, name, {role: type})) ){
+            console.log('Successfully Created a new builder: ' + name);
+            return true;
+        }
+        return false;
+    }
+
     export function buildCreepType(type, spawnName){
         let templateName = type;
         let index = 1;
@@ -22,35 +48,20 @@ module Build{
             index++;
         }
         let newName = templateName+index;
+        return buildNamedCreepType(newName, type, spawnName);
 
-        if( _.isObject(buildCreep([WORK, CARRY, MOVE], spawnName, newName, {role: type})) ){
-            console.log('Successfully Created a new builder: ' + newName);
-        }
     }
 
-    export function buildBuilder(spawnName) {
-        let templateName = 'Builder';
-        let index = 1;
-        while(!isLegalCreepName(templateName+index)){
-            index++;
-        }
-        let newName = templateName+index;
-
-        if( _.isObject(buildCreep([WORK, CARRY, MOVE], spawnName, newName, {role: 'builder'})) ){
-            console.log('Successfully Created a new builder: ' + newName);
-        }
+    function isCreepAlive(creepName:string){
+        return _.isObject(Game.creeps[creepName]);
     }
 
-    export function buildWorker(spawnName) {
-        let templateName = 'Worker';
-        let index = 1;
-        while(!isLegalCreepName(templateName+index)){
-            index++;
-        }
-        let newName = templateName+index;
-
-        if( _.isObject(buildCreep([WORK, CARRY, MOVE], spawnName, newName, {role: 'worker'})) ){
-            console.log('Successfully Created a new worker: ' + newName);
+    export function maintainCreeps(spawn){
+        var creepNames:string[] = _.keys(Memory.creeps);
+        for(let creep in creepNames){
+            if(!isCreepAlive(creep)){
+                buildNamedCreepType(creep, Memory.creeps[creep], spawn);
+            }
         }
     }
 }
@@ -71,6 +82,7 @@ module.exports.loop = function () {
     }
     let memoryCreeps = Memory.creeps;
 
+    Build.maintainCreeps(spawn1);
     let creepNames:string[] = _.keys(Memory.creeps);
     let workers:string[] = _.filter(creepNames, (creepName) => creepName.match(/worker/i));
     let builders:string[] = _.filter(creepNames, (creepName) => creepName.match(/builder/i));
