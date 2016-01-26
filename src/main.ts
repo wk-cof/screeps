@@ -56,11 +56,14 @@ module Build{
 }
 
 module.exports.loop = function () {
-    var spawnNames:string[] = _.keys(Game.spawns);
+    // ============================== Game Maintenance =================================================================
+
+    // Declarations
+    let spawnNames:string[] = _.keys(Game.spawns);
     let spawn1 = spawnNames[0];
 
     // Find existing creeps
-    var existingCreepNames = _.keys(Game.creeps);
+    let existingCreepNames = _.keys(Game.creeps);
 
     // Find creeps that we have in memory
     if (!Memory.creeps) {
@@ -81,8 +84,11 @@ module.exports.loop = function () {
         Build.buildCreepType('upgrader', spawn1);
     }
 
+    // ============================== Creep rebuilding =================================================================
+    // when the creep runs out of energy, it dies. Check for the DED dudes and recreate new ones.
 
-    // let creeps : MyCreeps = <MyCreeps> Game.creeps;
+
+    // ============================== Creep functions ==================================================================
     for (let name in Game.creeps) {
         var creep = Game.creeps[name];
         if (creep.memory['role'] === 'upgrader') {
