@@ -8,7 +8,7 @@ module Build {
 
     export class CreepAssembler {
 
-        private constructor() {
+        public constructor() {
 
         }
 
@@ -93,4 +93,4 @@ module Build {
 
 }
 
-module.exports = Build.CreepTypes;
+module.exports = Build.CreepAssembler;
