@@ -116,7 +116,7 @@ module.exports.loop = function () {
     let builders:string[] = _.filter(creepNames, (creepName) => creepName.match(/builder/i));
     let upgraders:string[] = _.filter(creepNames, (creepName) => creepName.match(/upgrader/i));
 
-    if (workers.length < 4) {
+    if (workers.length < 5) {
         console.log('not enough workers. Building an additional one');
         Build.buildCreepAutoName(Build.CreepTypes.worker, spawn1);
     } else if (builders.length < 1) {
@@ -134,7 +134,6 @@ module.exports.loop = function () {
     // ============================== Creep functions ==================================================================
     for (let creepName in Game.creeps) {
         let creep = Game.creeps[creepName];
-        console.log('memory: ' + _.keys(creep.memory['role']));
         if (creep.memory['role'] === Build.CreepTypes.upgrader) {
             //console.log('upgraders: ' + creep);
             builder.upgradeController(creep, Game.spawns[spawn1]);
