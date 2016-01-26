@@ -14,7 +14,13 @@ module Build{
     }
 
     function buildCreepInterface(bodyParts, spawnName, name, memory) {
-        return Game.spawns[spawnName].createCreep(bodyParts, name, memory);
+
+        var canCreateCreep = Game.spawns[spawnName].canCreateCreep(bodyParts, name);
+        console.log('cancreatecreep return: ' + canCreateCreep);
+        if (canCreateCreep === OK) {
+            return Game.spawns[spawnName].createCreep(bodyParts, name, memory);
+        }
+        return canCreateCreep;
 
     }
 
@@ -104,17 +110,20 @@ module.exports.loop = function () {
     }
     let memoryCreeps = Memory.creeps;
 
-    Build.maintainCreeps(spawn1);
-    let creepNames:string[] = _.keys(Memory.creeps);
+    //Build.maintainCreeps(spawn1);
+    let creepNames:string[] = existingCreepNames;
     let workers:string[] = _.filter(creepNames, (creepName) => creepName.match(/worker/i));
     let builders:string[] = _.filter(creepNames, (creepName) => creepName.match(/builder/i));
     let upgraders:string[] = _.filter(creepNames, (creepName) => creepName.match(/upgrader/i));
 
     if (workers.length < 3) {
+        console.log('not enough workers. Building an additional one');
         Build.buildCreepAutoName(Build.CreepTypes.worker, spawn1);
-    } else if (builders.length < 1) {
+    } else if (builders.length < 2) {
+        console.log('not enough builders. Building an additional one');
         Build.buildCreepAutoName(Build.CreepTypes.builder, spawn1);
     } else if (upgraders.length < 2) {
+        console.log('not enough upgraders. Building an additional one');
         Build.buildCreepAutoName(Build.CreepTypes.upgrader, spawn1);
     }
 
@@ -123,15 +132,19 @@ module.exports.loop = function () {
 
 
     // ============================== Creep functions ==================================================================
-    for (let name in Game.creeps) {
-        var creep = Game.creeps[name];
+    for (let creepName in Game.creeps) {
+        let creep = Game.creeps[creepName];
+        console.log('memory: ' + _.keys(creep.memory['role']));
         if (creep.memory['role'] === Build.CreepTypes.upgrader) {
+            //console.log('upgraders: ' + creep);
             builder.upgradeController(creep, Game.spawns[spawn1]);
         }
         else if (creep.memory['role'] === Build.CreepTypes.worker) {
+            //console.log('workers: ' + creep);
             harvester(creep, Game.spawns[spawn1]);
         }
         else if (creep.memory['role'] === Build.CreepTypes.builder) {
+            //console.log('builders: ' + creep);
             builder.buildRoad(creep, Game.spawns[spawn1]);
         }
     }

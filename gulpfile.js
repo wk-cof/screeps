@@ -13,7 +13,7 @@ gulp.task('clean', function () {
 
 gulp.task('compile', ['clean'], function () {
 	return 	gulp.src(['src/**/*.ts', 'typings/**/*.d.ts'])
-		.pipe(plugins.print())
+		//.pipe(plugins.print())
 		.pipe(plugins.typescript({
 			noImplicitAny: false,
 			noExternalResolve: true,

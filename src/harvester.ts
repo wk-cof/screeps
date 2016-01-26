@@ -7,16 +7,15 @@ function getDistancesToSources(spawn:Spawn){
 }
 
 var mine = function (creep:Creep, spawn:Spawn) {
-    console.log(creep.carry.energy, creep.carryCapacity)
     if (creep.carry.energy < creep.carryCapacity) {
-        var sources = creep.room.find(FIND_SOURCES);
+        var sources = creep.room.find<Source>(FIND_SOURCES);
         // navigate towards the closest resource
         if (creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
             creep.moveTo(sources[0]);
         }
     }
     else {
-        if (creep.transferEnergy(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        if (creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             creep.moveTo(spawn);
         }
     }

@@ -7,15 +7,18 @@ export interface IBuilder{
 
 var builder = {
     buildRoad: (creep:Creep, spawn:Spawn) => {
+        //console.log('builder log: ' + creep);
+        //console.log(creep.carry.energy, creep.carryCapacity);
+
         if (creep.carry.energy == 0){// creep.carryCapacity) {
             if (spawn.transferEnergy(creep) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(spawn);
             }
         }
         else {
-             var targets = creep.room.find<Structure>(FIND_CONSTRUCTION_SITES);
+             var targets = creep.room.find<ConstructionSite>(FIND_CONSTRUCTION_SITES);
             if (targets.length) {
-                if (creep.upgradeController(targets[0]) == ERR_NOT_IN_RANGE) {
+                if (creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(targets[0]);
                 }
             }
