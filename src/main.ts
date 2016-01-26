@@ -116,10 +116,10 @@ module.exports.loop = function () {
     let builders:string[] = _.filter(creepNames, (creepName) => creepName.match(/builder/i));
     let upgraders:string[] = _.filter(creepNames, (creepName) => creepName.match(/upgrader/i));
 
-    if (workers.length < 3) {
+    if (workers.length < 4) {
         console.log('not enough workers. Building an additional one');
         Build.buildCreepAutoName(Build.CreepTypes.worker, spawn1);
-    } else if (builders.length < 2) {
+    } else if (builders.length < 1) {
         console.log('not enough builders. Building an additional one');
         Build.buildCreepAutoName(Build.CreepTypes.builder, spawn1);
     } else if (upgraders.length < 2) {
