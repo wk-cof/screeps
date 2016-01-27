@@ -32,7 +32,7 @@ gulp.task('upload-sim', ['compile'], function () {
 				main: fs.readFileSync('./dist/main.js', {encoding: "utf8"}),
 				harvester: fs.readFileSync('./dist/harvester.js', {encoding: "utf8"}),
 				builder: fs.readFileSync('./dist/builder.js', {encoding: "utf8"}),
-				build: fs.readFileSync('./dist/main.js', {encoding: "utf8"})
+				build: fs.readFileSync('./dist/build.js', {encoding: "utf8"})
 			}
 		};
 	var req = https.request({

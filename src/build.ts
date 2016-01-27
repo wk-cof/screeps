@@ -93,4 +93,4 @@ module Build {
 
 }
 
-module.exports = Build.CreepAssembler;
+module.exports = Build;

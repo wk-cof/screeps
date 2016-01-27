@@ -5,6 +5,7 @@ var harvester = require('harvester');
 var builder:IBuilder = require('builder');
 var Build = require('build');
 
+//declare var Build:any;
 
 module.exports.loop = function () {
     // ============================== Game Maintenance =================================================================
@@ -30,13 +31,13 @@ module.exports.loop = function () {
 
     if (workers.length < 5) {
         console.log('not enough workers. Building an additional one');
-        Build.buildCreepAutoName(Build.CreepTypes.worker, spawn1);
+        Build.CreepAssembler.buildCreepAutoName(Build.CreepTypes.worker, spawn1);
     } else if (builders.length < 1) {
         console.log('not enough builders. Building an additional one');
-        Build.buildCreepAutoName(Build.CreepTypes.builder, spawn1);
-    } else if (upgraders.length < 2) {
+        Build.CreepAssembler.buildCreepAutoName(Build.CreepTypes.builder, spawn1);
+    } else if (upgraders.length < 4) {
         console.log('not enough upgraders. Building an additional one');
-        Build.buildCreepAutoName(Build.CreepTypes.upgrader, spawn1);
+        Build.CreepAssembler.buildCreepAutoName(Build.CreepTypes.upgrader, spawn1);
     }
 
     // ============================== Creep rebuilding =================================================================

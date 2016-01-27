@@ -6,7 +6,14 @@ function getDistancesToSources(spawn:Spawn){
     console.log('room name'+ roomName );
 }
 
+function getExtensions(spawn:Spawn):Extension[] {
+    var extensions: Extension[];
+    console.log(spawn.room.name)
+    return extensions;
+}
+
 var mine = function (creep:Creep, spawn:Spawn) {
+    getExtensions(spawn);
     if (creep.carry.energy < creep.carryCapacity) {
         var sources = creep.room.find<Source>(FIND_SOURCES);
         // navigate towards the closest resource
