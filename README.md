@@ -12,6 +12,8 @@
 * Automate road building from the spawn to the resources.
 * Build a network of roads around the spawn.
 * Separation between harvesters and carriers.
+* Move constants to a separate file.
+
 
 ### Done
 * Figure out how to use extensions to store more energy.

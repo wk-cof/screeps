@@ -653,12 +653,16 @@ declare var Game: Game;
 declare var Memory: Memory;
 
 
-declare var STRUCTURE_EXTENSION:number,
-            STRUCTURE_RAMPART:number,
-            STRUCTURE_ROAD:number,
-            STRUCTURE_SPAWN:number,
-            STRUCTURE_WALL:number,
-            STRUCTURE_LINK:number;
+var STRUCTURE_SPAWN       = "spawn",
+STRUCTURE_EXTENSION   = "extension",
+STRUCTURE_ROAD        = "road",
+STRUCTURE_WALL        = "constructedWall",
+STRUCTURE_RAMPART     = "rampart",
+STRUCTURE_KEEPER_LAIR = "keeperLair",
+STRUCTURE_PORTAL      = "portal",
+STRUCTURE_CONTROLLER  = "controller",
+STRUCTURE_LINK        = "link",
+STRUCTURE_STORAGE     = "storage";
 
 declare var FIND_CREEPS:number,
             FIND_MY_CREEPS:number,

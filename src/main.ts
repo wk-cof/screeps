@@ -7,6 +7,8 @@ var Build = require('build');
 
 //declare var Build:any;
 
+// Globals
+
 module.exports.loop = function () {
     // ============================== Game Maintenance =================================================================
 
@@ -57,7 +59,8 @@ module.exports.loop = function () {
         }
         else if (creep.memory['role'] === Build.CreepTypes.builder) {
             //console.log('builders: ' + creep);
-            builder.buildRoad(creep, Game.spawns[spawn1]);
+            //builder.maintainRoad(creep);
+            builder.buildOnConstructionSite(creep, Game.spawns[spawn1]);
         }
     }
     return null;

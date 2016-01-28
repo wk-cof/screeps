@@ -6,6 +6,10 @@ function getDistancesToSources(spawn:Spawn){
     console.log('room name'+ roomName );
 }
 
+let isSpawnFull = (spawn:Spawn):boolean => {
+    return false;
+};
+
 function getExtensions(spawn:Spawn):Extension[] {
     var extensions: Extension[];
     console.log(spawn.room.name)
@@ -13,7 +17,7 @@ function getExtensions(spawn:Spawn):Extension[] {
 }
 
 var mine = function (creep:Creep, spawn:Spawn) {
-    getExtensions(spawn);
+    //getExtensions(spawn);
     if (creep.carry.energy < creep.carryCapacity) {
         var sources = creep.room.find<Source>(FIND_SOURCES);
         // navigate towards the closest resource
@@ -22,7 +26,11 @@ var mine = function (creep:Creep, spawn:Spawn) {
         }
     }
     else {
-        if (creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        if (isSpawnFull(spawn)){
+            // find nearest non-full extension.
+
+        }
+        else if (creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             creep.moveTo(spawn);
         }
     }
