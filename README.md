@@ -1,8 +1,10 @@
 # Useful Links
 
-### [Globals](http://screeps.wikia.com/wiki/Globals)
+#### [Globals](http://screeps.wikia.com/wiki/Globals)
 
-### [Public REST API](http://support.screeps.com/hc/en-us/articles/203022612-Committing-scripts-using-direct-API-access)
+#### [Public REST API](http://support.screeps.com/hc/en-us/articles/203022612-Committing-scripts-using-direct-API-access)
+
+#### [Screeps Profiler](https://github.com/gdborton/screeps-profiler)
 
 ## ToDo
 

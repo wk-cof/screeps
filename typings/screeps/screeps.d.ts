@@ -653,7 +653,7 @@ declare var Game: Game;
 declare var Memory: Memory;
 
 
-var STRUCTURE_SPAWN       = "spawn",
+var STRUCTURE_SPAWN   = "spawn",
 STRUCTURE_EXTENSION   = "extension",
 STRUCTURE_ROAD        = "road",
 STRUCTURE_WALL        = "constructedWall",
@@ -685,11 +685,21 @@ declare var FIND_CREEPS:number,
 
 //Result Codes:
 declare var OK:number,
-            ERR_NOT_OWNER:number,
-            ERR_BUSY:number,
-            ERR_INVALID_TARGET:number,
-            ERR_NOT_IN_RANGE:number,
-            ERR_NO_BODYPART:number;
+    ERR_NOT_OWNER:number,
+    ERR_NO_PATH:number,
+    ERR_NAME_EXISTS:number,
+    ERR_BUSY:number,
+    ERR_NOT_FOUND:number,
+    ERR_NOT_ENOUGH_ENERGY:number,
+    ERR_INVALID_TARGET:number,
+    ERR_FULL:number,
+    ERR_NOT_IN_RANGE:number,
+    ERR_INVALID_ARGS:number,
+    ERR_TIRED:number,
+    ERR_NO_BODYPART:number,
+    ERR_NOT_ENOUGH_EXTENSIONS:number,
+    ERR_RCL_NOT_ENOUGH:number,
+    ERR_GCL_NOT_ENOUGH
 
 // body parts
 declare var WORK:string,
