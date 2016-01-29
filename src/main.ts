@@ -3,9 +3,9 @@
 import {IBuilder} from "./builder";
 var harvester = require('harvester');
 var builder:IBuilder = require('builder');
-var Build = require('build');
+var CreepAssembler = require('creep-assembler');
 
-//declare var Build:any;
+//declare var CreepAssembler:any;
 
 // Globals
 
@@ -25,7 +25,7 @@ module.exports.loop = function () {
     }
     let memoryCreeps = Memory.creeps;
 
-    //Build.maintainCreeps(spawn1);
+    //CreepAssembler.maintainCreeps(spawn1);
     let creepNames:string[] = existingCreepNames;
     let workers:string[] = _.filter(creepNames, (creepName) => creepName.match(/worker/i));
     let builders:string[] = _.filter(creepNames, (creepName) => creepName.match(/builder/i));
@@ -33,13 +33,13 @@ module.exports.loop = function () {
 
     if (workers.length < 5) {
         console.log('not enough workers. Building an additional one');
-        Build.CreepAssembler.buildCreepAutoName(Build.CreepTypes.worker, spawn1);
-    } else if (builders.length < 1) {
+        CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.worker, spawn1);
+    } else if (builders.length < 0) {
         console.log('not enough builders. Building an additional one');
-        Build.CreepAssembler.buildCreepAutoName(Build.CreepTypes.builder, spawn1);
+        CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.builder, spawn1);
     } else if (upgraders.length < 4) {
         console.log('not enough upgraders. Building an additional one');
-        Build.CreepAssembler.buildCreepAutoName(Build.CreepTypes.upgrader, spawn1);
+        CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.upgrader, spawn1);
     }
 
     // ============================== Creep rebuilding =================================================================
@@ -49,15 +49,15 @@ module.exports.loop = function () {
     // ============================== Creep functions ==================================================================
     for (let creepName in Game.creeps) {
         let creep = Game.creeps[creepName];
-        if (creep.memory['role'] === Build.CreepTypes.upgrader) {
+        if (creep.memory['role'] === CreepAssembler.CreepTypes.upgrader) {
             //console.log('upgraders: ' + creep);
             builder.upgradeController(creep, Game.spawns[spawn1]);
         }
-        else if (creep.memory['role'] === Build.CreepTypes.worker) {
+        else if (creep.memory['role'] === CreepAssembler.CreepTypes.worker) {
             //console.log('workers: ' + creep);
             harvester(creep, Game.spawns[spawn1]);
         }
-        else if (creep.memory['role'] === Build.CreepTypes.builder) {
+        else if (creep.memory['role'] === CreepAssembler.CreepTypes.builder) {
             //console.log('builders: ' + creep);
             //builder.maintainRoad(creep);
             builder.buildOnConstructionSite(creep, Game.spawns[spawn1]);

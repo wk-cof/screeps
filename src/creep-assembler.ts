@@ -43,7 +43,7 @@ module Build {
                     bodyParts = [WORK, CARRY, MOVE];
                     break;
                 case CreepTypes.upgrader:
-                    bodyParts = [WORK, CARRY, MOVE];
+                    bodyParts = [WORK, WORK, CARRY, CARRY, MOVE];
                     break;
                 default:
                     bodyParts = [WORK, WORK, CARRY, MOVE];

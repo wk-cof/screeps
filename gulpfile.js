@@ -5,7 +5,7 @@ var del = require('del');
 
 var https = require('https');
 var fs = require('fs');
-var secrets = require('./secrets.js');
+var secrets = require('./config/secrets.js');
 
 gulp.task('clean', function () {
     return del('dist/**');
@@ -32,7 +32,7 @@ gulp.task('upload-sim', ['compile'], function () {
 				main: fs.readFileSync('./dist/main.js', {encoding: "utf8"}),
 				harvester: fs.readFileSync('./dist/harvester.js', {encoding: "utf8"}),
 				builder: fs.readFileSync('./dist/builder.js', {encoding: "utf8"}),
-				build: fs.readFileSync('./dist/build.js', {encoding: "utf8"})
+				'creep-assembler': fs.readFileSync('./dist/creep-assembler.js', {encoding: "utf8"})
 			}
 		};
 	var req = https.request({
