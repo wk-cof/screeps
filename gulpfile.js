@@ -11,7 +11,7 @@ gulp.task('clean', function () {
     return del('dist/**');
 });
 
-gulp.task('compile', ['clean'], function () {
+gulp.task('build', ['clean'], function () {
 	return 	gulp.src(['src/**/*.ts', 'typings/**/*.d.ts'])
 		//.pipe(plugins.print())
 		.pipe(plugins.typescript({
@@ -23,11 +23,12 @@ gulp.task('compile', ['clean'], function () {
 		.pipe(gulp.dest('dist'));
 
 });
-gulp.task('upload-sim', ['compile'], function () {
+
+function upload(branchName) {
 	var email = secrets.email,
 		password = secrets.password,
 		data = {
-			branch: 'default',
+			branch: branchName,
 			modules: {
 				main: fs.readFileSync('./dist/main.js', {encoding: "utf8"}),
 				harvester: fs.readFileSync('./dist/harvester.js', {encoding: "utf8"}),
@@ -52,6 +53,8 @@ gulp.task('upload-sim', ['compile'], function () {
 	});
 	req.write(JSON.stringify(data));
 	req.end();
-});
-gulp.task('build', ['upload-sim']);
-gulp.task('default', ['compile']);
+};
+
+gulp.task('upload', ['build'], upload('default'));
+gulp.task('dev', ['build'], upload('dev'));
+gulp.task('default', ['build']);

@@ -11,7 +11,7 @@ var config = require('config');
 // Globals
 
 module.exports.loop = function () {
-    // ============================== Game Maintenance =================================================================
+    // ============================== Game Maintenance11 =================================================================
 
     // Declarations
     let spawnNames:string[] = _.keys(Game.spawns);
@@ -63,7 +63,7 @@ module.exports.loop = function () {
         }
 
         // when the creep runs out of energy, it dies. Recharge creeps
-        if (creep.ticksToLive < 400){
+        if (creep.ticksToLive < config.healThreshold){
             if (creep.pos.isNearTo(spawnObject)){
 
                 if (spawnObject.renewCreep(creep) === OK){
