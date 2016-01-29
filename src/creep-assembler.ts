@@ -40,7 +40,7 @@ module Build {
                     bodyParts = [WORK, WORK, CARRY, MOVE];
                     break;
                 case CreepTypes.worker:
-                    bodyParts = [WORK, CARRY, MOVE];
+                    bodyParts = [WORK, WORK, CARRY, MOVE];
                     break;
                 case CreepTypes.upgrader:
                     bodyParts = [WORK, WORK, CARRY, CARRY, MOVE];

@@ -1,4 +1,5 @@
 node_modules/**
-config/**
+secrets.js
 .idea/**
 dist/**
+src/config.ts

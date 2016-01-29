@@ -4,6 +4,7 @@ import {IBuilder} from "./builder";
 var harvester = require('harvester');
 var builder:IBuilder = require('builder');
 var CreepAssembler = require('creep-assembler');
+var config = require('config');
 
 //declare var CreepAssembler:any;
 
@@ -31,13 +32,13 @@ module.exports.loop = function () {
     let builders:string[] = _.filter(creepNames, (creepName) => creepName.match(/builder/i));
     let upgraders:string[] = _.filter(creepNames, (creepName) => creepName.match(/upgrader/i));
 
-    if (workers.length < 5) {
+    if (workers.length < config.workerCount) {
         console.log('not enough workers. Building an additional one');
         CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.worker, spawn1);
-    } else if (builders.length < 0) {
+    } else if (builders.length < config.builderCount) {
         console.log('not enough builders. Building an additional one');
         CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.builder, spawn1);
-    } else if (upgraders.length < 4) {
+    } else if (upgraders.length < config.upgraderCount) {
         console.log('not enough upgraders. Building an additional one');
         CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.upgrader, spawn1);
     }
