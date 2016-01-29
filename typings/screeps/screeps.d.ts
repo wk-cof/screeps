@@ -517,6 +517,7 @@ interface Spawn {
 	createCreep(body: string[], name?: string, memory?: any): string|number;
 	destroy(): number;
 	notifyWhenAttacked(enabled: boolean): number;
+	renewCreep(target: Creep): number;
 	transferEnergy(target: Creep, amount?: number): number;
 }
 interface Structure {

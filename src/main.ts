@@ -43,16 +43,14 @@ module.exports.loop = function () {
         CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.upgrader, spawn1);
     }
 
-    // ============================== Creep rebuilding =================================================================
-    // when the creep runs out of energy, it dies. Check for the DED dudes and recreate new ones.
-
-
-    // ============================== Creep functions ==================================================================
+    // ============================== Creep functions and rebuilding ===================================================
+    // find the spawn
+    let spawnObject:Spawn = Game.spawns[spawn1];
     for (let creepName in Game.creeps) {
         let creep = Game.creeps[creepName];
         if (creep.memory['role'] === CreepAssembler.CreepTypes.upgrader) {
             //console.log('upgraders: ' + creep);
-            builder.upgradeController(creep, Game.spawns[spawn1]);
+            builder.upgradeController(creep, spawnObject);
         }
         else if (creep.memory['role'] === CreepAssembler.CreepTypes.worker) {
             //console.log('workers: ' + creep);
@@ -61,8 +59,19 @@ module.exports.loop = function () {
         else if (creep.memory['role'] === CreepAssembler.CreepTypes.builder) {
             //console.log('builders: ' + creep);
             //builder.maintainRoad(creep);
-            builder.buildOnConstructionSite(creep, Game.spawns[spawn1]);
+            builder.buildOnConstructionSite(creep, spawnObject);
         }
+
+        // when the creep runs out of energy, it dies. Recharge creeps
+        if (creep.ticksToLive < 400){
+            if (creep.pos.isNearTo(spawnObject)){
+
+                if (spawnObject.renewCreep(creep) === OK){
+                    console.log(creep + ' is renewed to ' + creep.ticksToLive + ' ticks');
+                }
+            }
+        }
+
     }
     return null;
 }; 

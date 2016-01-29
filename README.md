@@ -22,6 +22,7 @@
     All the necessary energy should be in the spawn and extensions in the beginning of the creep creation.
 * Make harvesters deposit energy in extensions.
 * Build a network of roads around the spawn.
+* Heal creeps.
     
 ## Notes
 

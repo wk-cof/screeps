@@ -6,13 +6,15 @@ function getDistancesToSources(spawn:Spawn){
     console.log('room name'+ roomName );
 }
 
+// transfer energy
+//Game.creeps.builder42.transferEnergy(Game.creeps.builder42.room.find(FIND_MY_STRUCTURES)[2])
 let transferToClosestAvailableExtension = (creep:Creep) => {
     //var extension = creep.room.find(FIND_MY_STRUCTURES, {
     //    filter: (object:Extension) => {
     //        return object.structureType === STRUCTURE_EXTENSION && (object.energy < object.energyCapacity);
     //    }
     //});
-    var extension = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+    var extension:Extension = <Extension>creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
         filter: (object:Extension) => {
             return object.structureType === STRUCTURE_EXTENSION && (object.energy < object.energyCapacity);
         }
@@ -48,8 +50,5 @@ var mine = function (creep:Creep, spawn:Spawn) {
         }
     }
 };
-// transfer energy
-//Game.creeps.builder42.moveTo(Game.creeps.builder42.room.find(FIND_MY_STRUCTURES)[2])
-//Game.creeps.builder42.moveTo(Game.creeps.builder42.room.find(FIND_MY_STRUCTURES)[2])
-//Game.creeps.builder42.transferEnergy(Game.creeps.builder42.room.find(FIND_MY_STRUCTURES)[2])
+
 module.exports = mine;
