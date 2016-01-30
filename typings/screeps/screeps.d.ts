@@ -653,17 +653,17 @@ declare enum Direction {
 declare var Game: Game;
 declare var Memory: Memory;
 
-
-var STRUCTURE_SPAWN   = "spawn",
-STRUCTURE_EXTENSION   = "extension",
-STRUCTURE_ROAD        = "road",
-STRUCTURE_WALL        = "constructedWall",
-STRUCTURE_RAMPART     = "rampart",
-STRUCTURE_KEEPER_LAIR = "keeperLair",
-STRUCTURE_PORTAL      = "portal",
-STRUCTURE_CONTROLLER  = "controller",
-STRUCTURE_LINK        = "link",
-STRUCTURE_STORAGE     = "storage";
+// Globals
+declare var STRUCTURE_SPAWN:string,
+	STRUCTURE_EXTENSION:string,
+	STRUCTURE_ROAD:string,
+	STRUCTURE_WALL:string,
+	STRUCTURE_RAMPART:string,
+	STRUCTURE_KEEPER_LAIR:string,
+	STRUCTURE_PORTAL:string,
+	STRUCTURE_CONTROLLER:string,
+	STRUCTURE_LINK:string,
+	STRUCTURE_STORAGE:string;
 
 declare var FIND_CREEPS:number,
             FIND_MY_CREEPS:number,
@@ -706,5 +706,3 @@ declare var OK:number,
 declare var WORK:string,
             CARRY:string,
             MOVE:string;
-
-declare var RESOURCE_ENERGY:number;

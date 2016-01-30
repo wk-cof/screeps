@@ -45,7 +45,7 @@ var mine = function (creep:Creep, spawn:Spawn) {
         if (spawn.energy === spawn.energyCapacity){
             transferToClosestAvailableExtension(creep);
         }
-        else if (creep.transfer(spawn, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE){
+        else if (creep.transferEnergy(spawn) === ERR_NOT_IN_RANGE){
             creep.moveTo(spawn);
         }
     }

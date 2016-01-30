@@ -45,7 +45,6 @@ var builder = {
 
     },
     maintainRoad: (creep:Creep) => {
-        console.log('in Road Maintenance mode.')
         let isMoveRequired = false;
         let moveTarget = null;
         if (creep.carry.energy === 0) {
@@ -60,30 +59,29 @@ var builder = {
                 moveTarget = spawn;
             }
         }
-        //if (creep.carry.energy > 0) {
-        //    var roadsToRepair : Road = <Road>creep.pos.lookFor(FIND_STRUCTURES);
-        //    console.log(roadsToRepair);
+        if (creep.carry.energy > 0) {
+            var roadToRepair : Road = <Road>creep.pos.findClosestByRange(FIND_STRUCTURES, <any>{
+                filter: (object:Structure) => {
+                    //console.log(object.pos.toString());
+                    return (object.structureType === STRUCTURE_ROAD && (object.hits < object.hitsMax / 2));
+                }
+            });
+            if(!roadToRepair){
+                return;
+            }
+            console.log('reparing road at coordinates: (' + roadToRepair.pos.toString() );
+            if (roadToRepair && creep.pos.isNearTo(roadToRepair)) {
+                creep.repair(roadToRepair);
+            }
+            else {
+                isMoveRequired = true;
+                moveTarget = roadToRepair;
+            }
+        }
 
-            //var roadToRepair : Road = <Road>creep.pos.findClosestByRange(FIND_STRUCTURES, <any>{
-            //    filter: (object:Structure) => {
-            //        //console.log(object.pos.toString());
-            //        return (object.structureType === STRUCTURE_ROAD && (object.hits < object.hitsMax / 3)).toString();
-            //    }
-            //});
-            //console.log('reparing road at coordinates: (' + roadToRepair.pos.toString() );
-            //if (roadToRepair && creep.pos.isNearTo(roadToRepair)) {
-            //    console.log('should be reparing.')
-            //    creep.repair(roadToRepair);
-            //}
-            //else {
-            //    isMoveRequired = true;
-            //    moveTarget = roadToRepair;
-            //}
-        //}
-        //
-        //if (isMoveRequired) {
-        //    creep.moveTo(moveTarget);
-        //}
+        if (isMoveRequired) {
+            creep.moveTo(moveTarget);
+        }
     }
 };
 module.exports = builder;

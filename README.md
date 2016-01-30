@@ -10,9 +10,8 @@
 
 ### Pending
 * Build fighting units.
-* Automate road building from the spawn to the resources.
+* Automate road building from the spawn to the resources
 * Separation between harvesters and carriers.
-* Move constants to a separate file.
 
 
 ### Done
@@ -23,6 +22,8 @@
 * Make harvesters deposit energy in extensions.
 * Build a network of roads around the spawn.
 * Heal creeps.
+* Move constants to a separate file.
+* Road maintenance
     
 ## Notes
 
@@ -36,3 +37,7 @@ module.exports = {
     upgraderCount:  x
 }
 ```
+
+### Attacking units
+Put you ```TOUGH``` parts first. Under attack, the first parts to take hits are those specified first. 
+Full damage to a part leads to complete disabling of it – the creep can no longer perform this function.

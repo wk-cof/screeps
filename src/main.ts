@@ -58,9 +58,10 @@ module.exports.loop = function () {
         }
         else if (creep.memory['role'] === CreepAssembler.CreepTypes.builder) {
             //console.log('builders: ' + creep);
-            //builder.maintainRoad(creep);
-            builder.buildOnConstructionSite(creep, spawnObject);
+            builder.maintainRoad(creep);
+            //builder.buildOnConstructionSite(creep, spawnObject);
         }
+
 
         // when the creep runs out of energy, it dies. Recharge creeps
         if (creep.ticksToLive < 400){
