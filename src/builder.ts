@@ -1,8 +1,10 @@
 /// <reference path="../typings/tsd.d.ts" />
 
-const buildThreshold = 199;
+var MyCreep = require('creep');
+
 module BuilderModule {
-    export interface IBuilder {
+    import IMyCreep = MyCreep.IMyCreep;
+    export interface IBuilder extends IMyCreep{
         buildOnNearestConstructionSite:(spawn:Spawn) => void;
         upgradeController:(spawn:Spawn) => void;
         maintainRoads:(spawn:Spawn) => void;
@@ -12,40 +14,14 @@ module BuilderModule {
 // TODO: use a generic getEnergy function in the future
 
 
-    export class Builder implements IBuilder {
+    export class Builder extends MyCreep.MyCreep implements IBuilder {
         constructor(private creep:Creep) {
+            super(creep);
         }
-
-        private getEnergyFromSpawn(spawn:Spawn) {
-            if (this.creep.pos.isNearTo(spawn) === false) {
-                this.creep.moveTo(spawn);
-            }
-            else if (spawn.energy > buildThreshold) {
-                spawn.transferEnergy(this.creep)
-            }
-        }
-
-        private doOrMoveTo(action:Function, target:Structure|Creep|ConstructionSite) {
-            console.log(`target: ${target}`);
-            if (this.creep.pos.isNearTo(target)) {
-                console.log('applying action')
-                action.call(this.creep, target);
-                //this.creep.build(<ConstructionSite>target);
-            }
-            else {
-                console.log('moving to target')
-                this.creep.moveTo(target);
-            }
-        }
-
-        private findAllInTheRoom(findConstant:number) {
-            return this.creep.room.find<ConstructionSite>(findConstant);
-        }
-
 
         public buildOnNearestConstructionSite(spawn:Spawn) {
             console.log(`building for the spawn ${spawn}`);
-            if (this.creep.carry.energy === 0) {// creep.carryCapacity) {
+            if (this.creep.carry.energy === 0) {
                 this.getEnergyFromSpawn(spawn);
             }
             else {
@@ -59,7 +35,7 @@ module BuilderModule {
         }
 
         public upgradeController(spawn:Spawn) {
-            if (this.creep.carry.energy === 0) {// creep.carryCapacity) {
+            if (this.creep.carry.energy === 0) {
                 this.getEnergyFromSpawn(spawn);
             }
             else {
@@ -69,16 +45,6 @@ module BuilderModule {
                 }
             }
 
-        }
-
-        public findClosestByRange(structureType:number, filterFunction:Function) {
-
-            if (filterFunction) {
-                return this.creep.pos.findClosestByRange(structureType, {
-                    filter: filterFunction
-                });
-            }
-            return this.creep.pos.findClosestByRange(structureType);
         }
 
         /**

@@ -33,7 +33,8 @@ gulp.task('upload-sim', ['compile'], function () {
 				harvester: fs.readFileSync('./dist/harvester.js', {encoding: "utf8"}),
 				builder: fs.readFileSync('./dist/builder.js', {encoding: "utf8"}),
 				'creep-assembler': fs.readFileSync('./dist/creep-assembler.js', {encoding: "utf8"}),
-				config: fs.readFileSync('./dist/config.js', {encoding: "utf8"})
+				config: fs.readFileSync('./dist/config.js', {encoding: "utf8"}),
+				creep: fs.readFileSync('./dist/creep.js', {encoding: "utf8"})
 			}
 		};
 	var req = https.request({
