@@ -3,7 +3,8 @@ module Build {
     export enum CreepTypes{
         builder,
         worker,
-        upgrader
+        upgrader,
+        linkMiner
     }
 
     export class CreepAssembler {
@@ -45,6 +46,9 @@ module Build {
                 case CreepTypes.upgrader:
                     bodyParts = [WORK, WORK, CARRY, CARRY, MOVE];
                     break;
+                case CreepTypes.linkMiner:
+                    bodyParts = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE];
+                    break;
                 default:
                     bodyParts = [WORK, WORK, CARRY, MOVE];
             }
@@ -67,6 +71,9 @@ module Build {
                     break;
                 case CreepTypes.upgrader:
                     templateName = 'upgrader';
+                    break;
+                case CreepTypes.linkMiner:
+                    templateName = 'linkMiner';
                     break;
                 default:
                     templateName = 'default';

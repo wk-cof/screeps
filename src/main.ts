@@ -1,6 +1,6 @@
 /// <reference path="../typings/tsd.d.ts" />
 /// <reference path="harvester.ts" />
-var harvester = require('harvester');
+var HM = require('harvester');
 var BM = require('builder');
 var CreepAssembler = require('creep-assembler');
 var config = require('config');
@@ -51,10 +51,11 @@ module.exports.loop = function () {
     for (let creepName in Game.creeps) {
         let creep = Game.creeps[creepName];
 
-        switch (creep.memory['role']){
+        switch (creep.memory['role']) {
             case CreepAssembler.CreepTypes.worker:
                 //console.log('workers: ' + creep);
-                harvester(creep, Game.spawns[spawn1]);
+                let harvester = new HM.MyHarvester(creep);
+                harvester.mine(spawnObject);
                 break;
             case CreepAssembler.CreepTypes.upgrader:
                 let upgrader = new BM.Builder(creep);
@@ -64,15 +65,19 @@ module.exports.loop = function () {
                 let builder = new BM.Builder(creep);
                 builder.buildOnNearestConstructionSite(spawnObject);
                 break;
+            case CreepAssembler.CreepTypes.linkMiner:
+                let linkMiner = new HM.MyHarvester(creep);
+                linkMiner.mineToClosestLink();
+                break;
             default:
                 console.log(`unrecognized type of worker: ${creep.memory['role']}`);
         }
 
         // when the creep runs out of energy, it dies. Recharge creeps
-        if (creep.ticksToLive < 400){
-            if (creep.pos.isNearTo(spawnObject)){
+        if (creep.ticksToLive < 400) {
+            if (creep.pos.isNearTo(spawnObject)) {
 
-                if (spawnObject.renewCreep(creep) === OK){
+                if (spawnObject.renewCreep(creep) === OK) {
                     console.log(creep + ' is renewed to ' + creep.ticksToLive + ' ticks');
                 }
             }

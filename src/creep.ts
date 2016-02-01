@@ -2,7 +2,7 @@ module MyCreep {
     export interface IMyCreep {
         getEnergyFromSpawn:(spawn:Spawn) => boolean;
         doOrMoveTo:(action:Function, target:Structure|Creep|ConstructionSite) => boolean;
-        findClosestByRange:(structureType:number, filterFunction:Function) => Structure;
+        findClosestByRange:(structureType:number, filterFunction?:Function) => Structure;
         findAllInTheRoom:(findConstant:number) => any[];
     }
 
@@ -29,14 +29,14 @@ module MyCreep {
             }
         }
 
-        public findClosestByRange(structureType:number, filterFunction:Function) {
+        public findClosestByRange(findConstant:number, filterFunction?:Function) {
 
             if (filterFunction) {
-                return this.creep.pos.findClosestByRange(structureType, {
+                return this.creep.pos.findClosestByRange(findConstant, {
                     filter: filterFunction
                 });
             }
-            return this.creep.pos.findClosestByRange(structureType);
+            return this.creep.pos.findClosestByRange(findConstant);
         }
 
         // cast it to the correct type when finding something in particular.
