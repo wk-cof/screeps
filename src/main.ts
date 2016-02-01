@@ -14,6 +14,7 @@ module.exports.loop = function () {
 
     // Declarations
     let spawnNames:string[] = _.keys(Game.spawns);
+    console.log(spawnNames);
     let spawn1 = spawnNames[0];
 
     // Find existing creeps

@@ -25,12 +25,15 @@ module BuilderModule {
             }
         }
 
-        private doOrMoveTo(action:Function, target:Structure|Creep) {
-            //console.log(`target: ${target}, action: ${action}`);
+        private doOrMoveTo(action:Function, target:Structure|Creep|ConstructionSite) {
+            console.log(`target: ${target}`);
             if (this.creep.pos.isNearTo(target)) {
-                action.apply(this.creep, target);
+                console.log('applying action')
+                action.call(this.creep, target);
+                //this.creep.build(<ConstructionSite>target);
             }
             else {
+                console.log('moving to target')
                 this.creep.moveTo(target);
             }
         }
@@ -40,7 +43,8 @@ module BuilderModule {
         }
 
 
-        public buildOnNearestConstructionSite(spawn) {
+        public buildOnNearestConstructionSite(spawn:Spawn) {
+            console.log(`building for the spawn ${spawn}`);
             if (this.creep.carry.energy === 0) {// creep.carryCapacity) {
                 this.getEnergyFromSpawn(spawn);
             }
