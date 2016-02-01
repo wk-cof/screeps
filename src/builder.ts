@@ -1,87 +1,104 @@
 /// <reference path="../typings/tsd.d.ts" />
 
 const buildThreshold = 199;
+module BuilderModule {
+    export interface IBuilder {
+        buildOnNearestConstructionSite:(spawn:Spawn) => void;
+        upgradeController:(spawn:Spawn) => void;
+        maintainRoads:(spawn:Spawn) => void;
+        findClosestByRange(structureType:number, filterFunction:Function);
 
-export interface IBuilder {
-    buildOnConstructionSite:(creep:Creep, spawn:Spawn) => void;
-    upgradeController:(creep:Creep, spawn:Spawn) => void;
-    maintainRoad:(creep:Creep) => void;
-}
+    }
+// TODO: use a generic getEnergy function in the future
 
-var builder = {
-    buildOnConstructionSite: (creep:Creep, spawn:Spawn) => {
-        //console.log('builder log: ' + creep);
-        //console.log(creep.carry.energy, creep.carryCapacity);
 
-        if (creep.carry.energy == 0) {// creep.carryCapacity) {
-            if (spawn.energy > buildThreshold && spawn.transferEnergy(creep) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(spawn);
-            }
+    export class Builder implements IBuilder {
+        constructor(private creep:Creep) {
         }
-        else {
-            let targets = creep.room.find<ConstructionSite>(FIND_CONSTRUCTION_SITES);
-            if (targets.length) {
-                if (creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[0]);
-                }
+
+        private getEnergyFromSpawn(spawn:Spawn) {
+            if (this.creep.pos.isNearTo(spawn) === false) {
+                this.creep.moveTo(spawn);
             }
-        }
-    },
-    upgradeController: (creep:Creep, spawn:Spawn) => {
-        if (creep.carry.energy == 0) {// creep.carryCapacity) {
-            if (spawn.energy > buildThreshold && spawn.transferEnergy(creep) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(spawn);
-            }
-        }
-        else {
-            // var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-            let target = spawn.room.controller;
-            if (target) {
-                if (creep.upgradeController(target) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target);
-                }
+            else if (spawn.energy > buildThreshold) {
+                spawn.transferEnergy(this.creep)
             }
         }
 
-    },
-    maintainRoad: (creep:Creep) => {
-        let isMoveRequired = false;
-        let moveTarget = null;
-        if (creep.carry.energy === 0) {
-            let spawn = creep.pos.findClosest<Spawn>(FIND_MY_SPAWNS);
-            if (creep.pos.isNearTo(spawn)) {
-                if (spawn.energy > buildThreshold) {
-                    let transferResult = spawn.transferEnergy(creep);
-                }
+        private doOrMoveTo(action:Function, target:Structure|Creep) {
+            //console.log(`target: ${target}, action: ${action}`);
+            if (this.creep.pos.isNearTo(target)) {
+                action.apply(this.creep, target);
             }
             else {
-                isMoveRequired = true;
-                moveTarget = spawn;
-            }
-        }
-        if (creep.carry.energy > 0) {
-            var roadToRepair : Road = <Road>creep.pos.findClosestByRange(FIND_STRUCTURES, <any>{
-                filter: (object:Structure) => {
-                    //console.log(object.pos.toString());
-                    return (object.structureType === STRUCTURE_ROAD && (object.hits < object.hitsMax / 2));
-                }
-            });
-            if(!roadToRepair){
-                return;
-            }
-            console.log('reparing road at coordinates: (' + roadToRepair.pos.toString() );
-            if (roadToRepair && creep.pos.isNearTo(roadToRepair)) {
-                creep.repair(roadToRepair);
-            }
-            else {
-                isMoveRequired = true;
-                moveTarget = roadToRepair;
+                this.creep.moveTo(target);
             }
         }
 
-        if (isMoveRequired) {
-            creep.moveTo(moveTarget);
+        private findAllInTheRoom(findConstant:number) {
+            return this.creep.room.find<ConstructionSite>(findConstant);
+        }
+
+
+        public buildOnNearestConstructionSite(spawn) {
+            if (this.creep.carry.energy === 0) {// creep.carryCapacity) {
+                this.getEnergyFromSpawn(spawn);
+            }
+            else {
+                let targets = this.findAllInTheRoom(FIND_CONSTRUCTION_SITES);
+
+                if (targets.length) {
+                    var closestTarget = this.creep.pos.findClosestByRange(targets);
+                    this.doOrMoveTo(this.creep.build, closestTarget);
+                }
+            }
+        }
+
+        public upgradeController(spawn:Spawn) {
+            if (this.creep.carry.energy === 0) {// creep.carryCapacity) {
+                this.getEnergyFromSpawn(spawn);
+            }
+            else {
+                let target = spawn.room.controller;
+                if (target) {
+                    this.doOrMoveTo(this.creep.upgradeController, target);
+                }
+            }
+
+        }
+
+        public findClosestByRange(structureType:number, filterFunction:Function) {
+
+            if (filterFunction) {
+                return this.creep.pos.findClosestByRange(structureType, {
+                    filter: filterFunction
+                });
+            }
+            return this.creep.pos.findClosestByRange(structureType);
+        }
+
+        /**
+         *
+         * @param spawn{Spawn} Parent spawn
+         * @returns {boolean} true if action was taken. False if no action required.
+         */
+        public maintainRoads(spawn:Spawn):boolean {
+            if (this.creep.carry.energy === 0) {
+                this.getEnergyFromSpawn(spawn);
+            }
+            else {
+                let closestRoad = <Road>this.findClosestByRange(FIND_STRUCTURES,
+                    (object:Structure) => (object.structureType === STRUCTURE_ROAD && (object.hits < object.hitsMax / 2)));
+
+                if (!closestRoad) {
+                    return false;
+                }
+                this.doOrMoveTo(this.creep.repair, closestRoad);
+            }
+            return true;
+
         }
     }
-};
-module.exports = builder;
+
+}
+module.exports = BuilderModule;

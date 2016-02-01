@@ -9,9 +9,12 @@
 ## ToDo
 
 ### Pending
+* Create a parent Creep class with useful shortcuts.
 * Build fighting units.
+* Charge cannons.
 * Automate road building from the spawn to the resources
 * Separation between harvesters and carriers.
+* Use links to mine faster.
 
 
 ### Done
@@ -41,3 +44,7 @@ module.exports = {
 ### Attacking units
 Put you ```TOUGH``` parts first. Under attack, the first parts to take hits are those specified first. 
 Full damage to a part leads to complete disabling of it – the creep can no longer perform this function.
+
+### Random facts
+* Cannons can heal/reinforce structures
+* 
