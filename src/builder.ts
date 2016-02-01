@@ -4,7 +4,7 @@ var MyCreep = require('creep');
 
 module BuilderModule {
     import IMyCreep = MyCreep.IMyCreep;
-    export interface IBuilder extends IMyCreep{
+    export interface IBuilder extends IMyCreep {
         buildOnNearestConstructionSite:(spawn:Spawn) => void;
         upgradeController:(spawn:Spawn) => void;
         maintainRoads:(spawn:Spawn) => void;
@@ -19,6 +19,18 @@ module BuilderModule {
             super(creep);
         }
 
+        /**
+         * building is different from the rest of the actions since it can be performed from several tiles away.
+         * TODO: Find a better way to estimate the distance in order to avoid unnecessary build calls
+         */
+        private buildOrMoveTo(buildTarget:ConstructionSite):boolean {
+            if (this.creep.build(buildTarget) === ERR_NOT_IN_RANGE) {
+                this.creep.moveTo(buildTarget);
+            }
+            return true;
+        }
+
+
         public buildOnNearestConstructionSite(spawn:Spawn) {
             console.log(`building for the spawn ${spawn}`);
             if (this.creep.carry.energy === 0) {
@@ -29,7 +41,7 @@ module BuilderModule {
 
                 if (targets.length) {
                     var closestTarget = this.creep.pos.findClosestByRange(targets);
-                    this.doOrMoveTo(this.creep.build, closestTarget);
+                    this.buildOrMoveTo(closestTarget);
                 }
             }
         }
