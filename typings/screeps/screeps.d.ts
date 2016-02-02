@@ -475,8 +475,8 @@ interface RoomPosition {
 	findClosest<T>(objects: [T|RoomPosition], opts?: {filter: any|string, algorithm: string}): T;
 	findClosestByRange<T>(type: number, opts?: {filter: any|string }): T;
 	findClosestByRange<T>(objects: [T|RoomPosition], opts?: {filter: any|string }): T;
-	findInRange<T>(type: number, range: number, opts?: {filter: any|string, algorithm: string}): T[];
-	findInRange<T>(objects: [T|RoomPosition], range: number, opts?: {filter: any|string, algorithm: string}): T[];
+	findInRange<T>(type: number, range: number, opts?: {filter: any|string, algorithm?: string}): T[];
+	findInRange<T>(objects: [T|RoomPosition], range: number, opts?: {filter: any|string, algorithm?: string}): T[];
 	findPathTo(x: number, y: number, opts?: FindPathOpts): PathStep[];
 	findPathTo(target: RoomPosition|{pos: RoomPosition}, opts?: FindPathOpts): PathStep[];
 	getDirectionTo(x: number, y: number): number;

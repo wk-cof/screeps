@@ -51,9 +51,7 @@ module.exports.loop = function () {
     let towers:Tower[] = spawnObject.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
     _.each(towers, (tower) => {
         let myTower:TowerModule.IMyTower = new TowerModule.MyTower(tower);
-        if (!myTower.defendRoom()){
-            myTower.repairRoads();
-        }
+        myTower.runRoutine();
     });
 
     //}
