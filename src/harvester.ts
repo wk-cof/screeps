@@ -1,4 +1,3 @@
-/// <reference path="../typings/tsd.d.ts" />
 import MyCreep = require('creep');
 
 module HarvesterModule {

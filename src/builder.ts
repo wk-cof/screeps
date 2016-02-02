@@ -1,5 +1,3 @@
-/// <reference path="../typings/tsd.d.ts" />
-
 var MyCreep = require('creep');
 
 module BuilderModule {
@@ -32,7 +30,7 @@ module BuilderModule {
 
 
         public buildOnNearestConstructionSite(spawn:Spawn) {
-            console.log(`building for the spawn ${spawn}`);
+            //console.log(`building for the spawn ${spawn}`);
             if (this.creep.carry.energy === 0) {
                 this.getEnergyFromSpawn(spawn);
             }

@@ -566,6 +566,28 @@ interface Storage extends Structure {
 	storeCapacity: number;
 	transferEnergy(target: Creep, amount: number): number;
 }
+
+
+interface Tower extends Structure {
+	/**
+	 * Attack another creep or structure in a short-ranged attack. Needs the ATTACK body part. If the target is inside a rampart, then the rampart is attacked instead. The target has to be at adjacent square to the creep.
+	 * @returns Result Code: OK, ERR_NOT_OWNER, ERR_BUSY, ERR_INVALID_TARGET, ERR_NOT_IN_RANGE, ERR_NO_BODYPART
+	 */
+	attack(target: Creep|Spawn|Structure): number;
+	/**
+	 * Remotely heal any creep in the room. Consumes 10 energy units per tick.
+	 * Heal power depends on the distance to the target:
+	 * from 400 hits at range 10 to 200 hits at range 40.
+	 */
+	heal(target: Creep): number;
+	/**
+	 * Remotely repair any structure in the room. Consumes 10 energy units per tick. Repair power depends on the distance to the target: from 600 hits at range 10 to 300 hits at range 40
+	 * @param target {Structure} The target structure.
+	 * @returns Result {number} Code: OK, ERR_NOT_OWNER, ERR_BUSY, ERR_INVALID_TARGET, ERR_NOT_IN_RANGE, ERR_NO_BODYPART
+	 */
+	repair(target: Structure): number;
+	transferEnergy(target: Creep, amount: number): number;
+}
 interface BodyPartDefinition {
 	type: string;
 	hits: number;
@@ -663,7 +685,8 @@ declare var STRUCTURE_SPAWN:string,
 	STRUCTURE_PORTAL:string,
 	STRUCTURE_CONTROLLER:string,
 	STRUCTURE_LINK:string,
-	STRUCTURE_STORAGE:string;
+	STRUCTURE_STORAGE:string,
+	STRUCTURE_TOWER: string;
 
 declare var FIND_CREEPS:number,
             FIND_MY_CREEPS:number,

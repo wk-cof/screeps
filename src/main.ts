@@ -1,9 +1,10 @@
-/// <reference path="../typings/tsd.d.ts" />
 /// <reference path="harvester.ts" />
 var HM = require('harvester');
 var BM = require('builder');
+var CM = require('carrier');
 var CreepAssembler = require('creep-assembler');
 var config = require('config');
+var TowerModule = require('tower');
 
 //declare var CreepAssembler:any;
 
@@ -14,7 +15,6 @@ module.exports.loop = function () {
 
     // Declarations
     let spawnNames:string[] = _.keys(Game.spawns);
-    console.log(spawnNames);
     let spawn1 = spawnNames[0];
 
     // Find existing creeps
@@ -24,7 +24,6 @@ module.exports.loop = function () {
     if (!Memory.creeps) {
         Memory.creeps = {};
     }
-    let memoryCreeps = Memory.creeps;
 
 // ============================== Creep rebuilding =====================================================================
 
@@ -48,6 +47,17 @@ module.exports.loop = function () {
     // ============================== Creep functions ==================================================================
     // find the spawn
     let spawnObject:Spawn = Game.spawns[spawn1];
+
+    let towers:Tower[] = spawnObject.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+    _.each(towers, (tower) => {
+        let myTower:TowerModule.IMyTower = new TowerModule.MyTower(tower);
+        if (!myTower.defendRoom()){
+            myTower.repairRoads();
+        }
+    });
+
+    //}
+
     for (let creepName in Game.creeps) {
         let creep = Game.creeps[creepName];
 
@@ -69,6 +79,10 @@ module.exports.loop = function () {
                 let linkMiner = new HM.MyHarvester(creep);
                 linkMiner.mineToClosestLink();
                 break;
+            case CreepAssembler.CreepTypes.carrier:
+                let carrier = new CM.MyCarrier(creep);
+                //carrier.transferEnergyToTower(spawnObject);
+                break;
             default:
                 console.log(`unrecognized type of worker: ${creep.memory['role']}`);
         }
@@ -85,4 +99,4 @@ module.exports.loop = function () {
 
     }
     return null;
-}; 
+};

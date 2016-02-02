@@ -1,12 +1,40 @@
-function defendRoom(roomName:string) {
+module TowerModule {
 
-    var hostiles = Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);
+    export interface IMyTower {
+        defendRoom():boolean;
+        repairRoads():boolean;
+    }
 
-    if(hostiles.length > 0) {
-        var username = hostiles[0].owner.username;
-        Game.notify('User ' + username + ' spotted in room ' + roomName, 1);
-        //var towers = Game.rooms[roomName].find(
-        //    FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
-        //towers.forEach(tower => tower.attack(hostiles[0]));
+
+
+    export class MyTower implements IMyTower{
+        public constructor(private tower:Tower) {
+        }
+        private creepHealThreshold = 0.1;
+        private roadRepairThreshold = 0.3;
+
+        public defendRoom() {
+            let hostiles:Creep[] = this.tower.room.find(FIND_HOSTILE_CREEPS);
+            if (hostiles.length > 0) {
+                var username = hostiles[0].owner.username;
+                Game.notify('User ' + username + ' spotted in room ' + this.tower.room.name, 1);
+                this.tower.attack(hostiles[0]);
+                return true;
+            }
+        }
+
+        public repairRoads() {
+            let bumpyRoads:Road[] = this.tower.room.find(FIND_STRUCTURES, {filter:
+                (o:Structure) => (o.structureType == STRUCTURE_ROAD && o.hits/o.hitsMax < 0.3)});
+
+            if(bumpyRoads.length > 0) {
+                this.tower.repair(bumpyRoads[0]);
+                return true;
+            }
+            return false;
+        }
+
     }
 }
+
+module.exports = TowerModule;

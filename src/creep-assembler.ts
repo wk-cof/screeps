@@ -4,7 +4,8 @@ module Build {
         builder,
         worker,
         upgrader,
-        linkMiner
+        linkMiner,
+        carrier
     }
 
     export class CreepAssembler {
@@ -41,13 +42,16 @@ module Build {
                     bodyParts = [WORK, WORK, CARRY, MOVE];
                     break;
                 case CreepTypes.worker:
-                    bodyParts = [WORK, WORK, CARRY, MOVE];
+                    bodyParts = [WORK, WORK, CARRY, CARRY, MOVE];
                     break;
                 case CreepTypes.upgrader:
                     bodyParts = [WORK, WORK, CARRY, CARRY, MOVE];
                     break;
                 case CreepTypes.linkMiner:
                     bodyParts = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE];
+                    break;
+                case CreepTypes.carrier:
+                    bodyParts = [CARRY, MOVE, CARRY, CARRY, MOVE];
                     break;
                 default:
                     bodyParts = [WORK, WORK, CARRY, MOVE];
@@ -74,6 +78,9 @@ module Build {
                     break;
                 case CreepTypes.linkMiner:
                     templateName = 'linkMiner';
+                    break;
+                case CreepTypes.carrier:
+                    templateName = 'carrier';
                     break;
                 default:
                     templateName = 'default';

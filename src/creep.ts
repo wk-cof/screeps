@@ -11,12 +11,12 @@ module MyCreep {
         public constructor(private creep:Creep) {
         }
 
-        public getEnergyFromSpawn(spawn:Spawn) {
-            if (this.creep.pos.isNearTo(spawn) === false) {
-                this.creep.moveTo(spawn);
+        public getEnergyFromSpawn(source:Spawn|Link) {
+            if (this.creep.pos.isNearTo(source) === false) {
+                this.creep.moveTo(source);
             }
-            else if (spawn.energy > this.buildThreshold) {
-                spawn.transferEnergy(this.creep)
+            else if (source.energy > this.buildThreshold) {
+                source.transferEnergy(this.creep)
             }
         }
 
