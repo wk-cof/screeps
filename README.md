@@ -9,13 +9,11 @@
 ## ToDo
 
 ### Pending
-* Create a parent Creep class with useful shortcuts.
 * Build fighting units.
-* Charge cannons.
 * Automate road building from the spawn to the resources
 * Separation between harvesters and carriers.
 * Use links to mine faster.
-
+* Increase reusePath option in the Creep.moveTo method to help save CPU.
 
 ### Done
 * Figure out how to use extensions to store more energy.
@@ -27,7 +25,9 @@
 * Heal creeps.
 * Move constants to a separate file.
 * Road maintenance
-    
+* Create a parent Creep class with useful shortcuts.
+* Charge cannons.
+   
 ## Notes
 
 ### src/config.ts

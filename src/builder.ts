@@ -32,7 +32,7 @@ module BuilderModule {
         public buildOnNearestConstructionSite(spawn:Spawn) {
             //console.log(`building for the spawn ${spawn}`);
             if (this.creep.carry.energy === 0) {
-                this.getEnergyFromSpawn(spawn);
+                this.getEnergy(spawn);
             }
             else {
                 let targets = this.findAllInTheRoom(FIND_CONSTRUCTION_SITES);
@@ -44,12 +44,12 @@ module BuilderModule {
             }
         }
 
-        public upgradeController(spawn:Spawn) {
+        public upgradeController(source:Spawn|Storage|Link) {
             if (this.creep.carry.energy === 0) {
-                this.getEnergyFromSpawn(spawn);
+                this.getEnergy(source);
             }
             else {
-                let target = spawn.room.controller;
+                let target = source.room.controller;
                 if (target) {
                     this.doOrMoveTo(this.creep.upgradeController, target);
                 }

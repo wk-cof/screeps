@@ -16,7 +16,7 @@ module TowerModule {
         private maxHealRange = 10;
 
         private roadRepairThreshold = 0.3;
-        private maxRepairRange = 20;
+        private maxRepairRange = 15;
 
         public runRoutine() {
             // De Morgan law ftw :)
@@ -35,16 +35,15 @@ module TowerModule {
         }
 
         public healCreeps() {
-            //let dedCreeps = this.tower.pos.findInRange(FIND_MY_CREEPS,
-            //    this.maxHealRange, {
-            //        filter: (c:Creep) => c.ticksToLive < this.creepHealThreshold*1000
-            //    });
-            //if (dedCreeps.length > 0) {
-            //
-            //    console.log(this.tower.heal(dedCreeps[0]));
-            //    return true;
-            //}
-            //return false;
+            let dedCreeps = this.tower.pos.findInRange(FIND_MY_CREEPS,
+                this.maxHealRange, {
+                    filter: (c:Creep) => c.ticksToLive < this.creepHealThreshold*1000
+                });
+            if (dedCreeps.length > 0) {
+                //console.log(this.tower.heal(dedCreeps[0]));
+                return true;
+            }
+            return false;
         }
 
         public repairRoads() {

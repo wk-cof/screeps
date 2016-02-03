@@ -13,14 +13,6 @@ module HarvesterModule {
             super(creep);
         }
 
-        public transferToClosestAvailableExtension() {
-            let extension:Extension = this.findClosestByRange(FIND_MY_STRUCTURES,
-                (object:Extension) => object.structureType === STRUCTURE_EXTENSION && (object.energy < object.energyCapacity));
-
-            this.doOrMoveTo(this.creep.transferEnergy, extension);
-        }
-
-
         public mine(spawn:Spawn|Link) {
             if (this.creep.carry.energy < this.creep.carryCapacity) {
                 let closestSource = this.findClosestByRange(FIND_SOURCES);

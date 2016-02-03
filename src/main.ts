@@ -32,6 +32,7 @@ module.exports.loop = function () {
     let workersNames:string[] = _.filter(creepNames, (creepName) => creepName.match(/worker/i));
     let buildersNames:string[] = _.filter(creepNames, (creepName) => creepName.match(/builder/i));
     let upgradersNames:string[] = _.filter(creepNames, (creepName) => creepName.match(/upgrader/i));
+    let carrierNames:string[] = _.filter(creepNames, (creepName) => creepName.match(/carrier/i));
 
     if (workersNames.length < config.workerCount) {
         console.log('not enough workers. Building an additional one');
@@ -42,11 +43,14 @@ module.exports.loop = function () {
     } else if (upgradersNames.length < config.upgraderCount) {
         console.log('not enough upgraders. Building an additional one');
         CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.upgrader, spawn1);
+    } else if (carrierNames.length < config.carrierCount) {
+        CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.carrier, spawn1);
     }
 
     // ============================== Creep functions ==================================================================
     // find the spawn
     let spawnObject:Spawn = Game.spawns[spawn1];
+    let roomStorage:Storage = <Storage>Game.spawns[spawn1].room.storage;
 
     let towers:Tower[] = spawnObject.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
     _.each(towers, (tower) => {
@@ -71,7 +75,7 @@ module.exports.loop = function () {
                 break;
             case CreepAssembler.CreepTypes.builder:
                 let builder = new BM.Builder(creep);
-                builder.buildOnNearestConstructionSite(spawnObject);
+                builder.buildOnNearestConstructionSite(roomStorage);
                 break;
             case CreepAssembler.CreepTypes.linkMiner:
                 let linkMiner = new HM.MyHarvester(creep);
@@ -79,7 +83,7 @@ module.exports.loop = function () {
                 break;
             case CreepAssembler.CreepTypes.carrier:
                 let carrier = new CM.MyCarrier(creep);
-                //carrier.transferEnergyToTower(spawnObject);
+                carrier.runRoutine(spawnObject);
                 break;
             default:
                 console.log(`unrecognized type of worker: ${creep.memory['role']}`);

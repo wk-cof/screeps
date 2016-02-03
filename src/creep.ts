@@ -1,9 +1,12 @@
 module MyCreep {
     export interface IMyCreep {
         getEnergyFromSpawn:(spawn:Spawn) => boolean;
+        getEnergy:(source:Storage|Spawn|Link|Tower|Creep) => boolean;
         doOrMoveTo:(action:Function, target:Structure|Creep|ConstructionSite) => boolean;
         findClosestByRange:(structureType:number, filterFunction?:Function) => Structure;
         findAllInTheRoom:(findConstant:number) => any[];
+        transferToClosestAvailableExtension:() => boolean;
+
     }
 
     export class MyCreep implements IMyCreep {
@@ -18,6 +21,27 @@ module MyCreep {
             else if (source.energy > this.buildThreshold) {
                 source.transferEnergy(this.creep)
             }
+        }
+
+        public getEnergy(source:Storage|Spawn|Link|Tower|Creep) {
+            if (this.creep.pos.isNearTo(source) === false) {
+                this.creep.moveTo(source);
+            }
+            else {
+                source.transferEnergy(this.creep);
+            }
+        }
+
+        public transferToClosestAvailableExtension() {
+            //console.log('transferring energy to extension');
+            let extension:Extension = this.findClosestByRange(FIND_MY_STRUCTURES,
+                (object:Extension) => object.structureType === STRUCTURE_EXTENSION && (object.energy < object.energyCapacity));
+
+            if (extension) {
+                this.doOrMoveTo(this.creep.transferEnergy, extension);
+                return true;
+            }
+            return false;
         }
 
         public doOrMoveTo(action:Function, target:Structure|Creep|ConstructionSite) {
