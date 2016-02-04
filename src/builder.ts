@@ -13,6 +13,9 @@ module BuilderModule {
 
 
     export class Builder extends MyCreep.MyCreep implements IBuilder {
+
+        private wallMaxLife = 3000;
+
         constructor(private creep:Creep) {
             super(creep);
         }
@@ -77,6 +80,22 @@ module BuilderModule {
             }
             return true;
 
+        }
+
+        public buildWalls(energySource:Spawn|Link|Storage) {
+            if (this.creep.carry.energy === 0) {
+                this.getEnergy(energySource);
+            }
+            var target = this.creep.room.find(FIND_STRUCTURES, {
+                filter: (object) => {
+                    return object.structureType == STRUCTURE_WALL && object.hits < this.wallMaxLife;
+                }
+            });
+            if(target.length) {
+                if(this.creep.repair(target[0]) == ERR_NOT_IN_RANGE) {
+                    this.creep.moveTo(target[0]);
+                }
+            }
         }
     }
 

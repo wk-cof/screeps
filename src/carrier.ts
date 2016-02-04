@@ -7,10 +7,10 @@ module CarrierModule {
         runRoutine(spawn:Spawn):boolean;
     }
 
-    export class MyCarrier extends MyCreep.MyCreep implements IMyCarrier {
-        private buildThreshold = 220;
+    export class MyCarrier extends MyCreep.MyCreep implements IMyCarrier {;
         public constructor(private creep:Creep){
             super(creep);
+            this.buildThreshold = 220;
         }
 
         public runRoutine(spawn:Spawn):boolean {

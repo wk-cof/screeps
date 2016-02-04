@@ -10,7 +10,7 @@ module MyCreep {
     }
 
     export class MyCreep implements IMyCreep {
-        private buildThreshold = 199;
+        protected buildThreshold = 199;
         public constructor(private creep:Creep) {
         }
 
