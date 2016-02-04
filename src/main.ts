@@ -71,7 +71,7 @@ module.exports.loop = function () {
                 break;
             case CreepAssembler.CreepTypes.upgrader:
                 let upgrader = new BM.Builder(creep);
-                upgrader.upgradeController(spawnObject);
+                upgrader.upgradeController(roomStorage);
                 break;
             case CreepAssembler.CreepTypes.builder:
                 let builder = new BM.Builder(creep);
@@ -84,20 +84,31 @@ module.exports.loop = function () {
             case CreepAssembler.CreepTypes.carrier:
                 let carrier = new CM.MyCarrier(creep);
                 carrier.runRoutine(spawnObject);
+                if (creep.ticksToLive < 400) {
+                    if (creep.pos.isNearTo(spawnObject)) {
+
+                        if (spawnObject.renewCreep(creep) === OK) {
+                            console.log(creep + ' is renewed to ' + creep.ticksToLive + ' ticks');
+                        }
+                    }
+                }
                 break;
             default:
                 console.log(`unrecognized type of worker: ${creep.memory['role']}`);
         }
 
         // when the creep runs out of energy, it dies. Recharge creeps
-        if (creep.ticksToLive < 400) {
-            if (creep.pos.isNearTo(spawnObject)) {
-
-                if (spawnObject.renewCreep(creep) === OK) {
-                    console.log(creep + ' is renewed to ' + creep.ticksToLive + ' ticks');
-                }
-            }
-        }
+        // Turns out renewing creeps is not very cost effective. Let's try to give up and just recreate the creeps.
+        // we should only heal selected creeps
+        //if (creep.ticksToLive < 400) {
+        //    if (creep.pos.isNearTo(spawnObject)) {
+        //
+        //        if (spawnObject.renewCreep(creep) === OK) {
+        //            console.log(creep + ' is renewed to ' + creep.ticksToLive + ' ticks');
+        //        }
+        //    }
+        //}
+        //http://support.screeps.com/hc/en-us/community/posts/206398959-request-renewCreep-noobie-guide-
 
     }
     return null;

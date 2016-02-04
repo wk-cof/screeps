@@ -14,6 +14,8 @@
 * Separation between harvesters and carriers.
 * Use links to mine faster.
 * Increase reusePath option in the Creep.moveTo method to help save CPU.
+* Use creep memory to store locations/paths.
+* build different creeps based on how many extensions I have.
 
 ### Done
 * Figure out how to use extensions to store more energy.

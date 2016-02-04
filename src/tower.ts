@@ -12,7 +12,7 @@ module TowerModule {
         public constructor(private tower:Tower) {
         }
 
-        private creepHealThreshold = 0.4;
+        private creepHealThreshold = 0.7;
         private maxHealRange = 10;
 
         private roadRepairThreshold = 0.3;
@@ -34,13 +34,17 @@ module TowerModule {
             return false;
         }
 
+        /**
+         * Tower can only heal damaged creeps, not renew the ones that run out of ticks to live
+         * @returns {boolean} true if action was taken, false otherwise
+         */
         public healCreeps() {
             let dedCreeps = this.tower.pos.findInRange(FIND_MY_CREEPS,
                 this.maxHealRange, {
-                    filter: (c:Creep) => c.ticksToLive < this.creepHealThreshold*1000
+                    filter: (c:Creep) => c.hits < c.hitsMax
                 });
-            if (dedCreeps.length > 0) {
-                //console.log(this.tower.heal(dedCreeps[0]));
+            if (dedCreeps && dedCreeps.length > 0) {
+                this.tower.heal(dedCreeps[0]);
                 return true;
             }
             return false;

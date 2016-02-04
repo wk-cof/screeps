@@ -7,7 +7,7 @@ module CarrierModule {
         runRoutine(spawn:Spawn):boolean;
     }
 
-    export class MyCarrier extends MyCreep.MyCreep implements IMyCarrier {;
+    export class MyCarrier extends MyCreep.MyCreep implements IMyCarrier {
         public constructor(private creep:Creep){
             super(creep);
             this.buildThreshold = 220;
@@ -20,7 +20,12 @@ module CarrierModule {
                 this.transferEnergyToStorage
             ];
             if (this.creep.carry.energy === 0) {
-                this.getEnergyFromSpawn(spawn);
+                if (spawn.structureType == STRUCTURE_SPAWN && spawn.energy > 99) {
+                    this.getEnergy(spawn);
+                }
+                else {
+                    this.getEnergy(this.creep.room.storage);
+                }
             }
             else {
                 let actionTaken = false;

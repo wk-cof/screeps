@@ -27,9 +27,7 @@ module MyCreep {
             if (this.creep.pos.isNearTo(source) === false) {
                 this.creep.moveTo(source);
             }
-            else {
-                source.transferEnergy(this.creep);
-            }
+            return (source.transferEnergy(this.creep) === OK);
         }
 
         public transferToClosestAvailableExtension() {
