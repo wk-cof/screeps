@@ -17,7 +17,6 @@ export class MyTower implements IMyTower {
     private maxRepairRange = 15;
 
     public runRoutine() {
-        console.log('working');
         // De Morgan law ftw :)
         return !(!this.defendRoom() && !this.healCreeps() && !this.repairRoads());
     }

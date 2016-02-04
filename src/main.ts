@@ -2,7 +2,8 @@
 var HM = require('harvester');
 var BM = require('builder');
 var CM = require('carrier');
-var CreepAssembler = require('creep-assembler');
+//var CreepAssembler = require('creep-assembler');
+import * as CreepAssembler from 'creep-assembler';
 var config = require('config');
 //import TowerModule = require('tower');
 import * as TowerModule from 'tower';
