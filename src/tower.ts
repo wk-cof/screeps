@@ -24,7 +24,7 @@ module TowerModule {
         }
 
         public defendRoom() {
-            let hostiles:Creep[] = this.tower.room.find(FIND_HOSTILE_CREEPS);
+            let hostiles:Creep[] = this.tower.room.find<Creep>(FIND_HOSTILE_CREEPS);
             if (hostiles.length > 0) {
                 var username = hostiles[0].owner.username;
                 Game.notify('User ' + username + ' spotted in room ' + this.tower.room.name, 1);
@@ -39,7 +39,7 @@ module TowerModule {
          * @returns {boolean} true if action was taken, false otherwise
          */
         public healCreeps() {
-            let dedCreeps = this.tower.pos.findInRange(FIND_MY_CREEPS,
+            let dedCreeps = this.tower.pos.findInRange<Creep>(FIND_MY_CREEPS,
                 this.maxHealRange, {
                     filter: (c:Creep) => c.hits < c.hitsMax
                 });
@@ -51,8 +51,7 @@ module TowerModule {
         }
 
         public repairRoads() {
-
-            let bumpyRoads:Road[] = this.tower.pos.findInRange(FIND_STRUCTURES,
+            let bumpyRoads:Road[] = this.tower.pos.findInRange<Road>(FIND_STRUCTURES,
                 this.maxRepairRange, {
                 filter: (o:Structure) => {
                     return o.structureType == STRUCTURE_ROAD && o.hits / o.hitsMax < this.roadRepairThreshold;

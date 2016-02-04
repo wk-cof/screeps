@@ -75,7 +75,7 @@ module.exports.loop = function () {
                 break;
             case CreepAssembler.CreepTypes.builder:
                 let builder = new BM.Builder(creep);
-                builder.buildWalls(roomStorage);
+                builder.reinforceWalls(roomStorage);
                 break;
             case CreepAssembler.CreepTypes.linkMiner:
                 let linkMiner = new HM.MyHarvester(creep);

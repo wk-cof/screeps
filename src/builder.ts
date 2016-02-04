@@ -3,10 +3,11 @@ var MyCreep = require('creep');
 module BuilderModule {
     import IMyCreep = MyCreep.IMyCreep;
     export interface IBuilder extends IMyCreep {
-        buildOnNearestConstructionSite:(spawn:Spawn) => void;
-        upgradeController:(spawn:Spawn) => void;
-        maintainRoads:(spawn:Spawn) => void;
+        buildOnNearestConstructionSite(spawn:Spawn): void;
+        upgradeController(spawn:Spawn): void;
+        maintainRoads(spawn:Spawn): void;
         findClosestByRange(structureType:number, filterFunction:Function);
+        reinforceWalls(energySource:Spawn|Link|Storage): boolean;
 
     }
 // TODO: use a generic getEnergy function in the future
@@ -14,7 +15,7 @@ module BuilderModule {
 
     export class Builder extends MyCreep.MyCreep implements IBuilder {
 
-        private wallMaxLife = 3000;
+        private wallMaxLife = 10000;
 
         constructor(private creep:Creep) {
             super(creep);
@@ -82,7 +83,7 @@ module BuilderModule {
 
         }
 
-        public buildWalls(energySource:Spawn|Link|Storage) {
+        public reinforceWalls(energySource:Spawn|Link|Storage) {
             if (this.creep.carry.energy === 0) {
                 this.getEnergy(energySource);
             }
@@ -96,6 +97,7 @@ module BuilderModule {
                     this.creep.moveTo(target[0]);
                 }
             }
+            return true;
         }
     }
 

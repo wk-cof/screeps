@@ -101,25 +101,25 @@ module Build {
 
             switch (type) {
                 case CreepTypes.builder:
-                    bodyParts = [WORK, WORK, CARRY, MOVE, MOVE];
+                    bodyParts = CreepAssembler.getBodyParts({work: 2, carry: 2, move: 1});
                     break;
                 case CreepTypes.worker:
-                    bodyParts = [WORK, CARRY, MOVE, WORK, CARRY, WORK, CARRY, MOVE];
+                    bodyParts = CreepAssembler.getBodyParts({work: 4, carry: 3, move: 2});
                     break;
                 case CreepTypes.upgrader:
-                    bodyParts = [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE];
+                    bodyParts = CreepAssembler.getBodyParts({work: 2, carry: 4, move: 3});
                     break;
                 case CreepTypes.linkMiner:
-                    bodyParts = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE];
+                    bodyParts = CreepAssembler.getBodyParts({work: 1, carry: 1, move: 1});
                     break;
                 case CreepTypes.carrier:
-                    bodyParts = [CARRY,CARRY, CARRY,  MOVE, MOVE];
+                    bodyParts = CreepAssembler.getBodyParts({carry: 3, move: 2});
                     break;
                 default:
-                    bodyParts = [WORK, WORK, CARRY, MOVE];
+                    bodyParts = CreepAssembler.getBodyParts({work: 1, carry: 1, move: 1});
             }
 
-            if (_.isObject(CreepAssembler.buildCreepInterface(bodyParts, spawnName, name, {role: type}))) {
+                    if (_.isObject(CreepAssembler.buildCreepInterface(bodyParts, spawnName, name, {role: type}))) {
                 console.log('Successfully Created a new creep: ' + name + ' with body parts: ' + bodyParts.toString());
                 return true;
             }
