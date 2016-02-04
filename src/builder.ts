@@ -7,7 +7,7 @@ module BuilderModule {
         upgradeController(spawn:Spawn): void;
         maintainRoads(spawn:Spawn): void;
         findClosestByRange(structureType:number, filterFunction:Function);
-        reinforceWalls(energySource:Spawn|Link|Storage): boolean;
+        reinforce(energySource:Spawn|Link|Storage, structureType: string): boolean;
 
     }
 // TODO: use a generic getEnergy function in the future
@@ -83,13 +83,13 @@ module BuilderModule {
 
         }
 
-        public reinforceWalls(energySource:Spawn|Link|Storage) {
+        public reinforce(energySource:Spawn|Link|Storage, structureType: string) {
             if (this.creep.carry.energy === 0) {
                 this.getEnergy(energySource);
             }
             var target = this.creep.room.find(FIND_STRUCTURES, {
                 filter: (object) => {
-                    return object.structureType == STRUCTURE_WALL && object.hits < this.wallMaxLife;
+                    return object.structureType == structureType && object.hits < this.wallMaxLife;
                 }
             });
             if(target.length) {

@@ -4,8 +4,8 @@ var BM = require('builder');
 var CM = require('carrier');
 var CreepAssembler = require('creep-assembler');
 var config = require('config');
-var TowerModule = require('tower');
-
+//import TowerModule = require('tower');
+import * as TowerModule from 'tower';
 //declare var CreepAssembler:any;
 
 // Globals
@@ -52,7 +52,7 @@ module.exports.loop = function () {
     let spawnObject:Spawn = Game.spawns[spawn1];
     let roomStorage:Storage = <Storage>Game.spawns[spawn1].room.storage;
 
-    let towers:Tower[] = spawnObject.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+    let towers = spawnObject.room.find<Tower>(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
     _.each(towers, (tower) => {
         let myTower:TowerModule.IMyTower = new TowerModule.MyTower(tower);
         myTower.runRoutine();
@@ -75,7 +75,7 @@ module.exports.loop = function () {
                 break;
             case CreepAssembler.CreepTypes.builder:
                 let builder = new BM.Builder(creep);
-                builder.reinforceWalls(roomStorage);
+                builder.reinforce(roomStorage, STRUCTURE_RAMPART);
                 break;
             case CreepAssembler.CreepTypes.linkMiner:
                 let linkMiner = new HM.MyHarvester(creep);
