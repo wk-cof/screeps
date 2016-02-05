@@ -1,15 +1,11 @@
 /// <reference path="harvester.ts" />
-var HM = require('harvester');
-var BM = require('builder');
-var CM = require('carrier');
-//var CreepAssembler = require('creep-assembler');
+import * as HM from 'harvester';
+import * as BM from 'builder';
+import * as CM from 'carrier';
 import * as CreepAssembler from 'creep-assembler';
-var config = require('config');
-//import TowerModule = require('tower');
 import * as TowerModule from 'tower';
-//declare var CreepAssembler:any;
 
-// Globals
+var config = require('config');
 
 module.exports.loop = function () {
     // ============================== Game Maintenance =================================================================
@@ -76,7 +72,8 @@ module.exports.loop = function () {
                 break;
             case CreepAssembler.CreepTypes.builder:
                 let builder = new BM.Builder(creep);
-                builder.reinforce(roomStorage, STRUCTURE_RAMPART);
+                //builder.reinforce(roomStorage, STRUCTURE_RAMPART);
+                builder.buildOnNearestConstructionSite(<Spawn>roomStorage);
                 break;
             case CreepAssembler.CreepTypes.linkMiner:
                 let linkMiner = new HM.MyHarvester(creep);

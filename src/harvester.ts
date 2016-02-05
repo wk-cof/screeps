@@ -1,44 +1,37 @@
-import MyCreep = require('creep');
+import * as MyCreep from 'creep';
 
-module HarvesterModule {
-    import IMyCreep = MyCreep.IMyCreep;
-
-    export interface IMyHarvester extends IMyCreep {
-        transferToClosestAvailableExtension: () => boolean;
-        mine: (spawn:Spawn) => boolean;
-    }
-
-    export class MyHarvester extends MyCreep.MyCreep implements IMyHarvester {
-        public constructor(private creep:Creep) {
-            super(creep);
-        }
-
-        public mine(spawn:Spawn|Link) {
-            if (this.creep.carry.energy < this.creep.carryCapacity) {
-                let closestSource = this.findClosestByRange(FIND_SOURCES);
-                this.doOrMoveTo(this.creep.harvest, closestSource);
-            }
-            else {
-                // check if the spawn is full. If it is, transfer to the closest empty extension.
-                if (spawn.energy < spawn.energyCapacity) {
-                    this.doOrMoveTo(this.creep.transferEnergy, spawn);
-                }
-                else {
-                    return this.transferToClosestAvailableExtension();
-                }
-            }
-            return true;
-        }
-
-        public mineToClosestLink() {
-            let closestLink = this.findClosestByRange(FIND_MY_STRUCTURES,
-                (object:Link) => object.structureType === STRUCTURE_LINK);
-
-            return this.mine(closestLink);
-
-        }
-
-    }
+export interface IMyHarvester extends MyCreep.IMyCreep {
+    mine(spawn:Spawn): boolean;
+    mineToClosestLink(): boolean;
 }
 
-module.exports = HarvesterModule;
+export class MyHarvester extends MyCreep.MyCreep implements IMyHarvester {
+    public constructor(private creep:Creep) {
+        super(creep);
+    }
+
+    public mine(spawn:Spawn|Link) {
+        if (this.creep.carry.energy < this.creep.carryCapacity) {
+            let closestSource = this.findClosestByRange(FIND_SOURCES);
+            this.doOrMoveTo(this.creep.harvest, closestSource);
+        }
+        else {
+            // check if the spawn is full. If it is, transfer to the closest empty extension.
+            if (spawn.energy < spawn.energyCapacity) {
+                this.doOrMoveTo(this.creep.transferEnergy, spawn);
+            }
+            else {
+                return (<MyCreep.IMyCreep>this).transferToClosestAvailableExtension();
+            }
+        }
+        return true;
+    }
+
+    public mineToClosestLink() {
+        let closestLink = <Link>(<MyCreep.IMyCreep>this).findClosestByRange(FIND_MY_STRUCTURES,
+            (object:Link) => object.structureType === STRUCTURE_LINK);
+
+        return this.mine(closestLink);
+    }
+
+}

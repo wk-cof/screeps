@@ -3,6 +3,7 @@ export enum CreepTypes{
     worker,
     upgrader,
     linkMiner,
+    linkUpgrader,
     carrier
 }
 
@@ -108,7 +109,10 @@ export class CreepAssembler {
                 bodyParts = CreepAssembler.getBodyParts({work: 2, carry: 4, move: 3});
                 break;
             case CreepTypes.linkMiner:
-                bodyParts = CreepAssembler.getBodyParts({work: 1, carry: 1, move: 1});
+                bodyParts = CreepAssembler.getBodyParts({work: 5, carry: 1, move: 1});
+                break;
+            case CreepTypes.linkUpgrader:
+                bodyParts = CreepAssembler.getBodyParts({work: 5, carry: 1, move: 1});
                 break;
             case CreepTypes.carrier:
                 bodyParts = CreepAssembler.getBodyParts({carry: 3, move: 2});
@@ -138,6 +142,9 @@ export class CreepAssembler {
                 break;
             case CreepTypes.linkMiner:
                 templateName = 'linkMiner';
+                break;
+            case CreepTypes.linkUpgrader:
+                templateName = 'linkUpgrader';
                 break;
             case CreepTypes.carrier:
                 templateName = 'carrier';
