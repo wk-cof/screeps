@@ -6,16 +6,18 @@
 
 #### [Screeps Profiler](https://github.com/gdborton/screeps-profiler)
 
+#### [npm typescript definitions](https://www.npmjs.com/package/screeps-typescript-declarations)
+
 ## ToDo
 
 ### Pending
 * Build fighting units.
 * Automate road building from the spawn to the resources
-* Separation between harvesters and carriers.
-* Use links to mine faster.
 * Increase reusePath option in the Creep.moveTo method to help save CPU.
 * Use creep memory to store locations/paths.
 * build different creeps based on how many extensions I have.
+* Pick up dropped resources
+
 
 ### Done
 * Figure out how to use extensions to store more energy.
@@ -29,7 +31,9 @@
 * Road maintenance
 * Create a parent Creep class with useful shortcuts.
 * Charge cannons.
-   
+* Separation between harvesters and carriers.
+* Use links to mine faster.
+
 ## Notes
 
 ### src/config.ts
@@ -42,6 +46,7 @@ module.exports = {
     upgraderCount:  x
 }
 ```
+
 
 ### Attacking units
 Put you ```TOUGH``` parts first. Under attack, the first parts to take hits are those specified first. 

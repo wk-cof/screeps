@@ -103,10 +103,10 @@ export class CreepAssembler {
                 bodyParts = CreepAssembler.getBodyParts({work: 2, carry: 2, move: 1});
                 break;
             case CreepTypes.worker:
-                bodyParts = CreepAssembler.getBodyParts({work: 4, carry: 3, move: 2});
+                bodyParts = CreepAssembler.getBodyParts({work: 6, carry: 2, move: 1});
                 break;
             case CreepTypes.upgrader:
-                bodyParts = CreepAssembler.getBodyParts({work: 2, carry: 4, move: 3});
+                bodyParts = CreepAssembler.getBodyParts({work: 5, carry: 2, move: 1});
                 break;
             case CreepTypes.linkMiner:
                 bodyParts = CreepAssembler.getBodyParts({work: 5, carry: 1, move: 1});

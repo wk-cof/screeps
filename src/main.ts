@@ -4,6 +4,7 @@ import * as BM from 'builder';
 import * as CM from 'carrier';
 import * as CreepAssembler from 'creep-assembler';
 import * as TowerModule from 'tower';
+import * as LinkTransfer from 'link';
 
 var config = require('config');
 
@@ -13,6 +14,7 @@ module.exports.loop = function () {
     // Declarations
     let spawnNames:string[] = _.keys(Game.spawns);
     let spawn1 = spawnNames[0];
+    let roomName = 'E19S13';
 
     // Find existing creeps
     let existingCreepNames = _.keys(Game.creeps);
@@ -21,6 +23,10 @@ module.exports.loop = function () {
     if (!Memory.creeps) {
         Memory.creeps = {};
     }
+
+    // link transfers
+    let linkTransfer = new LinkTransfer.LinkTransfer(roomName);
+    linkTransfer.transfer();
 
 // ============================== Creep rebuilding =====================================================================
 
@@ -55,7 +61,6 @@ module.exports.loop = function () {
         myTower.runRoutine();
     });
 
-    //}
 
     for (let creepName in Game.creeps) {
         let creep = Game.creeps[creepName];
@@ -64,15 +69,16 @@ module.exports.loop = function () {
             case CreepAssembler.CreepTypes.worker:
                 //console.log('workers: ' + creep);
                 let harvester = new HM.MyHarvester(creep);
-                harvester.mine(spawnObject);
+                harvester.mine(linkTransfer.fromLink);
+                //harvester.mineToClosestLink();
                 break;
             case CreepAssembler.CreepTypes.upgrader:
                 let upgrader = new BM.Builder(creep);
-                upgrader.upgradeController(roomStorage);
+                upgrader.upgradeController(linkTransfer.toLink);
                 break;
             case CreepAssembler.CreepTypes.builder:
                 let builder = new BM.Builder(creep);
-                //builder.reinforce(roomStorage, STRUCTURE_RAMPART);
+                //builder.reinforce(roomStorage, STRUCTURE_WALL);
                 builder.buildOnNearestConstructionSite(<Spawn>roomStorage);
                 break;
             case CreepAssembler.CreepTypes.linkMiner:
@@ -81,7 +87,9 @@ module.exports.loop = function () {
                 break;
             case CreepAssembler.CreepTypes.carrier:
                 let carrier = new CM.MyCarrier(creep);
-                carrier.runRoutine(spawnObject);
+                //carrier.runRoutine(spawnObject);
+                carrier.runRoutine(roomStorage);
+                //carrier.getEnergyFromClosestLink();
                 if (creep.ticksToLive < 400) {
                     if (creep.pos.isNearTo(spawnObject)) {
 

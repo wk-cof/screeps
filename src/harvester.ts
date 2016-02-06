@@ -11,18 +11,19 @@ export class MyHarvester extends MyCreep.MyCreep implements IMyHarvester {
     }
 
     public mine(spawn:Spawn|Link) {
+        if (this.creep.carry.energy === this.creep.carryCapacity) {
+            // check if the spawn is full. If it is, transfer to the closest empty extension.
+            //if (spawn.energy < spawn.energyCapacity) {
+            this.doOrMoveTo(this.creep.transferEnergy, spawn);
+            //}
+            //else {
+            //    return (<MyCreep.IMyCreep>this).transferToClosestAvailableExtension();
+            //}
+        }
+
         if (this.creep.carry.energy < this.creep.carryCapacity) {
             let closestSource = this.findClosestByRange(FIND_SOURCES);
             this.doOrMoveTo(this.creep.harvest, closestSource);
-        }
-        else {
-            // check if the spawn is full. If it is, transfer to the closest empty extension.
-            if (spawn.energy < spawn.energyCapacity) {
-                this.doOrMoveTo(this.creep.transferEnergy, spawn);
-            }
-            else {
-                return (<MyCreep.IMyCreep>this).transferToClosestAvailableExtension();
-            }
         }
         return true;
     }
