@@ -1,14 +1,20 @@
-/// <reference path="harvester.ts" />
 import * as HM from 'harvester';
 import * as BM from 'builder';
 import * as CM from 'carrier';
 import * as CreepAssembler from 'creep-assembler';
 import * as TowerModule from 'tower';
 import * as LinkTransfer from 'link';
-
-var config = require('config');
+import * as config from 'config';
+import * as FM from 'fighter';
+//var config = require('config');
 
 module.exports.loop = function () {
+    if (Game.creeps['scout1']) {
+        //Game.creeps['scout1'].moveTo(Game.flags['Flag1']);
+        let fighter = new FM.Fighter(Game.creeps['scout1']);
+        //console.log(JSON.stringify(fighter.findHostileCreepsInRange(5)));
+        fighter.runRoutine(Game.spawns['Spawn1']);
+    }
     // ============================== Game Maintenance =================================================================
 
     // Declarations
@@ -16,8 +22,7 @@ module.exports.loop = function () {
     let spawn1 = spawnNames[0];
     let roomName = 'E19S13';
 
-    // Find existing creeps
-    let existingCreepNames = _.keys(Game.creeps);
+
 
     // Find creeps that we have in memory
     if (!Memory.creeps) {
@@ -29,28 +34,17 @@ module.exports.loop = function () {
     linkTransfer.transfer();
 
 // ============================== Creep rebuilding =====================================================================
+    // Find existing creeps
+    let existingCreepNames = _.keys(Game.creeps);
+    _.each(config.Config.activeWorkers, (value, key) => {
+        //console.log(key, value);
+        let currentCreeps =  _.filter(existingCreepNames, (creepName) => creepName.match(key));
+        if (currentCreeps.length < config.Config.activeWorkers[key]) {
+            CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes[key], spawn1);
+        }
+    });
 
-    //CreepAssembler.maintainCreeps(spawn1);
-    let creepNames:string[] = existingCreepNames;
-    let workersNames:string[] = _.filter(creepNames, (creepName) => creepName.match(/worker/i));
-    let buildersNames:string[] = _.filter(creepNames, (creepName) => creepName.match(/builder/i));
-    let upgradersNames:string[] = _.filter(creepNames, (creepName) => creepName.match(/upgrader/i));
-    let carrierNames:string[] = _.filter(creepNames, (creepName) => creepName.match(/carrier/i));
-
-    if (workersNames.length < config.workerCount) {
-        console.log('not enough workers. Building an additional one');
-        CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.worker, spawn1);
-    } else if (buildersNames.length < config.builderCount) {
-        console.log('not enough builders. Building an additional one');
-        CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.builder, spawn1);
-    } else if (upgradersNames.length < config.upgraderCount) {
-        console.log('not enough upgraders. Building an additional one');
-        CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.upgrader, spawn1);
-    } else if (carrierNames.length < config.carrierCount) {
-        CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes.carrier, spawn1);
-    }
-
-    // ============================== Creep functions ==================================================================
+// ============================== Creep functions ======================================================================
     // find the spawn
     let spawnObject:Spawn = Game.spawns[spawn1];
     let roomStorage:Storage = <Storage>Game.spawns[spawn1].room.storage;
@@ -60,6 +54,16 @@ module.exports.loop = function () {
         let myTower:TowerModule.IMyTower = new TowerModule.MyTower(tower);
         myTower.runRoutine();
     });
+
+    let heal = (creep:Creep, spawn: Spawn, minHp:number) => {
+        if (creep.ticksToLive < minHp) {
+            if (creep.pos.isNearTo(spawnObject)) {
+                if (spawnObject.renewCreep(creep) === OK) {
+                    console.log(creep + ' is renewed to ' + creep.ticksToLive + ' ticks');
+                }
+            }
+        }
+    }
 
 
     for (let creepName in Game.creeps) {
@@ -90,32 +94,17 @@ module.exports.loop = function () {
                 //carrier.runRoutine(spawnObject);
                 carrier.runRoutine(roomStorage);
                 //carrier.getEnergyFromClosestLink();
-                if (creep.ticksToLive < 400) {
-                    if (creep.pos.isNearTo(spawnObject)) {
-
-                        if (spawnObject.renewCreep(creep) === OK) {
-                            console.log(creep + ' is renewed to ' + creep.ticksToLive + ' ticks');
-                        }
-                    }
-                }
+                break;
+            case CreepAssembler.CreepTypes.zealot:
+                let zealot = new FM.Fighter(creep);
+                zealot.runRoutine(spawnObject);
+                heal(creep, spawnObject, 1400);
                 break;
             default:
                 console.log(`unrecognized type of worker: ${creep.memory['role']}`);
         }
 
         // when the creep runs out of energy, it dies. Recharge creeps
-        // Turns out renewing creeps is not very cost effective. Let's try to give up and just recreate the creeps.
-        // we should only heal selected creeps
-        //if (creep.ticksToLive < 400) {
-        //    if (creep.pos.isNearTo(spawnObject)) {
-        //
-        //        if (spawnObject.renewCreep(creep) === OK) {
-        //            console.log(creep + ' is renewed to ' + creep.ticksToLive + ' ticks');
-        //        }
-        //    }
-        //}
-        //http://support.screeps.com/hc/en-us/community/posts/206398959-request-renewCreep-noobie-guide-
-
     }
     return null;
 };

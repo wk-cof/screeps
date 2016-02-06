@@ -4,10 +4,12 @@ export enum CreepTypes{
     upgrader,
     linkMiner,
     linkUpgrader,
-    carrier
+    carrier,
+    zealot,
+    marine
 }
 
-interface IBodyPartsObject{
+interface IBodyPartsObject {
     move: number,
     work?: number,
     carry?: number,
@@ -83,9 +85,9 @@ export class CreepAssembler {
      * @param bodyPartsObject
      * @returns {string[]} Body Part array.
      */
-    private static getBodyParts(bodyPartsObject: IBodyPartsObject){
+    private static getBodyParts(bodyPartsObject:IBodyPartsObject) {
         return _.reduce(bodyPartsObject, (result, value, key) => {
-            while(value > 0) {
+            while (value > 0) {
                 result.push(key);
                 value--;
             }
@@ -117,11 +119,18 @@ export class CreepAssembler {
             case CreepTypes.carrier:
                 bodyParts = CreepAssembler.getBodyParts({carry: 3, move: 2});
                 break;
+            case CreepTypes.zealot:
+                bodyParts = CreepAssembler.getBodyParts({tough: 5, attack: 5, move: 3});
+                console.log('My Life for Aur!');
+                break;
+            case CreepTypes.marine:
+                bodyParts = CreepAssembler.getBodyParts({ranged_attack: 3, move: 2});
+                break;
             default:
                 bodyParts = CreepAssembler.getBodyParts({work: 1, carry: 1, move: 1});
         }
 
-                if (_.isObject(CreepAssembler.buildCreepInterface(bodyParts, spawnName, name, {role: type}))) {
+        if (_.isObject(CreepAssembler.buildCreepInterface(bodyParts, spawnName, name, {role: type}))) {
             console.log('Successfully Created a new creep: ' + name + ' with body parts: ' + bodyParts.toString());
             return true;
         }
@@ -148,6 +157,9 @@ export class CreepAssembler {
                 break;
             case CreepTypes.carrier:
                 templateName = 'carrier';
+                break;
+            case CreepTypes.zealot:
+                templateName = 'zealot';
                 break;
             default:
                 templateName = 'default';

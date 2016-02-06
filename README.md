@@ -8,6 +8,9 @@
 
 #### [npm typescript definitions](https://www.npmjs.com/package/screeps-typescript-declarations)
 
+#### [Healing Creeps](http://support.screeps.com/hc/en-us/community/posts/206398959-request-renewCreep-noobie-guide-)
+Turns out renewing creeps is not very cost effective. Better to just recreate the creeps in most situations.
+        
 ## ToDo
 
 ### Pending
