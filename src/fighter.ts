@@ -5,18 +5,13 @@ export class Fighter extends MyCreep {
     constructor(private creep:Creep) {
         super(creep);
     }
-    
+
     public runRoutine(spawn:Spawn) {
-        if (this.creep.room === spawn.room){
+        if (this.creep.room === spawn.room) {
             this.creep.moveTo(Game.flags['rallyPoint']);
         }
         else {
-            if(this.findHostileCreepsInRange(1).length > 0) {
-                this.attackNearestCreep();
-            }
-            else {
-                this.attackNearestCreep();
-            }
+            this.attackNearestCreep();
         }
     }
 
@@ -42,10 +37,11 @@ export class Fighter extends MyCreep {
 
     public attackLowestWall() {
         let wallsInRange = this.creep.pos.findInRange(FIND_STRUCTURES, 5,
-            {filter: (s:Structure) => s.structureType === STRUCTURE_WALL });
+            {filter: (s:Structure) => s.structureType === STRUCTURE_WALL});
         let sortedWalls = _.sortBy(wallsInRange, 'hits');
         return this.doOrMoveTo(this.creep.attack, sortedWalls[0]);
     }
+
     public attackNearestWall() {
         let nearestWall = this.findClosestByRange(FIND_STRUCTURES, (s:Structure) => s.structureType === STRUCTURE_WALL);
         if (nearestWall) {
