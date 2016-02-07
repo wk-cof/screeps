@@ -22,11 +22,11 @@ export class MyCreep implements IMyCreep {
         }
     }
 
-    public getEnergy(source:Storage|Spawn|Link|Tower|Creep) {
+    public getEnergy(source:Structure|Creep) {
         if (this.creep.pos.isNearTo(source) === false) {
             this.creep.moveTo(source);
         }
-        return (source.transferEnergy(this.creep) === OK);
+        return ((<any>source).transferEnergy(this.creep) === OK);
     }
 
     public transferToClosestAvailableExtension() {
@@ -41,7 +41,7 @@ export class MyCreep implements IMyCreep {
         return false;
     }
 
-    public doOrMoveTo(action:Function, target:Structure|Creep|ConstructionSite) {
+    public doOrMoveTo(action:Function, target:Structure|Creep|ConstructionSite|Source) {
         if (this.creep.pos.isNearTo(target)) {
             action.call(this.creep, target);
         }

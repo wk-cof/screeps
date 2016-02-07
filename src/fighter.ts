@@ -11,7 +11,7 @@ export class Fighter extends MyCreep {
             this.creep.moveTo(Game.flags['rallyPoint']);
         }
         else {
-            this.attackNearestCreep();
+            this.attackLowestWall();
         }
     }
 

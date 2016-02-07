@@ -2,7 +2,7 @@ export enum CreepTypes{
     builder,
     worker,
     upgrader,
-    linkMiner,
+    flagMiner,
     linkUpgrader,
     carrier,
     zealot,
@@ -108,10 +108,10 @@ export class CreepAssembler {
                 bodyParts = CreepAssembler.getBodyParts({work: 6, carry: 2, move: 1});
                 break;
             case CreepTypes.upgrader:
-                bodyParts = CreepAssembler.getBodyParts({work: 5, carry: 2, move: 1});
+                bodyParts = CreepAssembler.getBodyParts({work: 10, carry: 2, move: 4});
                 break;
-            case CreepTypes.linkMiner:
-                bodyParts = CreepAssembler.getBodyParts({work: 5, carry: 1, move: 1});
+            case CreepTypes.flagMiner:
+                bodyParts = CreepAssembler.getBodyParts({work: 2, carry: 4, move: 5});
                 break;
             case CreepTypes.linkUpgrader:
                 bodyParts = CreepAssembler.getBodyParts({work: 5, carry: 1, move: 1});
@@ -120,7 +120,8 @@ export class CreepAssembler {
                 bodyParts = CreepAssembler.getBodyParts({carry: 3, move: 2});
                 break;
             case CreepTypes.zealot:
-                bodyParts = CreepAssembler.getBodyParts({tough: 5, attack: 5, move: 3});
+                //bodyParts = CreepAssembler.getBodyParts({tough: 5, attack: 5, move: 3});
+                bodyParts = CreepAssembler.getBodyParts({attack: 1, move: 1});
                 console.log('My Life for Aur!');
                 break;
             case CreepTypes.marine:
@@ -149,8 +150,8 @@ export class CreepAssembler {
             case CreepTypes.upgrader:
                 templateName = 'upgrader';
                 break;
-            case CreepTypes.linkMiner:
-                templateName = 'linkMiner';
+            case CreepTypes.flagMiner:
+                templateName = 'flagMiner';
                 break;
             case CreepTypes.linkUpgrader:
                 templateName = 'linkUpgrader';

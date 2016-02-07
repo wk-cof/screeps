@@ -15,7 +15,7 @@ export class LinkTransfer {
             {filter: (object:Link) => object.structureType === STRUCTURE_LINK});
         _.each(links, (link) => {
             let linkLocation = JSON.stringify(link.pos);
-
+            // If link is not in memory, figure out it's role
             if (!Memory.rooms[roomName][linkLocation]) {
                 console.log(`no memory for ${linkLocation}`);
                 let linkMemory = {
@@ -36,7 +36,6 @@ export class LinkTransfer {
                     linkMemory.role = 'other';
                 }
                 Memory.rooms[roomName][linkLocation] = linkMemory;
-                //console.log(JSON.stringify(linkMemory));
             }
 
             switch(Memory.rooms[roomName][linkLocation].role) {
@@ -55,7 +54,10 @@ export class LinkTransfer {
     public transfer():number {
         let availableEnergy = this.fromLink.energy;
         let availableCapacity = this.toLink.energyCapacity - this.toLink.energy;
-        return this.fromLink.transferEnergy(this.toLink,
-            availableEnergy > availableCapacity ? availableCapacity : availableEnergy );
+        if (this.fromLink.cooldown === 0 && availableCapacity > 0) {
+            return this.fromLink.transferEnergy(this.toLink,
+                availableEnergy > availableCapacity ? availableCapacity : availableEnergy);
+        }
+        return OK;
     }
 }

@@ -19,7 +19,7 @@ export class Builder extends MyCreep.MyCreep implements IBuilder {
      * building is different from the rest of the actions since it can be performed from several tiles away.
      * TODO: Find a better way to estimate the distance in order to avoid unnecessary build calls
      */
-    private buildOrMoveTo(buildTarget:ConstructionSite):boolean {
+    protected buildOrMoveTo(buildTarget:ConstructionSite):boolean {
         if (this.creep.build(buildTarget) === ERR_NOT_IN_RANGE) {
             this.creep.moveTo(buildTarget);
         }

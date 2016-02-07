@@ -9,12 +9,12 @@ import * as FM from 'fighter';
 //var config = require('config');
 
 module.exports.loop = function () {
-    if (Game.creeps['scout1']) {
-        //Game.creeps['scout1'].moveTo(Game.flags['Flag1']);
-        let fighter = new FM.Fighter(Game.creeps['scout1']);
-        //console.log(JSON.stringify(fighter.findHostileCreepsInRange(5)));
-        fighter.runRoutine(Game.spawns['Spawn1']);
-    }
+    //if (Game.creeps['scout1']) {
+    //    //Game.creeps['scout1'].moveTo(Game.flags['Flag1']);
+    //    let miner = new HM.FlagMiner(Game.creeps['scout1'], Game.flags['room2Resource1']);
+    //    //console.log(JSON.stringify(fighter.findHostileCreepsInRange(5)));
+    //    miner.mine(Game.spawns['Spawn1']);
+    //}
     // ============================== Game Maintenance =================================================================
 
     // Declarations
@@ -85,10 +85,6 @@ module.exports.loop = function () {
                 //builder.reinforce(roomStorage, STRUCTURE_WALL);
                 builder.buildOnNearestConstructionSite(<Spawn>roomStorage);
                 break;
-            case CreepAssembler.CreepTypes.linkMiner:
-                let linkMiner = new HM.MyHarvester(creep);
-                linkMiner.mineToClosestLink();
-                break;
             case CreepAssembler.CreepTypes.carrier:
                 let carrier = new CM.MyCarrier(creep);
                 //carrier.runRoutine(spawnObject);
@@ -100,8 +96,12 @@ module.exports.loop = function () {
                 zealot.runRoutine(spawnObject);
                 heal(creep, spawnObject, 1400);
                 break;
+            case CreepAssembler.CreepTypes.flagMiner:
+                let miner = new HM.FlagMiner(creep,Game.flags['room2Resource1']);
+                miner.mine(roomStorage);
+                break;
             default:
-                console.log(`unrecognized type of worker: ${creep.memory['role']}`);
+                //console.log(`unrecognized type of worker: ${creep.memory['role']}`);
         }
 
         // when the creep runs out of energy, it dies. Recharge creeps
