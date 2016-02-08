@@ -6,7 +6,8 @@ export enum CreepTypes{
     linkUpgrader,
     carrier,
     zealot,
-    marine
+    marine,
+    zergling
 }
 
 interface IBodyPartsObject {
@@ -108,7 +109,7 @@ export class CreepAssembler {
                 bodyParts = CreepAssembler.getBodyParts({work: 6, carry: 2, move: 1});
                 break;
             case CreepTypes.upgrader:
-                bodyParts = CreepAssembler.getBodyParts({work: 10, carry: 2, move: 4});
+                bodyParts = CreepAssembler.getBodyParts({work: 10, carry: 2, move: 6});
                 break;
             case CreepTypes.flagMiner:
                 bodyParts = CreepAssembler.getBodyParts({work: 2, carry: 6, move: 7});
@@ -120,8 +121,13 @@ export class CreepAssembler {
                 bodyParts = CreepAssembler.getBodyParts({carry: 3, move: 2});
                 break;
             case CreepTypes.zealot:
-                //bodyParts = CreepAssembler.getBodyParts({tough: 5, attack: 5, move: 3});
-                bodyParts = CreepAssembler.getBodyParts({attack: 1, move: 1});
+                bodyParts = CreepAssembler.getBodyParts({tough: 10,  move: 6, attack: 5});
+                //bodyParts = CreepAssembler.getBodyParts({attack: 1, move: 1});
+                console.log('My Life for Aur!');
+                break;
+            case CreepTypes.zergling:
+                bodyParts = CreepAssembler.getBodyParts({tough: 1,  move: 2, attack: 1});
+                //bodyParts = CreepAssembler.getBodyParts({attack: 1, move: 1});
                 console.log('My Life for Aur!');
                 break;
             case CreepTypes.marine:
@@ -162,7 +168,9 @@ export class CreepAssembler {
             case CreepTypes.zealot:
                 templateName = 'zealot';
                 break;
-            default:
+            case CreepTypes.zergling:
+                templateName = 'zergling';
+                break;            default:
                 templateName = 'default';
         }
         let index = 1;

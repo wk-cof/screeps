@@ -11,7 +11,9 @@ export class Fighter extends MyCreep {
             this.creep.moveTo(Game.flags['rallyPoint']);
         }
         else {
-            this.attackLowestWall();
+            if (!this.attackNearestCreep()) {
+                this.creep.moveTo(Game.flags['rallyPoint']);
+            }
         }
     }
 
@@ -20,12 +22,13 @@ export class Fighter extends MyCreep {
     }
 
     public attackNearestCreep() {
-        let nearestEnemyCreep = this.findClosestByRange(FIND_HOSTILE_CREEPS,
-            (c:Creep) => c.getActiveBodyparts(ATTACK) > 0);
-        if (nearestEnemyCreep) {
-            return this.doOrMoveTo(this.creep.attack, nearestEnemyCreep);
+        let nearestEnemyCreep = this.findClosestByRange(FIND_HOSTILE_CREEPS);
+            //(c:Creep) => c.getActiveBodyparts(ATTACK) > 0);
+        if (_.isObject(nearestEnemyCreep)) {
+            this.doOrMoveTo(this.creep.attack, nearestEnemyCreep);
+            return true;
         }
-        //this.doOrMoveTo()
+        return false;
     }
 
     public attackNearestSpawn() {
@@ -49,4 +52,10 @@ export class Fighter extends MyCreep {
         }
     }
 
+}
+
+export class Healer extends MyCreep {
+    constructor(private creep:Creep) {
+        super(creep);
+    }
 }
