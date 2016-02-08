@@ -52,13 +52,7 @@ export class FlagMiner extends Builder {
             }
         }
         else {
-            let constructionSites = this.creep.room.find(FIND_CONSTRUCTION_SITES);
-            if (constructionSites.length) {
-                this.buildOrMoveTo(constructionSites[0]);
-            }
-            else {
                 this.doOrMoveTo(this.creep.transferEnergy, target);
-            }
         }
     }
 }

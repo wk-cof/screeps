@@ -11,7 +11,7 @@ export class MyTower implements IMyTower {
     }
 
     private creepHealThreshold = 0.7;
-    private maxHealRange = 10;
+    private maxHealRange = 15;
 
     private roadRepairThreshold = 0.3;
     private maxRepairRange = 15;

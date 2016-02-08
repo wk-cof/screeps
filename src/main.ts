@@ -9,6 +9,20 @@ import * as FM from 'fighter';
 //var config = require('config');
 
 module.exports.loop = function () {
+    if (!Game.creeps['room2Upgrader']) {
+        Game.spawns['Spawn2'].createCreep([WORK, CARRY, MOVE], 'room2Upgrader');
+    }
+    else {
+        let foo = new BM.Builder(Game.creeps['room2Upgrader']);
+        foo.upgradeController(Game.spawns['Spawn2']);
+    }
+    if (!Game.creeps['room2Miner']) {
+        Game.spawns['Spawn2'].createCreep([WORK, CARRY, MOVE], 'room2Miner');
+    }
+    else {
+        let foo = new HM.MyHarvester(Game.creeps['room2Miner']);
+        foo.mine(Game.spawns['Spawn2']);
+    }
     //if (Game.creeps['scout1']) {
     //    //Game.creeps['scout1'].moveTo(Game.flags['Flag1']);
     //    let miner = new HM.FlagMiner(Game.creeps['scout1'], Game.flags['room2Resource1']);

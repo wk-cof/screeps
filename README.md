@@ -43,11 +43,17 @@ Turns out renewing creeps is not very cost effective. Better to just recreate th
 config.ts is not checked in to avoid unnecessary checkins due to the count adjustments to the number of various units.
 Current config.ts structure:
 ```javascript
-module.exports = {
-    workerCount:    x,
-    builderCount:   x,
-    upgraderCount:  x
-}
+export class Config {
+    public static activeWorkers = {
+        worker: 1,
+        builder: 0,
+        upgrader: 1,
+        carrier: 1,
+        zealot: 0,
+        flagMiner: 2
+    };
+    public static healThreshold = 500;
+};
 ```
 
 
