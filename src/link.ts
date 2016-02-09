@@ -1,6 +1,7 @@
 export class LinkTransfer {
     public fromLink:Link;
     public toLink:Link;
+    public resourceLink:Link;
 
     constructor(roomName:string) {
 
@@ -17,7 +18,6 @@ export class LinkTransfer {
             let linkLocation = JSON.stringify(link.pos);
             // If link is not in memory, figure out it's role
             if (!Memory.rooms[roomName][linkLocation]) {
-                console.log(`no memory for ${linkLocation}`);
                 let linkMemory = {
                     pos: link.pos,
                     role: null
@@ -40,23 +40,39 @@ export class LinkTransfer {
 
             switch(Memory.rooms[roomName][linkLocation].role) {
                 case 'spawn':
+                    break;
                 case 'source':
                     this.fromLink = link;
                     break;
                 case 'controller':
-                default:
                     this.toLink = link;
+                    break;
+                default:
+                    this.resourceLink = link;
+                    break;
+
             }
-            //console.log(this.fromLink, this.toLink);
         });
     }
 
     public transfer():number {
-        let availableEnergy = this.fromLink.energy;
-        let availableCapacity = this.toLink.energyCapacity - this.toLink.energy;
-        if (this.fromLink.cooldown === 0 && availableCapacity > 0) {
-            return this.fromLink.transferEnergy(this.toLink,
-                availableEnergy > availableCapacity ? availableCapacity : availableEnergy);
+        // transfer all energy away from resource link to source or spawn link
+        if (this.resourceLink && this.resourceLink.cooldown === 0) {
+            let toCapacity = this.toLink.energyCapacity - this.toLink.energy;
+            let fromCapacity = this.fromLink.energyCapacity - this.fromLink.energy;
+
+            let targetLink:Link = toCapacity > fromCapacity ? this.toLink : this.fromLink;
+            let targetCapacity  = toCapacity > fromCapacity ? toCapacity : fromCapacity;
+            this.resourceLink.transferEnergy(targetLink,
+                this.resourceLink.energy > targetCapacity? targetCapacity: this.resourceLink.energy);
+        }
+        if (this.fromLink && this.fromLink.cooldown === 0) {
+            let availableEnergy = this.fromLink.energy;
+            let availableCapacity = this.toLink.energyCapacity - this.toLink.energy;
+            if (availableCapacity > 50) {
+                this.fromLink.transferEnergy(this.toLink,
+                    availableEnergy > availableCapacity ? availableCapacity : availableEnergy);
+            }
         }
         return OK;
     }

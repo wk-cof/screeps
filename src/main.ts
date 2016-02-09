@@ -9,12 +9,12 @@ import * as FM from 'fighter';
 //var config = require('config');
 
 module.exports.loop = function () {
-    //if (Game.creeps['scout1']) {
-    //    //Game.creeps['scout1'].moveTo(Game.flags['Flag1']);
-    //    let miner = new HM.FlagMiner(Game.creeps['scout1'], Game.flags['room2Resource1']);
-    //    //console.log(JSON.stringify(fighter.findHostileCreepsInRange(5)));
-    //    miner.mine(Game.spawns['Spawn1']);
-    //}
+    try {
+        room2setup();
+    }
+    catch(error){
+        console.log(error);
+    }
     // ============================== Game Maintenance =================================================================
 
     // Declarations
@@ -30,8 +30,13 @@ module.exports.loop = function () {
     }
 
     // link transfers
-    let linkTransfer = new LinkTransfer.LinkTransfer(roomName);
-    linkTransfer.transfer();
+    let linkTransfer;
+    try {
+         linkTransfer = new LinkTransfer.LinkTransfer(roomName);
+        linkTransfer.transfer();
+    }
+    catch(error) {
+    }
 
 // ============================== Creep rebuilding =====================================================================
     // Find existing creeps
@@ -99,7 +104,7 @@ module.exports.loop = function () {
                 break;
             case CreepAssembler.CreepTypes.flagMiner:
                 let miner = new HM.FlagMiner(creep,Game.flags['room2Resource1']);
-                miner.mine(roomStorage);
+                miner.mine(linkTransfer.resourceLink? linkTransfer.resourceLink : roomStorage);
                 break;
             default:
                 //console.log(`unrecognized type of worker: ${creep.memory['role']}`);
@@ -109,3 +114,22 @@ module.exports.loop = function () {
     }
     return null;
 };
+
+function room2setup() {
+    if (Game.creeps['room2Builder1']) {
+        //Game.creeps['room2Builder1'].moveTo(Game.flags['Flag1']);
+        let builder = new BM.Builder(Game.creeps['room2Builder1']);
+        builder.buildOnNearestConstructionSite(Game.spawns['Spawn2']);
+    }
+    else {
+        Game.spawns['Spawn2'].createCreep([WORK, CARRY, MOVE, MOVE], 'room2Builder1');
+    }
+    if (Game.creeps['room2Worker1']) {
+        //Game.creeps['room2Worker1'].moveTo(Game.flags['Flag1']);
+        let worker = new HM.MyHarvester(Game.creeps['room2Worker1']);
+        worker.mine(Game.spawns['Spawn2']);
+    }
+    else {
+        Game.spawns['Spawn2'].createCreep([WORK, CARRY, MOVE], 'room2Worker1');
+    }
+}
