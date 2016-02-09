@@ -18,7 +18,7 @@ export class MyTower implements IMyTower {
 
     public runRoutine() {
         // De Morgan law ftw :)
-        return !(!this.defendRoom() && !this.healCreeps() && !this.repairRoads());
+        return !(!this.defendRoom() && !this.healCreeps() && !this.repairRoads() && !this.reinforce(STRUCTURE_WALL));
     }
 
     public defendRoom() {
@@ -59,6 +59,20 @@ export class MyTower implements IMyTower {
         if (bumpyRoads.length > 0) {
             this.tower.repair(bumpyRoads[0]);
             return true;
+        }
+        return false;
+    }
+
+    public reinforce(structureType:string) {
+        var target = this.tower.room.find(FIND_STRUCTURES, {
+            filter: (object) => {
+                return object.structureType == structureType && object.hits < 1000;
+            }
+        });
+        if (target.length) {
+            if (this.tower.repair(target[0]) === OK) {
+                return true
+            }
         }
         return false;
     }

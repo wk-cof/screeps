@@ -22,13 +22,6 @@ module.exports.loop = function () {
     let spawn1 = spawnNames[0];
     let roomName = 'E19S13';
 
-
-
-    // Find creeps that we have in memory
-    if (!Memory.creeps) {
-        Memory.creeps = {};
-    }
-
     // link transfers
     let linkTransfer;
     try {

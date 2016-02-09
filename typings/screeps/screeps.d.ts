@@ -649,19 +649,37 @@ interface PathStep {
     direction: string;
 }
 interface Memory {
-    creeps: {[name: string]: CreepMemory};
-    flags: {[name: string]: FlagMemory};
+    //creeps: {[name: string]: CreepMemory};
+    //flags: {[name: string]: FlagMemory};
     rooms: {[name: string]: RoomMemory};
-    spawns: {[name: string]: SpawnMemory};
+    //spawns: {[name: string]: SpawnMemory};
 }
 interface CreepMemory {
+    id: string,
+    role: number,
+    parentSpawn: string;
 }
+
 interface FlagMemory {
 }
+
 interface RoomMemory {
+    activeCreeps:CreepMemory[];
+    spawnIDs:SpawnMemory[];
+    sourceIDs:string[];
+    buildQueue:CreepMemory[];
+    towers:string[];
+    links: LinkMemory[];
 }
+
 interface SpawnMemory {
+    id: string
 }
+
+interface LinkMemory {
+    id: string
+}
+
 declare enum Direction {
     TOP = 1,
     TOP_RIGHT = 2,
