@@ -103,7 +103,7 @@ export class CreepAssembler {
 
         switch (type) {
             case CreepTypes.builder:
-                bodyParts = CreepAssembler.getBodyParts({work: 2, carry: 8, move: 4});
+                bodyParts = CreepAssembler.getBodyParts({work: 2, carry: 4, move: 3});
                 break;
             case CreepTypes.worker:
                 bodyParts = CreepAssembler.getBodyParts({work: 6, carry: 2, move: 1});
