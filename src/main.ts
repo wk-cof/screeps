@@ -62,49 +62,6 @@ module.exports.loop = function () {
             }
         }
     }
-
-
-    for (let creepName in Game.creeps) {
-        let creep = Game.creeps[creepName];
-
-        switch (creep.memory['role']) {
-            case CreepAssembler.CreepTypes.worker:
-                //console.log('workers: ' + creep);
-                let harvester = new HM.MyHarvester(creep);
-                harvester.mine(linkTransfer.fromLink);
-                //harvester.mineToClosestLink();
-                break;
-            case CreepAssembler.CreepTypes.upgrader:
-                let upgrader = new BM.Builder(creep);
-                upgrader.upgradeController(linkTransfer.toLink);
-                break;
-            case CreepAssembler.CreepTypes.builder:
-                let builder = new BM.Builder(creep);
-                //builder.reinforce(roomStorage, STRUCTURE_WALL);
-                builder.buildOnNearestConstructionSite(<Spawn>roomStorage);
-                break;
-            case CreepAssembler.CreepTypes.carrier:
-                let carrier = new CM.MyCarrier(creep);
-                //carrier.runRoutine(spawnObject);
-                carrier.runRoutine(roomStorage);
-                //carrier.getEnergyFromClosestLink();
-                break;
-            case CreepAssembler.CreepTypes.zergling:
-            case CreepAssembler.CreepTypes.zealot:
-                let zergling = new FM.Fighter(creep);
-                zergling.runRoutine(spawnObject);
-                //heal(creep, spawnObject, 1400);
-                break;
-            case CreepAssembler.CreepTypes.flagMiner:
-                let miner = new HM.FlagMiner(creep,Game.flags['room2Resource1']);
-                miner.mine(linkTransfer.resourceLink? linkTransfer.resourceLink : roomStorage);
-                break;
-            default:
-                //console.log(`unrecognized type of worker: ${creep.memory['role']}`);
-        }
-
-        // when the creep runs out of energy, it dies. Recharge creeps
-    }
     return null;
 };
 

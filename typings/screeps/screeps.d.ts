@@ -649,14 +649,11 @@ interface PathStep {
     direction: string;
 }
 interface Memory {
-    //creeps: {[name: string]: CreepMemory};
-    //flags: {[name: string]: FlagMemory};
     rooms: {[name: string]: RoomMemory};
-    //spawns: {[name: string]: SpawnMemory};
 }
 interface CreepMemory {
-    id: string,
-    role: number,
+    id: string;
+    role: number;
     parentSpawn: string;
 }
 

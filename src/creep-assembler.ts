@@ -6,8 +6,7 @@ export enum CreepTypes{
     linkUpgrader,
     carrier,
     zealot,
-    marine,
-    zergling
+    marine
 }
 
 interface IBodyPartsObject {
@@ -27,12 +26,18 @@ export class CreepAssembler {
     }
 
     private static isLegalCreepName = (name) => {
-        return _.isUndefined(Memory.creeps[name]);
+        let existingCreepNames = _.keys(Game.creeps);
+        return existingCreepNames.indexOf(name) === -1;
     };
 
-    private static isCreepAlive = (creepName:string) => {
-        return _.isObject(Game.creeps[creepName]);
-    };
+    public static findLegalCreepName(type:CreepTypes):string {
+        let namePrefix = CreepAssembler.getCreepStringName(type);
+        let index = 1;
+        while (!CreepAssembler.isLegalCreepName(namePrefix + index)) {
+            index++;
+        }
+        return namePrefix + index;
+    }
 
     /**
      * Calculates energy required to make a creep
@@ -82,11 +87,12 @@ export class CreepAssembler {
     };
 
     /**
-     * converts object like: {carry: 1, move: 2} into a list of body parts like ['carry', 'move', 'move']
-     * @param bodyPartsObject
+     * Creates a body parts like ['carry', 'move', 'move'] from creepType
+     * @param creepType Type of the creep in the list
      * @returns {string[]} Body Part array.
      */
-    private static getBodyParts(bodyPartsObject:IBodyPartsObject) {
+    public static getBodyParts(creepType:CreepTypes) {
+        let bodyPartsObject = CreepAssembler.getBodyPartsObject(creepType) || [];
         return _.reduce(bodyPartsObject, (result, value, key) => {
             while (value > 0) {
                 result.push(key);
@@ -99,44 +105,8 @@ export class CreepAssembler {
     public static buildCreep = (name:string, type:CreepTypes, spawnName:string) => {
         console.log('Attempting to build a creep: ' + name + '; type: ' + type);
         // assign body parts based on type
-        let bodyParts;
 
-        switch (type) {
-            case CreepTypes.builder:
-                bodyParts = CreepAssembler.getBodyParts({work: 2, carry: 4, move: 3});
-                break;
-            case CreepTypes.worker:
-                bodyParts = CreepAssembler.getBodyParts({work: 6, carry: 2, move: 1});
-                break;
-            case CreepTypes.upgrader:
-                bodyParts = CreepAssembler.getBodyParts({work: 10, carry: 2, move: 4});
-                break;
-            case CreepTypes.flagMiner:
-                bodyParts = CreepAssembler.getBodyParts({work: 3, carry: 4, move: 6});
-                break;
-            case CreepTypes.linkUpgrader:
-                bodyParts = CreepAssembler.getBodyParts({work: 5, carry: 1, move: 1});
-                break;
-            case CreepTypes.carrier:
-                bodyParts = CreepAssembler.getBodyParts({carry: 3, move: 2});
-                break;
-            case CreepTypes.zealot:
-                bodyParts = CreepAssembler.getBodyParts({tough: 10,  move: 6, attack: 5});
-                //bodyParts = CreepAssembler.getBodyParts({attack: 1, move: 1});
-                console.log('My Life for Aur!');
-                break;
-            case CreepTypes.zergling:
-                bodyParts = CreepAssembler.getBodyParts({tough: 1,  move: 2, attack: 1});
-                //bodyParts = CreepAssembler.getBodyParts({attack: 1, move: 1});
-                console.log('My Life for Aur!');
-                break;
-            case CreepTypes.marine:
-                bodyParts = CreepAssembler.getBodyParts({ranged_attack: 3, move: 2});
-                break;
-            default:
-                bodyParts = CreepAssembler.getBodyParts({work: 1, carry: 1, move: 1});
-        }
-
+        let bodyParts = CreepAssembler.getBodyParts(type);
         if (_.isObject(CreepAssembler.buildCreepInterface(bodyParts, spawnName, name, {role: type}))) {
             console.log('Successfully Created a new creep: ' + name + ' with body parts: ' + bodyParts.toString());
             return true;
@@ -145,49 +115,70 @@ export class CreepAssembler {
     };
 
     public static buildCreepAutoName = (type:CreepTypes, spawnName:string) => {
-        let templateName:string;
-        switch (type) {
-            case CreepTypes.builder:
-                templateName = 'builder';
-                break;
-            case CreepTypes.worker:
-                templateName = 'worker';
-                break;
-            case CreepTypes.upgrader:
-                templateName = 'upgrader';
-                break;
-            case CreepTypes.flagMiner:
-                templateName = 'flagMiner';
-                break;
-            case CreepTypes.linkUpgrader:
-                templateName = 'linkUpgrader';
-                break;
-            case CreepTypes.carrier:
-                templateName = 'carrier';
-                break;
-            case CreepTypes.zealot:
-                templateName = 'zealot';
-                break;
-            case CreepTypes.zergling:
-                templateName = 'zergling';
-                break;            default:
-                templateName = 'default';
-        }
-        let index = 1;
-        while (!CreepAssembler.isLegalCreepName(templateName + index)) {
-            index++;
-        }
-        let newName = templateName + index;
+        let templateName = CreepAssembler.getCreepStringName(type);
+
+        let newName = CreepAssembler.findLegalCreepName(type);
         return CreepAssembler.buildCreep(newName, type, spawnName);
     };
 
-    public static maintainCreeps = (spawn:string) => {
-        //var creepNames:string[] = _.keys(Memory.creeps);
-        //_.each(creepNames, (creep) => {
-        //    if (!CreepAssembler.isCreepAlive(creep)) {
-        //        console.log(creep + ' is ded');
-        //        CreepAssembler.buildCreep(creep, Memory.creeps[creep], spawn);
-        //    }
-        //});
+    public static getCreepStringName(type:CreepTypes):string {
+        return CreepTypes[type];
+    }
+
+    private static getBodyPartsObject(type:CreepTypes):IBodyPartsObject {
+        switch (type) {
+            case CreepTypes.builder:
+                return {
+                    work: 2,
+                    carry: 2,
+                    move: 1
+                };
+            case CreepTypes.worker:
+                return {
+                    work: 6,
+                    carry: 2,
+                    move: 1
+                };
+            case CreepTypes.upgrader:
+                return {
+                    work: 10,
+                    carry: 2,
+                    move: 4
+                };
+            case CreepTypes.flagMiner:
+                return {
+                    work: 2,
+                    carry: 6,
+                    move: 7
+                };
+            case CreepTypes.linkUpgrader:
+                return {
+                    work: 5,
+                    carry: 1,
+                    move: 1
+                };
+            case CreepTypes.carrier:
+                return {
+                    carry: 3,
+                    move: 2
+                };
+            case CreepTypes.zealot:
+                return {
+                    tough: 5,
+                    attack: 5,
+                    move: 3
+                };
+            case CreepTypes.marine:
+                return {
+                    ranged_attack: 3,
+                    move: 2
+                };
+            default:
+                return {
+                    work: 1,
+                    carry: 1,
+                    move: 1
+                };
+        }
     }
 }
