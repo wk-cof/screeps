@@ -14,6 +14,7 @@
     "gulp-concat": "^2.6.0",
     "gulp-load-plugins": "^1.2.0",
     "gulp-print": "^2.0.1",
+    "gulp-screeps": "1.0.2",
     "gulp-typescript": "2.10.0",
     "tsd": "0.6.5"
   }
