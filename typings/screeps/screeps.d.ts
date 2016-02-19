@@ -653,8 +653,9 @@ interface Memory {
 }
 interface CreepMemory {
     id: string;
-    role: number;
+    name: string;
     parentSpawn: string;
+    role: number;
 }
 
 interface FlagMemory {
@@ -662,9 +663,10 @@ interface FlagMemory {
 
 interface RoomMemory {
     activeCreeps:CreepMemory[];
+    buildQueue:CreepMemory[];
+    constructingCreeps: CreepMemory[];
     spawnIDs:string[];
     sourceIDs:string[];
-    buildQueue:CreepMemory[];
     towers:string[];
     links:string[];
 }

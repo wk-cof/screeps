@@ -23,14 +23,14 @@ export class MyRoom {
             console.log(`Room ${roomName} not found.`);
             return;
         }
-        // parse the room object from memory;
+        //// parse the room object from memory;
         if (!Memory.rooms[roomName]) {
-            console.log('Creating new room data');
+            //console.log('Creating new room data');
             this.roomMemory = this.constructEmptyRoom();
             this.findObjectsInRoom();
         }
         else {
-            console.log('getting data from memory');
+            //console.log('getting data from memory');
             this.roomMemory = Memory.rooms[roomName];
         }
         this.getDataFromMemory();
@@ -45,6 +45,7 @@ export class MyRoom {
         return {
             activeCreeps: [],
             buildQueue: [],
+            constructingCreeps: [],
             links: [],
             sourceIDs: [],
             spawnIDs: [],
@@ -114,10 +115,26 @@ export class MyRoom {
         this.roomMemory.activeCreeps.push(creepMemory);
     }
 
+    private checkBuildingCreeps() {
+        for (let idx in this.roomMemory.constructingCreeps) {
+            let creepMemory = this.roomMemory.constructingCreeps[idx];
+            if (!creepMemory.id) {
+                let id = Game.creeps[creepMemory.name].id;
+                console.log(`creep ${creepMemory.name} is missing an id. Creep's new id is: ${id}.`);
+                creepMemory.id = id;
+            }
+            let creep:Creep = Game.getObjectById(creepMemory.id);
+            if (creep && !creep.spawning) {
+                // time for baby creep to leave the nest
+                this.roomMemory.constructingCreeps = _.pullAt(this.roomMemory.constructingCreeps, idx);
+                this.roomMemory.activeCreeps.push(creepMemory);
+            }
+        }
+    }
+
     private buildFromQueue(spawn:Spawn) {
         let buildQueue = this.roomMemory.buildQueue;
         let creepToConstruct = buildQueue[0] || null;
-        console.log(JSON.stringify(spawn));
         if (!creepToConstruct || !spawn) {
             return ERR_INVALID_TARGET;
         }
@@ -129,8 +146,9 @@ export class MyRoom {
         let creepName = CreepAssembler.findLegalCreepName(creepToConstruct.role);
         let creepMemory:CreepMemory = {
             id: null,
-            role: creepToConstruct.role,
-            parentSpawn: spawn.name
+            name: creepName,
+            parentSpawn: spawn.name,
+            role: creepToConstruct.role
         };
         let status = spawn.createCreep(CreepAssembler.getBodyParts(creepToConstruct.role), creepName, creepMemory);
 
@@ -138,18 +156,17 @@ export class MyRoom {
         if (_.isString(status)) {
             // remove the creep from the queue
             this.roomMemory.buildQueue = this.roomMemory.buildQueue.slice(1);
-            console.log(`the name matches? ${status === creepName}`);
 
-            // insert the creep into memory
-            creepMemory.id = Game.creeps[creepName].id; // I don't think creep has an id immediately, it will get it the next tick when it's building
-            this.addActiveCreepToMemory(creepMemory);
+            // insert the creep into constructingCreeps memory
+            this.roomMemory.constructingCreeps.push(creepMemory);
         }
         return status;
     }
 
     private enqueueCreep(type:CreepTypes) {
         let newCreepMemory:CreepMemory = {
-            id: 'temp_id',
+            id: null,
+            name: null,
             parentSpawn: null,
             role: type
         };
@@ -162,14 +179,18 @@ export class MyRoom {
         return creepTypes.length || 0;
     }
 
+    private getActiveCreepsCount(type:CreepTypes) {
+        let creepTypes = _.filter(this.roomMemory.activeCreeps, {role: type});
+        return creepTypes.length || 0;
+    }
+
     //------ Public Methods --------------------------------------------------------------------------------------------
     public runRoutine() {
-        if (this.getBuildingCreepsCount(CreepTypes.scout) === 0) {
+        this.checkBuildingCreeps();
+        if (this.getBuildingCreepsCount(CreepTypes.scout) === 0 && this.getActiveCreepsCount(CreepTypes.scout) === 0) {
             this.enqueueCreep(CreepTypes.scout);
         }
-        console.log('building', JSON.stringify(this.roomMemory.buildQueue));
-        console.log('active', JSON.stringify(this.roomMemory.activeCreeps));
-        //this.buildFromQueue(this.spawns[0]);
+        this.buildFromQueue(this.spawns[0]);
         // order creeps around
         for (let idx in this.creeps) {
             let creep:Creep = this.creeps[idx];
