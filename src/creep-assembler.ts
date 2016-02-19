@@ -6,7 +6,8 @@ export enum CreepTypes{
     linkUpgrader,
     carrier,
     zealot,
-    marine
+    marine,
+    scout
 }
 
 interface IBodyPartsObject {
@@ -127,6 +128,10 @@ export class CreepAssembler {
 
     private static getBodyPartsObject(type:CreepTypes):IBodyPartsObject {
         switch (type) {
+            case CreepTypes.scout:
+                return {
+                    move: 1
+                }
             case CreepTypes.builder:
                 return {
                     work: 2,

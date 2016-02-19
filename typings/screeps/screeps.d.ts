@@ -662,11 +662,11 @@ interface FlagMemory {
 
 interface RoomMemory {
     activeCreeps:CreepMemory[];
-    spawnIDs:SpawnMemory[];
+    spawnIDs:string[];
     sourceIDs:string[];
     buildQueue:CreepMemory[];
     towers:string[];
-    links: LinkMemory[];
+    links:string[];
 }
 
 interface SpawnMemory {
@@ -742,7 +742,7 @@ declare var OK:number,
     ERR_NO_BODYPART:number,
     ERR_NOT_ENOUGH_EXTENSIONS:number,
     ERR_RCL_NOT_ENOUGH:number,
-    ERR_GCL_NOT_ENOUGH
+    ERR_GCL_NOT_ENOUGH;
 
 // body parts
 declare var MOVE:string,

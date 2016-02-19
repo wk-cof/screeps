@@ -6,13 +6,20 @@ import * as TowerModule from 'tower';
 import * as LinkTransfer from 'link';
 import * as config from 'config';
 import * as FM from 'fighter';
+import {MyRoom} from 'room';
 //var config = require('config');
 
 module.exports.loop = function () {
+    let room = new MyRoom('E19S13');
+    room.runRoutine();
+};
+
+
+function oldLoop() {
     try {
         room2setup();
     }
-    catch(error){
+    catch (error) {
         console.log(error);
     }
     // ============================== Game Maintenance =================================================================
@@ -25,10 +32,10 @@ module.exports.loop = function () {
     // link transfers
     let linkTransfer;
     try {
-         linkTransfer = new LinkTransfer.LinkTransfer(roomName);
+        linkTransfer = new LinkTransfer.LinkTransfer(roomName);
         linkTransfer.transfer();
     }
-    catch(error) {
+    catch (error) {
     }
 
 // ============================== Creep rebuilding =====================================================================
@@ -36,7 +43,7 @@ module.exports.loop = function () {
     let existingCreepNames = _.keys(Game.creeps);
     _.each(config.Config.activeWorkers, (value, key) => {
         //console.log(key, value);
-        let currentCreeps =  _.filter(existingCreepNames, (creepName) => creepName.match(key));
+        let currentCreeps = _.filter(existingCreepNames, (creepName) => creepName.match(key));
         if (currentCreeps.length < config.Config.activeWorkers[key]) {
             CreepAssembler.CreepAssembler.buildCreepAutoName(CreepAssembler.CreepTypes[key], spawn1);
         }
@@ -53,7 +60,7 @@ module.exports.loop = function () {
         myTower.runRoutine();
     });
 
-    let heal = (creep:Creep, spawn: Spawn, minHp:number) => {
+    let heal = (creep:Creep, spawn:Spawn, minHp:number) => {
         if (creep.ticksToLive < minHp) {
             if (creep.pos.isNearTo(spawnObject)) {
                 if (spawnObject.renewCreep(creep) === OK) {

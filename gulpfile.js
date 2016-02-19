@@ -28,7 +28,7 @@ gulp.task('upload', ['compile'], function () {
 });
 
 gulp.task('ptr', ['compile'], function () {
-    sectrets.ptr = true;
+    secrets.ptr = true;
     gulp.src('dist/*.js')
         .pipe(plugins.screeps(secrets));
 });
