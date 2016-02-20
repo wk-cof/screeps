@@ -26,8 +26,8 @@ export class MyRoom {
         }
         //// parse the room object from memory;
         if (!Memory.rooms[roomName]) {
-        //if (true) {
-            //console.log('Creating new room data');
+            //if (true) {
+            console.log('Creating new room data');
             this.roomMemory = this.constructEmptyRoom();
             this.findObjectsInRoom();
         }
@@ -75,8 +75,12 @@ export class MyRoom {
         for (let idx in this.roomMemory.active) {
             let creep:Creep = Game.getObjectById(this.roomMemory.active[idx].id);
             if (!creep) {
-                this.roomMemory.queued.push(this.roomMemory.active[idx]);
+                // remove the creep from active
                 this.roomMemory.active.splice(idx, 1);
+                //// if it needs to be rebuilt, queue it up
+                //if (this.needsRebuilding(this.roomMemory.active[idx].role)) {
+                //    this.roomMemory.queued.push(this.roomMemory.active[idx]);
+                //}
             }
             else {
                 this.creeps.push(creep);
@@ -174,7 +178,7 @@ export class MyRoom {
     }
 
     private getBuildingCreepsCount(type:CreepTypes) {
-        let creepTypes = _.filter(this.roomMemory.queued, {role: type});
+        let creepTypes = _.filter(this.roomMemory.building, {role: type});
         return creepTypes.length || 0;
     }
 
@@ -188,21 +192,24 @@ export class MyRoom {
         return creepTypes.length || 0;
     }
 
-    private enqueueFromConfig() {
-        _.each(Config.activeWorkers, (creepCount, creepName) => {
-            let totalCreeps = this.getBuildingCreepsCount(CreepTypes[creepName]) +
-                this.getActiveCreepsCount(CreepTypes[creepName]) +
-                this.getQueuedCreepsCount(CreepTypes[creepName]);
-            if ( totalCreeps < creepCount) {
-                this.enqueueCreep(CreepTypes[creepName]);
-            }
-        });
+    private needsRebuilding(type:CreepTypes) {
+        let totalCreeps = this.getBuildingCreepsCount(type) +
+            this.getActiveCreepsCount(type) +
+            this.getQueuedCreepsCount(type);
+        return totalCreeps < Config.activeWorkers[CreepAssembler.getCreepStringName(type)];
     }
 
     //------ Public Methods --------------------------------------------------------------------------------------------
     public runRoutine() {
         this.checkBuildingCreeps();
-        this.enqueueFromConfig();
+
+        // rebuild creeps if necessary
+        _.each(Config.activeWorkers, (creepCount, creepName) => {
+            if (this.needsRebuilding(CreepTypes[creepName])) {
+                this.enqueueCreep(CreepTypes[creepName]);
+            }
+        });
+
         this.buildFromQueue(this.spawns[0]);
         // order creeps around
         for (let idx in this.creeps) {
