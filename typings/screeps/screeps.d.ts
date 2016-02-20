@@ -662,11 +662,11 @@ interface FlagMemory {
 }
 
 interface RoomMemory {
-    activeCreeps:CreepMemory[];
-    buildQueue:CreepMemory[];
-    constructingCreeps: CreepMemory[];
-    spawnIDs:string[];
-    sourceIDs:string[];
+    active:CreepMemory[];
+    queued:CreepMemory[];
+    building: CreepMemory[];
+    spawns:string[];
+    sources:string[];
     towers:string[];
     links:string[];
 }

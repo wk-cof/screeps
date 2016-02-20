@@ -10,7 +10,8 @@ import {MyRoom} from 'room';
 //var config = require('config');
 
 module.exports.loop = function () {
-    let room = new MyRoom('E19S13');
+    let rooms = _.values(Game.rooms);
+    let room = new MyRoom(rooms[0].name);
     room.runRoutine();
 };
 
