@@ -73,14 +73,10 @@ export class MyRoom {
     private getDataFromMemory() {
         // creeps: if the creep that's supposed to be there doesn't exist, add it to construction queued
         for (let idx in this.roomMemory.active) {
-            let creep:Creep = Game.getObjectById(this.roomMemory.active[idx].id);
+            let creep = <Creep>Game.getObjectById(this.roomMemory.active[idx].id);
             if (!creep) {
                 // remove the creep from active
                 this.roomMemory.active.splice(idx, 1);
-                //// if it needs to be rebuilt, queue it up
-                //if (this.needsRebuilding(this.roomMemory.active[idx].role)) {
-                //    this.roomMemory.queued.push(this.roomMemory.active[idx]);
-                //}
             }
             else {
                 this.creeps.push(creep);
@@ -89,19 +85,19 @@ export class MyRoom {
 
         // spawns
         for (let idx in this.roomMemory.spawns) {
-            let spawn:Spawn = Game.getObjectById(this.roomMemory.spawns[idx]);
+            let spawn = <Spawn>Game.getObjectById(this.roomMemory.spawns[idx]);
             this.spawns.push(spawn);
         }
 
         // sources
         for (let idx in this.roomMemory.sources) {
-            let source:Source = Game.getObjectById(this.roomMemory.sources[idx]);
+            let source = <Source>Game.getObjectById(this.roomMemory.sources[idx]);
             this.sources.push(source);
         }
 
         // towers
         for (let idx in this.roomMemory.towers) {
-            let tower:Tower = Game.getObjectById(this.roomMemory.towers[idx]);
+            let tower = <Tower>Game.getObjectById(this.roomMemory.towers[idx]);
             // TODO: if tower that's supposed to be there doesn't exist, rebuild it
         }
     }

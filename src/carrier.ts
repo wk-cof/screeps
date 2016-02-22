@@ -35,18 +35,6 @@ export class MyCarrier extends MyCreep.MyCreep implements IMyCarrier {
         return true;
     }
 
-    private transferEnergyFromTo(from:Structure|Creep, to:Structure|Creep) {
-        if (this.creep.carry.energy === 0) {
-            this.getEnergy(from);
-        }
-        else {
-            if (to) {
-
-            }
-        }
-        return true;
-    }
-
     private transferEnergyTo(target:Structure|Creep){
         this.doOrMoveTo(this.creep.transferEnergy, target);
     }

@@ -10,7 +10,11 @@ export interface IMyCreep {
 
 export class MyCreep implements IMyCreep {
     protected buildThreshold = 199;
+    protected creepMemory:CreepMemory;
     public constructor(private creep:Creep) {
+        if (_.isObject(creep)){
+            this.creepMemory = creep.memory;
+        }
     }
 
     public getEnergyFromSpawn(source:Spawn|Link) {
@@ -51,7 +55,6 @@ export class MyCreep implements IMyCreep {
     }
 
     public findClosestByRange(findConstant:number, filterFunction?:Function) {
-
         if (filterFunction) {
             return this.creep.pos.findClosestByRange(findConstant, {
                 filter: filterFunction

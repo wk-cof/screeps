@@ -659,6 +659,13 @@ interface CreepMemory {
 }
 
 interface FlagMemory {
+    flagType: number;
+}
+
+interface SourceFlagMemory extends FlagMemory {
+    parentRoom: string;
+    workerCap: number;
+    roomName: string;
 }
 
 interface RoomMemory {

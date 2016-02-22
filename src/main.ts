@@ -7,9 +7,25 @@ import * as LinkTransfer from 'link';
 import * as config from 'config';
 import * as FM from 'fighter';
 import {MyRoom} from 'room';
+import {MyFlag} from "flag";
 //var config = require('config');
 
 module.exports.loop = function () {
+    // parse flags
+    let sourceFlags:MyFlag[] = [];
+    try {
+        _.each<Flag>(Game.flags, (value) => {
+            let flag = new MyFlag(value);
+            if (flag.isSourceFlag()) {
+                sourceFlags.push(flag);
+            }
+        });
+    }
+    catch(err) {
+        console.log(JSON.stringify(err));
+    }
+
+
     let rooms = _.values(Game.rooms);
     let room = new MyRoom(rooms[0].name);
     room.runRoutine();
