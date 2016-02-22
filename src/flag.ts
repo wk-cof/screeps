@@ -13,7 +13,8 @@ export class MyFlag {
             throw 'flag doesn\'t exist';
         }
 
-        if (!this.flag.memory) {
+        // flags have memory by default. check if it was filled by me
+        if (!this.flag.memory || !this.flag.memory.flagType) {
             this.parseName();
         }
         else {
@@ -23,17 +24,19 @@ export class MyFlag {
 
     //------ Private methods -------------------------------------------------------------------------------------------
     /**
-     * Source flag structure: src-$roomName-$mineToRoomName-$workerCap
+     * Source flag structure: src-$roomName-$mineToRoomName-$workerCap-$index
      */
     private parseName() {
         let flagNameTokens = this.flag.name.split('-');
         if (flagNameTokens[0] === 'src') {
             this.sourceFlag = true;
+            let source = <Source>this.flag.pos.lookFor('source')[0];
             let sourceFlagMemory:SourceFlagMemory = {
                 flagType: FlagTypes.source,
                 roomName: flagNameTokens[1] || null,
                 parentRoom: flagNameTokens[2] || null,
-                workerCap: flagNameTokens[3] || 0
+                workerCap: flagNameTokens[3] || 0,
+                sourceID: _.isObject(source) ? source.id : null
             };
             this.flag.memory = sourceFlagMemory;
         }
@@ -48,5 +51,9 @@ export class MyFlag {
     //------ Public methods --------------------------------------------------------------------------------------------
     public isSourceFlag() {
         return this.sourceFlag;
+    }
+
+    public getParentRoomName():string {
+        return (<SourceFlagMemory>this.flag.memory).parentRoom || '';
     }
 }

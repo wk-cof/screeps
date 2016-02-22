@@ -7,12 +7,14 @@ import {MyCarrier} from "carrier";
 import {Fighter} from "fighter";
 import {FlagMiner} from "harvester";
 import {Config} from "config";
+import {MyFlag} from "flag";
 
 export class MyRoom {
     //------ Private data ----------------------------------------------------------------------------------------------
     private spawns:Spawn[] = [];
     private creeps:Creep[] = [];
     private sources:Source[] = [];
+    private flags:MyFlag[] = [];
 
     private room:Room;
     private roomMemory:RoomMemory;
@@ -239,6 +241,9 @@ export class MyRoom {
                     console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
                     break;
                 case CreepTypes.flagMiner:
+                    if (!this.flags) {
+                        break;
+                    }
                     let miner = new FlagMiner(creep, Game.flags['room2Resource1']);
                     console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
                     //miner.mine(roomStorage);
@@ -251,6 +256,10 @@ export class MyRoom {
             Memory.rooms = {};
         }
         Memory.rooms[this.roomName] = this.roomMemory;//this.toSerial();
+    }
+
+    public setRoomFlags(flags) {
+        this.flags = flags;
     }
 
     public  toSerial() {

@@ -26,9 +26,14 @@ module.exports.loop = function () {
     }
 
 
-    let rooms = _.values(Game.rooms);
-    let room = new MyRoom(rooms[0].name);
-    room.runRoutine();
+    _.each<Room>(Game.rooms, (roomObject) => {
+        let roomFlags = _.filter(sourceFlags, (flag:MyFlag) => {
+            return flag.isSourceFlag() && flag.getParentRoomName() === roomObject.name;
+        });
+        let room = new MyRoom(roomObject.name);
+        room.setRoomFlags(roomFlags);
+        //room.runRoutine();
+    });
 };
 
 
