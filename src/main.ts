@@ -32,7 +32,7 @@ module.exports.loop = function () {
         });
         let room = new MyRoom(roomObject.name);
         room.setRoomFlags(roomFlags);
-        //room.runRoutine();
+        room.runRoutine();
     });
 };
 

@@ -82,6 +82,7 @@ export class MyRoom {
             }
             else {
                 this.creeps.push(creep);
+                //creep.memory = this.roomMemory.active[idx];
             }
         }
 
@@ -197,6 +198,15 @@ export class MyRoom {
         return totalCreeps < Config.activeWorkers[CreepAssembler.getCreepStringName(type)];
     }
 
+    private saveActiveCreepMemory() {
+        for (let idx in this.roomMemory.active) {
+            let creep = <Creep>Game.getObjectById(this.roomMemory.active[idx].id);
+            if (creep) {
+                _.defaults(this.roomMemory.active[idx], creep.memory);
+            }
+        }
+    }
+
     //------ Public Methods --------------------------------------------------------------------------------------------
     public runRoutine() {
         this.checkBuildingCreeps();
@@ -244,9 +254,9 @@ export class MyRoom {
                     if (!this.flags) {
                         break;
                     }
-                    let miner = new FlagMiner(creep, Game.flags['room2Resource1']);
+                    let miner = new FlagMiner((<FlagMinerCreep>creep));
                     console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    //miner.mine(roomStorage);
+                    miner.mine(this.flags, this.spawns[0]);
                     break;
                 default:
                     break;
@@ -255,6 +265,7 @@ export class MyRoom {
         if (!Memory.rooms) {
             Memory.rooms = {};
         }
+        this.saveActiveCreepMemory();
         Memory.rooms[this.roomName] = this.roomMemory;//this.toSerial();
     }
 

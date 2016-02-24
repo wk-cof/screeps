@@ -154,6 +154,11 @@ interface Creep {
     unclaimController(target:Structure): number;
     upgradeController(target:Structure): number;
 }
+
+interface FlagMinerCreep extends Creep {
+    memory: FlagMinerMemory;
+}
+
 /**
  * A dropped piece of energy. It will decay after a while if not picked up.
  */
@@ -656,6 +661,10 @@ interface CreepMemory {
     name: string;
     parentSpawn: string;
     role: number;
+}
+
+interface FlagMinerMemory extends CreepMemory {
+    flagName: string;
 }
 
 interface FlagMemory {

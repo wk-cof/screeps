@@ -1,6 +1,7 @@
 import {MyCreep} from "creep";
 import {IMyCreep} from "creep";
 import {Builder} from "builder";
+import {MyFlag} from "flag";
 
 export interface IMyHarvester extends IMyCreep {
     mine(spawn:Spawn): boolean;
@@ -34,25 +35,31 @@ export class MyHarvester extends MyCreep implements IMyHarvester {
 }
 
 export class FlagMiner extends Builder {
-    constructor(private creep:Creep, private flag:Flag) {
+    constructor(private creep:FlagMinerCreep) {
         super(creep);
     }
 
-    public mine(target:Structure) {
-        if (this.creep.carry.energy < this.creep.carryCapacity) {
-            // check if creep and the flag are in the same room
-            if (this.creep.room.name === this.flag.roomName) {
-                let sources = this.creep.room.lookForAt('source', this.flag);
-                if (sources.length) {
-                    this.doOrMoveTo(this.creep.harvest, sources[0]);
+    public mine(flags:MyFlag[], target) {
+        let creepMemory = (<FlagMinerMemory>this.creepMemory);
+        if (!creepMemory || !creepMemory.flagName) {
+            // figure out which flag to mine to
+            for (let idx in flags) {
+                let currentFlag = flags[idx];
+                if (currentFlag.needMoreWorkers()) {
+                    this.creep.memory.flagName = currentFlag.getFlag().name;
                 }
-            }
-            else {
-                this.creep.moveTo(this.flag);
             }
         }
         else {
+            //TODO: This solution is not very maintainable. Can't easily reoder creep to mine to a different dest.
+            let flag = Game.flags[creepMemory.flagName];
+            let underlyingSource = flag.pos.lookFor('source')[0];
+            if (this.creep.carry.energy < this.creep.carryCapacity) {
+                this.doOrMoveTo(this.creep.harvest, underlyingSource);
+            }
+            else {
                 this.doOrMoveTo(this.creep.transferEnergy, target);
+            }
         }
     }
 }
