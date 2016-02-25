@@ -69,17 +69,15 @@ export class MyRoom {
                     break;
                 case CreepTypes.builder:
                     let builder = new Builder(creep, [this.room.storage.id]);
-                    //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
                     builder.runRoutine();
                     break;
                 case CreepTypes.carrier:
-                    //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
                     let carrier = new MyCarrier(creep, [this.room.storage.id]);
                     carrier.runRoutine();
                     break;
                 case CreepTypes.zealot:
-                    let zealot = new Fighter(creep);
-                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
+                    //let zealot = new Fighter(creep);
+                    //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
                     //zealot.runRoutine(spawnObject);
                     //heal(creep, spawnObject, 1400);
                     break;

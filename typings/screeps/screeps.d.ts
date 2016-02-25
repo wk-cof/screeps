@@ -772,4 +772,5 @@ declare var MOVE:string,
     ATTACK:string,
     RANGED_ATTACK:string,
     TOUGH:string,
-    HEAL:string;
+    HEAL:string,
+    CLAIM:string;

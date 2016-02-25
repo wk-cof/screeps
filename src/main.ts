@@ -35,6 +35,14 @@ module.exports.loop = function () {
         room.setRoomFlags(roomFlags);
         room.runRoutine();
     });
+
+    let claimer = 'claimer1';
+    if (!Game.creeps[claimer]) {
+        Game.spawns['Spawn1'].createCreep([MOVE,CLAIM], claimer, {});
+    }
+    else {
+        Game.creeps[claimer].moveTo(Game.flags['claimFlag'])
+    }
 };
 
 
