@@ -13,13 +13,37 @@ export class MyCarrier extends MyCreep implements IMyCarrier {
      * @param creep
      * @param {string}energySourceIds ID of a structure or a creep
      */
-    public constructor(private creep:Creep, private energySourceIds: string[] ) {
-        super(creep);
+    public constructor(private creep:Creep, energySourceIds:string[]) {
+        super(creep, energySourceIds);
         this.buildThreshold = 220;
     }
 
-    //------ Private methods -------------------------------------------------------------------------------------------
+    //------ Public Methods --------------------------------------------------------------------------------------------
+    public runRoutine():number {
+        if (this.creep.carry.energy === 0) {
+            this.routine = [
+                this.pickUpResources,
+                this.getEnergyFromSources
+            ];
+        }
+        else {
+            this.routine = [
+                this.transferEnergyToSpawns,
+                this.transferToClosestAvailableExtension,
+                this.transferEnergyToTowers,
+                this.transferEnergyToStorage
+            ];
+        }
+        let actionResult = ERR_NOT_FOUND;
+        let actionIndex = 0;
+        while (!(actionResult === OK) && actionIndex < this.routine.length) {
+            actionResult = this.routine[actionIndex].call(this);
+            actionIndex++;
+        }
+        return actionResult;
+    }
 
+    //------ Private methods -------------------------------------------------------------------------------------------
     private transferEnergyTo(target:Structure|Creep):number {
         return this.doOrMoveTo(this.creep.transferEnergy, target);
     }
@@ -34,43 +58,6 @@ export class MyCarrier extends MyCreep implements IMyCarrier {
             return this.doOrMoveTo(this.creep.transferEnergy, closestTower);
         }
         return ERR_INVALID_TARGET;
-    }
-
-    private getEnergyFromSources():number {
-        for(let idx in this.energySourceIds) {
-            let structure = Game.getObjectById<Structure>(this.energySourceIds[idx]);
-            if (structure) {
-                let getEnergy = false;
-                switch (structure.structureType) {
-                    case STRUCTURE_STORAGE:
-                        getEnergy = (<Storage>structure).store.energy < (<Storage>structure).storeCapacity;
-                        break;
-                    case STRUCTURE_LINK:
-                        getEnergy = (<Link>structure).energy < (<Link>structure).energyCapacity * 0.5;
-                        break;
-                    case STRUCTURE_EXTENSION:
-                        getEnergy = (<Extension>structure).energy < (<Extension>structure).energyCapacity;
-                        break;
-                    case STRUCTURE_SPAWN:
-                        getEnergy = (<Spawn>structure).energy < (<Spawn>structure).energyCapacity;
-                        break;
-                    case STRUCTURE_TOWER:
-                        getEnergy = (<Tower>structure).energy < (<Tower>structure).energyCapacity;
-                        break;
-                    case undefined:
-                        //probably a creep
-                        // TODO: Handle creeps
-                        break;
-                    default:
-                        break;
-                }
-                if (getEnergy) {
-                    return this.getEnergy(structure);
-                }
-            }
-
-        }
-        return ERR_NOT_FOUND;
     }
 
     private transferEnergyToStorage() {
@@ -97,33 +84,4 @@ export class MyCarrier extends MyCreep implements IMyCarrier {
         }
         return ERR_NOT_FOUND;
     }
-
-    //------ Public Methods --------------------------------------------------------------------------------------------
-
-    public runRoutine():number {
-        let routine:Function[];
-        if (this.creep.carry.energy === 0) {
-            routine = [
-                this.pickUpResources,
-                this.getEnergyFromSources
-            ];
-                //this.getEnergy;
-        }
-        else {
-            routine = [
-                this.transferEnergyToSpawns,
-                this.transferToClosestAvailableExtension,
-                this.transferEnergyToTowers,
-                this.transferEnergyToStorage
-            ];
-        }
-            let actionResult = ERR_NOT_FOUND;
-            let actionIndex = 0;
-            while (!(actionResult === OK) && actionIndex < routine.length) {
-                actionResult = routine[actionIndex].call(this);
-                actionIndex++;
-            }
-            return actionResult;
-    }
-
 }

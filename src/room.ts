@@ -8,6 +8,7 @@ import {Fighter} from "fighter";
 import {FlagMiner} from "harvester";
 import {Config} from "config";
 import {MyFlag} from "flag";
+import {ControllerUpgrader} from "builder";
 
 export class MyRoom {
     //------ Private data ----------------------------------------------------------------------------------------------
@@ -38,6 +39,76 @@ export class MyRoom {
             this.roomMemory = Memory.rooms[roomName];
         }
         this.getDataFromMemory();
+    }
+
+    //------ Public Methods --------------------------------------------------------------------------------------------
+    public runRoutine() {
+        this.checkBuildingCreeps();
+
+        // rebuild creeps if necessary
+        _.each(Config.activeWorkers, (creepCount, creepName) => {
+            if (this.needsRebuilding(CreepTypes[creepName])) {
+                this.enqueueCreep(CreepTypes[creepName]);
+            }
+        });
+
+        this.buildFromQueue(this.spawns[0]);
+        // order creeps around
+        for (let idx in this.creeps) {
+            let creep:Creep = this.creeps[idx];
+            switch (creep.memory['role']) {
+                case CreepTypes.worker:
+                    let harvester = new MyHarvester(creep);
+                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
+                    //harvester.mine(linkTransfer.fromLink);
+                    break;
+                case CreepTypes.upgrader:
+                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
+                    let upgrader = new ControllerUpgrader(creep, [this.room.storage.id]);
+                    upgrader.runRoutine();
+                    break;
+                case CreepTypes.builder:
+                    let builder = new Builder(creep, [this.room.storage.id]);
+                    //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
+                    builder.runRoutine();
+                    break;
+                case CreepTypes.carrier:
+                    //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
+                    let carrier = new MyCarrier(creep, [this.room.storage.id]);
+                    carrier.runRoutine();
+                    break;
+                case CreepTypes.zealot:
+                    let zealot = new Fighter(creep);
+                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
+                    //zealot.runRoutine(spawnObject);
+                    //heal(creep, spawnObject, 1400);
+                    break;
+                case CreepTypes.flagMiner:
+                    //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
+                    let miner = new FlagMiner((<FlagMinerCreep>creep));
+                    miner.mine(this.flags, this.room.storage);//spawns[0]);
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (!Memory.rooms) {
+            Memory.rooms = {};
+        }
+        this.saveActiveCreepMemory();
+        Memory.rooms[this.roomName] = this.roomMemory;//this.toSerial();
+    }
+
+    public setRoomFlags(flags) {
+        this.flags = flags;
+    }
+
+    public  toSerial() {
+        return <RoomMemory>JSON.stringify(this.roomMemory);
+    }
+
+    public fromSerial() {
+
     }
 
     //------ Private methods -------------------------------------------------------------------------------------------
@@ -205,79 +276,5 @@ export class MyRoom {
                 _.defaults(this.roomMemory.active[idx], creep.memory);
             }
         }
-    }
-
-    //------ Public Methods --------------------------------------------------------------------------------------------
-    public runRoutine() {
-        this.checkBuildingCreeps();
-
-        // rebuild creeps if necessary
-        _.each(Config.activeWorkers, (creepCount, creepName) => {
-            if (this.needsRebuilding(CreepTypes[creepName])) {
-                this.enqueueCreep(CreepTypes[creepName]);
-            }
-        });
-
-        this.buildFromQueue(this.spawns[0]);
-        // order creeps around
-        for (let idx in this.creeps) {
-            let creep:Creep = this.creeps[idx];
-            switch (creep.memory['role']) {
-                case CreepTypes.worker:
-                    let harvester = new MyHarvester(creep);
-                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    //harvester.mine(linkTransfer.fromLink);
-                    break;
-                case CreepTypes.upgrader:
-                    let upgrader = new Builder(creep);
-                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    //upgrader.upgradeController(linkTransfer.toLink);
-                    break;
-                case CreepTypes.builder:
-                    let builder = new Builder(creep);
-                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    //builder.buildOnNearestConstructionSite(<Spawn>roomStorage);
-                    break;
-                case CreepTypes.carrier:
-                    let carrier = new MyCarrier(creep, [this.room.storage.id]);
-                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    carrier.runRoutine();
-                    break;
-                case CreepTypes.zealot:
-                    let zealot = new Fighter(creep);
-                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    //zealot.runRoutine(spawnObject);
-                    //heal(creep, spawnObject, 1400);
-                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    break;
-                case CreepTypes.flagMiner:
-                    if (!this.flags) {
-                        break;
-                    }
-                    let miner = new FlagMiner((<FlagMinerCreep>creep));
-                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    miner.mine(this.flags, this.room.storage);//spawns[0]);
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (!Memory.rooms) {
-            Memory.rooms = {};
-        }
-        this.saveActiveCreepMemory();
-        Memory.rooms[this.roomName] = this.roomMemory;//this.toSerial();
-    }
-
-    public setRoomFlags(flags) {
-        this.flags = flags;
-    }
-
-    public  toSerial() {
-        return <RoomMemory>JSON.stringify(this.roomMemory);
-    }
-
-    public fromSerial() {
-
     }
 }
