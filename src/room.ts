@@ -20,9 +20,12 @@ export class MyRoom {
     private room:Room;
     private roomMemory:RoomMemory;
 
+    private roomStorage: Storage;
+
     //------ Constructors ----------------------------------------------------------------------------------------------
     public constructor(private roomName:string) {
         this.room = Game.rooms[roomName];
+        this.roomStorage= this.room.storage || {};
         if (!this.room) {
             console.log(`Room ${roomName} not found.`);
             return;
@@ -43,14 +46,20 @@ export class MyRoom {
 
     //------ Public Methods --------------------------------------------------------------------------------------------
     public runRoutine() {
-        this.checkBuildingCreeps();
+        try {
+            this.checkBuildingCreeps();
 
-        // rebuild creeps if necessary
-        _.each(Config.activeWorkers, (creepCount, creepName) => {
-            if (this.needsRebuilding(CreepTypes[creepName])) {
-                this.enqueueCreep(CreepTypes[creepName]);
-            }
-        });
+            // rebuild creeps if necessary
+            _.each(Config.activeWorkers, (creepCount, creepName) => {
+                if (this.needsRebuilding(CreepTypes[creepName])) {
+                    this.enqueueCreep(CreepTypes[creepName]);
+                }
+            });
+        }
+        catch (err) {
+            console.log('encountered error while checking up on creeps');
+            console.log(err);
+        }
 
         this.buildFromQueue(this.spawns[0]);
         // order creeps around
@@ -64,15 +73,15 @@ export class MyRoom {
                     break;
                 case CreepTypes.upgrader:
                     console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    let upgrader = new ControllerUpgrader(creep, [this.room.storage.id]);
+                    let upgrader = new ControllerUpgrader(creep, [this.roomStorage.id]);
                     upgrader.runRoutine();
                     break;
                 case CreepTypes.builder:
-                    let builder = new Builder(creep, [this.room.storage.id]);
+                    let builder = new Builder(creep, [this.roomStorage.id]);
                     builder.runRoutine();
                     break;
                 case CreepTypes.carrier:
-                    let carrier = new MyCarrier(creep, [this.room.storage.id]);
+                    let carrier = new MyCarrier(creep, [this.roomStorage.id]);
                     carrier.runRoutine();
                     break;
                 case CreepTypes.zealot:
