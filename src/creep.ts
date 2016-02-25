@@ -1,10 +1,10 @@
 export interface IMyCreep {
     getEnergyFromSpawn:(spawn:Spawn) => boolean;
-    getEnergy:(source:Storage|Spawn|Link|Tower|Creep) => boolean;
-    doOrMoveTo:(action:Function, target:Structure|Creep|ConstructionSite) => boolean;
+    getEnergy:(source:Storage|Spawn|Link|Tower|Creep) => number;
+    doOrMoveTo:(action:Function, target:Structure|Creep|ConstructionSite) => number;
     findClosestByRange:(structureType:number, filterFunction?:Function) => Structure;
     findAllInTheRoom:(findConstant:number) => any[];
-    transferToClosestAvailableExtension:() => boolean;
+    transferToClosestAvailableExtension:() => number;
 
 }
 
@@ -30,31 +30,34 @@ export class MyCreep implements IMyCreep {
         if (this.creep.pos.isNearTo(source) === false) {
             this.creep.moveTo(source);
         }
-        return ((<any>source).transferEnergy(this.creep) === OK);
+        return (<any>source).transferEnergy(this.creep);
     }
 
-    public transferToClosestAvailableExtension() {
+    public transferToClosestAvailableExtension():number {
         //console.log('transferring energy to extension');
         let extension:Extension = this.findClosestByRange(FIND_MY_STRUCTURES,
             (object:Extension) => object.structureType === STRUCTURE_EXTENSION && (object.energy < object.energyCapacity));
 
         if (extension) {
-            this.doOrMoveTo(this.creep.transferEnergy, extension);
-            return true;
+            return this.doOrMoveTo(this.creep.transferEnergy, extension);
         }
-        return false;
+        return ERR_NOT_FOUND;
     }
 
-    public doOrMoveTo(action:Function, target:Structure|Creep|ConstructionSite|Source) {
+    public doOrMoveTo(action:Function, target:Structure|Creep|ConstructionSite|Source):number {
+        //if (this.creep.pos.isNearTo(target) === false) {
+        //    this.creep.moveTo(target);
+        //}
+        //return action.call(this.creep, target);
         if (this.creep.pos.isNearTo(target)) {
-            action.call(this.creep, target);
+            return action.call(this.creep, target);
         }
         else {
-            this.creep.moveTo(target);
+            return this.creep.moveTo(target);
         }
     }
 
-    public findClosestByRange(findConstant:number, filterFunction?:Function) {
+    public findClosestByRange<T>(findConstant:number, filterFunction?:Function):T {
         if (filterFunction) {
             return this.creep.pos.findClosestByRange(findConstant, {
                 filter: filterFunction
@@ -64,7 +67,13 @@ export class MyCreep implements IMyCreep {
     }
 
     // cast it to the correct type when finding something in particular.
-    public findAllInTheRoom(findConstant:number):any[] {
-        return this.creep.room.find<any>(findConstant);
+    public findAllInTheRoom<T>(findConstant:number, filterFunction?:Function):T {
+        if (filterFunction) {
+            return this.creep.room.find<T>(findConstant, {
+                filter: filterFunction
+            });
+        }
+        //return this.creep.pos.findClosestByRange(findConstant);
+        return this.creep.room.find<T>(findConstant);
     }
 }

@@ -574,6 +574,8 @@ interface Storage extends Structure {
 
 
 interface Tower extends Structure {
+    energy: number;
+    energyCapacity: number;
     /**
      * Attack another creep or structure in a short-ranged attack. Needs the ATTACK body part. If the target is inside a rampart, then the rampart is attacked instead. The target has to be at adjacent square to the creep.
      * @returns Result Code: OK, ERR_NOT_OWNER, ERR_BUSY, ERR_INVALID_TARGET, ERR_NOT_IN_RANGE, ERR_NO_BODYPART
@@ -655,6 +657,7 @@ interface PathStep {
 }
 interface Memory {
     rooms: {[name: string]: RoomMemory};
+    turnNumber: number;
 }
 interface CreepMemory {
     id: string;

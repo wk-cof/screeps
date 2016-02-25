@@ -11,6 +11,7 @@ import {MyFlag} from "flag";
 //var config = require('config');
 
 module.exports.loop = function () {
+    Memory.turnNumber = (Memory.turnNumber + 1) % 100;
     // parse flags
     let sourceFlags:MyFlag[] = [];
     try {

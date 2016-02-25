@@ -239,9 +239,9 @@ export class MyRoom {
                     //builder.buildOnNearestConstructionSite(<Spawn>roomStorage);
                     break;
                 case CreepTypes.carrier:
-                    let carrier = new MyCarrier(creep);
+                    let carrier = new MyCarrier(creep, [this.room.storage.id]);
                     console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    //carrier.runRoutine(roomStorage);
+                    carrier.runRoutine();
                     break;
                 case CreepTypes.zealot:
                     let zealot = new Fighter(creep);
@@ -256,7 +256,7 @@ export class MyRoom {
                     }
                     let miner = new FlagMiner((<FlagMinerCreep>creep));
                     console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    miner.mine(this.flags, this.spawns[0]);
+                    miner.mine(this.flags, this.room.storage);//spawns[0]);
                     break;
                 default:
                     break;
