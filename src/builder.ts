@@ -14,7 +14,7 @@ export class Builder extends MyCreep implements IBuilder {
     private wallMaxLife = 15000;
     private wallMaxLife = 15000;
 
-    constructor(private creep:Creep, energySourceIds:string[]) {
+    constructor(private creep:Creep, energySourceIds?:string[]) {
         super(creep, energySourceIds);
     }
     //------ Public Methods --------------------------------------------------------------------------------------------

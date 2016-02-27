@@ -14,13 +14,11 @@ Turns out renewing creeps is not very cost effective. Better to just recreate th
 ## ToDo
 
 ### Pending
-* Build fighting units.
 * Automate road building from the spawn to the resources
 * Increase reusePath option in the Creep.moveTo method to help save CPU.
-* Use creep memory to store locations/paths.
 * build different creeps based on how many extensions I have.
-* Pick up dropped resources
-
+* implement priority queue
+* implement mining sources and destinations on room-based level.
 
 ### Done
 * Figure out how to use extensions to store more energy.
@@ -36,6 +34,11 @@ Turns out renewing creeps is not very cost effective. Better to just recreate th
 * Charge cannons.
 * Separation between harvesters and carriers.
 * Use links to mine faster.
+* Build fighting units.
+* Use creep memory to store locations/paths.
+* Pick up dropped resources
+* customize config: Store different room setups on separate objects.
+* write creep memory to room memory and if it's not available, get creep memory.
 
 ## Notes
 

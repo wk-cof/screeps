@@ -658,11 +658,13 @@ interface PathStep {
 interface Memory {
     rooms: {[name: string]: RoomMemory};
     turnNumber: number;
+    creeps: CreepMemory[];
 }
 interface CreepMemory {
     id: string;
     name: string;
     parentSpawn: string;
+    parentRoom: string;
     role: number;
 }
 

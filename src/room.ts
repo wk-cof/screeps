@@ -21,6 +21,7 @@ export class MyRoom {
     private roomMemory:RoomMemory;
 
     private roomStorage: Storage;
+    private roomConfig:Config;
 
     //------ Constructors ----------------------------------------------------------------------------------------------
     public constructor(private roomName:string) {
@@ -30,12 +31,18 @@ export class MyRoom {
             console.log(`Room ${roomName} not found.`);
             return;
         }
+        this.roomConfig = Config.rooms[roomName];
+        if (!this.roomConfig) {
+            console.log(`${roomName} doesn't have a config.`);
+            return;
+        }
         //// parse the room object from memory;
         if (!Memory.rooms[roomName]) {
             //if (true) {
             console.log('Creating new room data');
             this.roomMemory = this.constructEmptyRoom();
             this.findObjectsInRoom();
+            this.roomMemory.active = this.findRoomCreeps();
         }
         else {
             //console.log('getting data from memory');
@@ -50,7 +57,7 @@ export class MyRoom {
             this.checkBuildingCreeps();
 
             // rebuild creeps if necessary
-            _.each(Config.activeWorkers, (creepCount, creepName) => {
+            _.each(this.roomConfig, (creepCount, creepName) => {
                 if (this.needsRebuilding(CreepTypes[creepName])) {
                     this.enqueueCreep(CreepTypes[creepName]);
                 }
@@ -144,7 +151,12 @@ export class MyRoom {
 
         let links = this.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LINK}});
         this.roomMemory.links = _.pluck(links, 'id');
+    }
 
+    private findRoomCreeps():CreepMemory[] {
+        return _.filter<CreepMemory>(Memory.creeps, (creepMemory:CreepMemory) => {
+            return creepMemory.parentRoom === this.room.name;
+        });
     }
 
     /**
@@ -156,6 +168,7 @@ export class MyRoom {
             let creep = <Creep>Game.getObjectById(this.roomMemory.active[idx].id);
             if (!creep) {
                 // remove the creep from active
+                delete Memory.creeps[this.roomMemory.active[idx].name];
                 this.roomMemory.active.splice(idx, 1);
             }
             else {
@@ -208,6 +221,7 @@ export class MyRoom {
                 // time for baby creep to leave the nest
                 this.roomMemory.building.splice(idx, 1);
                 this.roomMemory.active.push(creepMemory);
+                Memory.creeps[creep.name] = creepMemory;
             }
         }
     }
@@ -228,6 +242,7 @@ export class MyRoom {
             id: null,
             name: creepName,
             parentSpawn: spawn.name,
+            parentRoom: spawn.room.name,
             role: creepToConstruct.role
         };
         let status = spawn.createCreep(CreepAssembler.getBodyParts(creepToConstruct.role), creepName, creepMemory);
@@ -248,6 +263,7 @@ export class MyRoom {
             id: null,
             name: null,
             parentSpawn: null,
+            parentRoom: null,
             role: type
         };
 
@@ -273,7 +289,7 @@ export class MyRoom {
         let totalCreeps = this.getBuildingCreepsCount(type) +
             this.getActiveCreepsCount(type) +
             this.getQueuedCreepsCount(type);
-        return totalCreeps < Config.activeWorkers[CreepAssembler.getCreepStringName(type)];
+        return totalCreeps < this.roomConfig[CreepAssembler.getCreepStringName(type)];
     }
 
     private saveActiveCreepMemory() {
