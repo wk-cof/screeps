@@ -20,13 +20,13 @@ export class MyRoom {
     private room:Room;
     private roomMemory:RoomMemory;
 
-    private roomStorage: Storage;
+    private roomStorage:Storage;
     private roomConfig:Config;
 
     //------ Constructors ----------------------------------------------------------------------------------------------
     public constructor(private roomName:string) {
         this.room = Game.rooms[roomName];
-        this.roomStorage= this.room.storage || {};
+        this.roomStorage = this.room.storage || {};
         if (!this.room) {
             console.log(`Room ${roomName} not found.`);
             return;
@@ -68,7 +68,10 @@ export class MyRoom {
             console.log(err);
         }
 
-        this.buildFromQueue(this.spawns[0]);
+
+        if (this.buildFromPriorityQueue(this.spawns[0]) === ERR_NOT_FOUND) {
+            this.buildFromQueue(this.spawns[0]);
+        }
         // order creeps around
         for (let idx in this.creeps) {
             let creep:Creep = this.creeps[idx];
@@ -134,7 +137,8 @@ export class MyRoom {
         return {
             active: [],
             building: [],
-            queued: [],
+            queue: [],
+            priorityQueue: [],
             links: [],
             sources: [],
             spawns: [],
@@ -226,11 +230,18 @@ export class MyRoom {
         }
     }
 
-    private buildFromQueue(spawn:Spawn) {
-        let buildQueue = this.roomMemory.queued;
-        let creepToConstruct = buildQueue[0] || null;
+    private buildFromPriorityQueue(spawn:Spawn):number {
+        return this.build(spawn, 'priorityQueue');
+    }
+
+    private buildFromQueue(spawn:Spawn):number {
+        return this.build(spawn, 'queue');
+    }
+
+    private build(spawn:Spawn, buildQueueName:string):number {
+        let creepToConstruct = this.roomMemory[buildQueueName][0] || null;
         if (!creepToConstruct || !spawn) {
-            return ERR_INVALID_TARGET;
+            return ERR_NOT_FOUND;
         }
         let canConstruct = this.canCreateCreep(spawn, creepToConstruct);
         if (canConstruct !== OK) {
@@ -250,7 +261,7 @@ export class MyRoom {
         // if creep is created, the return is it's name
         if (_.isString(status)) {
             // remove the creep from the queued
-            this.roomMemory.queued = this.roomMemory.queued.slice(1);
+            this.roomMemory[buildQueueName] = this.roomMemory[buildQueueName].slice(1);
 
             // insert the creep into building memory
             this.roomMemory.building.push(creepMemory);
@@ -267,7 +278,13 @@ export class MyRoom {
             role: type
         };
 
-        this.roomMemory.queued.push(newCreepMemory);
+        // if creep is a priority creep, put it in the priority queue
+        if (this.roomConfig['priorityList'] && this.roomConfig['priorityList'].indexOf(type) !== -1) {
+            this.roomMemory.priorityQueue.push(newCreepMemory);
+        }
+        else {
+            this.roomMemory.queue.push(newCreepMemory);
+        }
     }
 
     private getBuildingCreepsCount(type:CreepTypes) {
@@ -281,8 +298,9 @@ export class MyRoom {
     }
 
     private getQueuedCreepsCount(type:CreepTypes) {
-        let creepTypes = _.filter(this.roomMemory.queued, {role: type});
-        return creepTypes.length || 0;
+        let normalCreepTypes = _.filter(this.roomMemory.queue, {role: type}) || [];
+        let priorityCreepTypes = _.filter(this.roomMemory.priorityQueue, {role: type}) || [];
+        return (normalCreepTypes.length + priorityCreepTypes.length);
     }
 
     private needsRebuilding(type:CreepTypes) {
@@ -292,6 +310,9 @@ export class MyRoom {
         return totalCreeps < this.roomConfig[CreepAssembler.getCreepStringName(type)];
     }
 
+    /**
+     * Add data from creep's memory to the room's memory
+     */
     private saveActiveCreepMemory() {
         for (let idx in this.roomMemory.active) {
             let creep = <Creep>Game.getObjectById(this.roomMemory.active[idx].id);

@@ -519,7 +519,7 @@ interface Spawn {
     structureType: string;
     spawning: {name: string, needTime: number, remainingTime: number};
     canCreateCreep(body:string[], name?:string): number;
-    createCreep(body:string[], name?:string, memory?:any): string|number;
+    createCreep(body:string[], name?:string, memory?:any): number;
     destroy(): number;
     notifyWhenAttacked(enabled:boolean): number;
     renewCreep(target:Creep): number;
@@ -684,7 +684,8 @@ interface SourceFlagMemory extends FlagMemory {
 
 interface RoomMemory {
     active:CreepMemory[];
-    queued:CreepMemory[];
+    queue:CreepMemory[];
+    priorityQueue:CreepMemory[];
     building: CreepMemory[];
     spawns:string[];
     sources:string[];

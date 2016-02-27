@@ -6,17 +6,17 @@ module.exports.loop = function () {
     Memory.turnNumber = (Memory.turnNumber + 1) % 100;
     // parse flags
     let sourceFlags:MyFlag[] = [];
-    try {
+    //try {
         _.each<Flag>(Game.flags, (value) => {
             let flag = new MyFlag(value);
             if (flag.isSourceFlag()) {
                 sourceFlags.push(flag);
             }
         });
-    }
-    catch(err) {
-        console.log(JSON.stringify(err));
-    }
+    //}
+    //catch(err) {
+    //    console.log(JSON.stringify(err));
+    //}
 
 
     _.each<Room>(Game.rooms, (roomObject) => {
