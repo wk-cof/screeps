@@ -9,6 +9,7 @@ import {FlagMiner} from "harvester";
 import {Config} from "config";
 import {MyFlag} from "flag";
 import {ControllerUpgrader} from "builder";
+import {LinkTransfer} from "link";
 
 export class MyRoom {
     //------ Private data ----------------------------------------------------------------------------------------------
@@ -68,6 +69,9 @@ export class MyRoom {
             console.log(err);
         }
 
+        console.log(this.room.name);
+        let linkTransfer = new LinkTransfer(this.room.name);
+        linkTransfer.transfer();
 
         if (this.buildFromPriorityQueue(this.spawns[0]) === ERR_NOT_FOUND) {
             this.buildFromQueue(this.spawns[0]);
@@ -82,7 +86,7 @@ export class MyRoom {
                     //harvester.mine(linkTransfer.fromLink);
                     break;
                 case CreepTypes.upgrader:
-                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
+                    //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
                     let upgrader = new ControllerUpgrader(creep, [this.roomStorage.id]);
                     upgrader.runRoutine();
                     break;
@@ -321,4 +325,16 @@ export class MyRoom {
             }
         }
     }
+
+    //private getSources(type:CreepTypes) {
+    //
+    //    switch (type) {
+    //        case CreepTypes.upgrader: // TODO: implement upgrader mining to a link
+    //            return
+    //        case CreepTypes.worker:
+    //            break;
+    //        default:
+    //
+    //    }
+    //}
 }

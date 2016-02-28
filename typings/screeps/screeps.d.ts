@@ -659,6 +659,7 @@ interface Memory {
     rooms: {[name: string]: RoomMemory};
     turnNumber: number;
     creeps: CreepMemory[];
+    links: LinkMemory[];
 }
 interface CreepMemory {
     id: string;
@@ -682,6 +683,10 @@ interface SourceFlagMemory extends FlagMemory {
     roomName: string;
 }
 
+interface LinkFlagMemory extends FlagMemory {
+    linkOrder: number;
+}
+
 interface RoomMemory {
     active:CreepMemory[];
     queue:CreepMemory[];
@@ -698,7 +703,8 @@ interface SpawnMemory {
 }
 
 interface LinkMemory {
-    id: string
+    id: string;
+    rank: number;
 }
 
 declare enum Direction {

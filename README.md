@@ -17,8 +17,9 @@ Turns out renewing creeps is not very cost effective. Better to just recreate th
 * Automate road building from the spawn to the resources
 * Increase reusePath option in the Creep.moveTo method to help save CPU.
 * build different creeps based on how many extensions I have.
-* implement priority queue
-* implement mining sources and destinations on room-based level.
+* implement mining in the same room
+* implement logic for finding sources and destinations in the room.
+* fix a bug that allows creeps to ignore the flag creep limit
 
 ### Done
 * Figure out how to use extensions to store more energy.
@@ -39,6 +40,8 @@ Turns out renewing creeps is not very cost effective. Better to just recreate th
 * Pick up dropped resources
 * customize config: Store different room setups on separate objects.
 * write creep memory to room memory and if it's not available, get creep memory.
+* implement priority queue
+* implement mining sources and destinations on room-based level.
 
 ## Notes
 

@@ -1,79 +1,96 @@
+import {MyFlag} from "flag";
+
+export class MyLink {
+    // Energy will flow towards the lower rank. Energy doesn't flow between same ranks.
+    private linkMemory:LinkMemory;
+
+    constructor(private link:Link) {
+        if (!link) {
+            throw 'MyLink requires an argument';
+        }
+    }
+
+    // Default rank without a flag is 0
+    public getRank():number {
+        // get the rank from memory
+        if (!Memory.links) {
+            Memory.links = [];
+        }
+
+        if (!Memory.links[this.link.id]) {
+            // find a flag on top of the link and write the result to memory
+            this.createMemory();
+        }
+        else if (!this.linkMemory) {
+            this.readMemory();
+        }
+
+        return this.linkMemory.rank;
+    }
+
+    getLink():Link {
+        return this.link;
+    }
+
+    private createMemory() {
+        let flag = this.link.pos.lookFor<Flag>('flag')[0];
+        if (!flag) {
+            return 0;
+        }
+        let linkFlag = new MyFlag(flag);
+        if (linkFlag.isLinkFlag()) {
+            this.linkMemory = {
+                id: this.link.id,
+                rank: (<LinkFlagMemory>flag.memory).linkOrder
+            };
+            Memory.links[this.link.id] = this.linkMemory;
+        }
+    }
+
+    private readMemory() {
+        this.linkMemory = Memory.links[this.link.id];
+    }
+}
+
 export class LinkTransfer {
-    public fromLink:Link;
-    public toLink:Link;
-    public resourceLink:Link;
+    private links:MyLink[] = [];
 
     constructor(roomName:string) {
-
-        if (!Memory.rooms) {
-            Memory.rooms = {};
-        }
-        if (!Memory.rooms[roomName]) {
-            Memory.rooms[roomName] = {};
-        }
-
-        let links = Game.rooms[roomName].find<Link>(FIND_MY_STRUCTURES,
+        let linkObjects = Game.rooms[roomName].find<Link>(FIND_MY_STRUCTURES,
             {filter: (object:Link) => object.structureType === STRUCTURE_LINK});
-        _.each(links, (link) => {
-            let linkLocation = JSON.stringify(link.pos);
-            // If link is not in memory, figure out it's role
-            if (!Memory.rooms[roomName][linkLocation]) {
-                let linkMemory = {
-                    pos: link.pos,
-                    role: null
-                };
-                // find link's role
-                if (link.pos.findInRange(FIND_MY_SPAWNS, 2).length) {
-                    linkMemory.role = 'spawn'
-                }
-                else if (link.pos.findInRange([Game.rooms[roomName].controller], 2).length) {
-                    linkMemory.role = 'controller';
-                }
-                else if (link.pos.findInRange(FIND_SOURCES, 2).length) {
-                    linkMemory.role = 'source';
-                }
-                else {
-                    linkMemory.role = 'other';
-                }
-                Memory.rooms[roomName][linkLocation] = linkMemory;
-            }
-
-            switch(Memory.rooms[roomName][linkLocation].role) {
-                case 'spawn':
-                    break;
-                case 'source':
-                    this.fromLink = link;
-                    break;
-                case 'controller':
-                    this.toLink = link;
-                    break;
-                default:
-                    this.resourceLink = link;
-                    break;
-
-            }
+        _.each(linkObjects, (link:Link) => {
+            this.links.push(new MyLink(link));
         });
     }
 
     public transfer():number {
-        // transfer all energy away from resource link to source or spawn link
-        if (this.resourceLink && this.resourceLink.cooldown === 0) {
-            let toCapacity = this.toLink.energyCapacity - this.toLink.energy;
-            let fromCapacity = this.fromLink.energyCapacity - this.fromLink.energy;
+        this.sortLinks();
 
-            let targetLink:Link = toCapacity > fromCapacity ? this.toLink : this.fromLink;
-            let targetCapacity  = toCapacity > fromCapacity ? toCapacity : fromCapacity;
-            this.resourceLink.transferEnergy(targetLink,
-                this.resourceLink.energy > targetCapacity? targetCapacity: this.resourceLink.energy);
-        }
-        if (this.fromLink && this.fromLink.cooldown === 0) {
-            let availableEnergy = this.fromLink.energy;
-            let availableCapacity = this.toLink.energyCapacity - this.toLink.energy;
+        // assume sorted array
+        let i = 0, j = this.links.length - 1;
+        while (i < j) {
+            let receivingLink = this.links[i].getLink();
+            let availableCapacity = receivingLink.energyCapacity - receivingLink.energy;
             if (availableCapacity > 50) {
-                this.fromLink.transferEnergy(this.toLink,
-                    availableEnergy > availableCapacity ? availableCapacity : availableEnergy);
+                // find sourceLink: skip if not enough energy or it can't currently transfer
+                while (j > i && (this.links[j].getLink().energy < 50 || this.links[j].getLink().cooldown > 0)) {
+                    j--;
+                }
+                if (this.links[i].getRank() < this.links[j].getRank()) {
+                    let availableEnergy = this.links[j].getLink().energy;
+                    return this.links[j].getLink().transferEnergy(this.links[i].getLink(),
+                        availableEnergy > availableCapacity ? availableCapacity : availableEnergy);
+
+                }
             }
+            i++;
         }
-        return OK;
+        return ERR_NOT_FOUND;
+    }
+
+    private sortLinks() {
+        this.links = _.sortBy(this.links, (link) => {
+            return link.getRank();
+        });
     }
 }

@@ -1,12 +1,13 @@
 import {CreepTypes} from "creep-assembler";
 enum FlagTypes {
     unknown = 1,
-    source
+    source,
+    link
 }
 
 export class MyFlag {
     //------ Private data ----------------------------------------------------------------------------------------------
-    private sourceFlag:boolean = false;
+    protected flagType:FlagTypes;
 
     //------ Constructors ----------------------------------------------------------------------------------------------
     constructor(private flag:Flag) {
@@ -18,9 +19,7 @@ export class MyFlag {
         if (!this.flag.memory || !this.flag.memory.flagType) {
             this.parseName();
         }
-        else {
-            this.sourceFlag = this.flag.memory.flagType === FlagTypes.source;
-        }
+        this.flagType = this.flag.memory.flagType;
     }
 
     //------ Private methods -------------------------------------------------------------------------------------------
@@ -28,9 +27,15 @@ export class MyFlag {
      * Source flag structure: src-$roomName-$mineToRoomName-$workerCap-$index
      */
     private parseName() {
+        if (!this.flag.name) {
+            this.flag.memory = {
+                flagType: FlagTypes.unknown
+            };
+            return;
+        }
         let flagNameTokens = this.flag.name.split('-');
         if (flagNameTokens[0] === 'src') {
-            this.sourceFlag = true;
+            this.flagType = FlagTypes.source;
             let source = <Source>this.flag.pos.lookFor('source')[0];
             let sourceFlagMemory:SourceFlagMemory = {
                 flagType: FlagTypes.source,
@@ -41,8 +46,15 @@ export class MyFlag {
             };
             this.flag.memory = sourceFlagMemory;
         }
+        else if (flagNameTokens[0] === 'lnk') {
+
+            let linkFlagMemory: LinkFlagMemory = {
+                flagType: FlagTypes.link,
+                linkOrder: parseInt(flagNameTokens[1]) || 0
+            };
+            this.flag.memory = linkFlagMemory;
+        }
         else {
-            // this.sourceFlag = false; // implied
             this.flag.memory = {
                 flagType: FlagTypes.unknown
             };
@@ -55,7 +67,11 @@ export class MyFlag {
     }
 
     public isSourceFlag() {
-        return this.sourceFlag;
+        return this.flagType == FlagTypes.source;
+    }
+
+    public isLinkFlag() {
+        return this.flagType == FlagTypes.link;
     }
 
     public getParentRoomName():string {
@@ -63,7 +79,7 @@ export class MyFlag {
     }
 
     public needMoreWorkers():boolean {
-        if (!this.sourceFlag) {
+        if (!this.isSourceFlag()) {
             return false;
         }
         let roomMemory = Memory.rooms[(<SourceFlagMemory>this.flag.memory).parentRoom];
