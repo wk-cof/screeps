@@ -73,7 +73,9 @@ export class MyRoom {
         let linkTransfer = new LinkTransfer(this.room.name);
         linkTransfer.transfer();
 
-        if (this.buildFromPriorityQueue(this.spawns[0]) === ERR_NOT_FOUND) {
+        let status = this.buildFromPriorityQueue(this.spawns[0]);
+        console.log('attempting to build from priority queue, ' + status);
+        if (status === ERR_NOT_FOUND) {
             this.buildFromQueue(this.spawns[0]);
         }
         // order creeps around
