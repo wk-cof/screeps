@@ -2,18 +2,18 @@
 import {MyCreep} from "creep";
 
 export class Fighter extends MyCreep {
+    private flag:Flag;
     constructor(private creep:Creep) {
         super(creep);
+        this.flag = Game.flags['rallyPoint'];
     }
 
-    public runRoutine(spawn:Spawn) {
-        if (this.creep.room === spawn.room) {
-            this.creep.moveTo(Game.flags['rallyPoint']);
-        }
-        else {
-            if (!this.attackNearestCreep()) {
-                this.creep.moveTo(Game.flags['rallyPoint']);
-            }
+    public runRoutine() {
+        this.routine = [
+
+        ];
+        if (!this.attackNearestCreep()) {
+            this.creep.moveTo(this.flag);
         }
     }
 
