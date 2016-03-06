@@ -11,8 +11,7 @@ export interface IBuilder extends IMyCreep {
 
 export class Builder extends MyCreep implements IBuilder {
 
-    private wallMaxLife = 15000;
-    private wallMaxLife = 15000;
+    private wallMaxLife = 300000;
 
     constructor(private creep:Creep, energySources:Structure[]) {
         super(creep, energySources);
@@ -27,9 +26,9 @@ export class Builder extends MyCreep implements IBuilder {
         else {
             this.routine = [
                 this.buildOnNearestConstructionSite,
-                this.reinforceWalls,
+                this.maintainRoads,
                 this.reinforceRamparts,
-                //this.maintainRoads,
+                this.reinforceWalls,
             ];
         }
         let actionResult = ERR_NOT_FOUND;
@@ -74,7 +73,7 @@ export class Builder extends MyCreep implements IBuilder {
 
     private maintainRoads(spawn:Spawn):number {
         let closestRoad = <Road>this.findClosestByRange(FIND_STRUCTURES,
-            (object:Structure) => (object.structureType === STRUCTURE_ROAD && (object.hits < object.hitsMax / 2)));
+            (object:Structure) => (object.structureType === STRUCTURE_ROAD && (object.hits < object.hitsMax / 3)));
 
         if (closestRoad) {
             return this.doOrMoveTo(this.creep.repair, closestRoad);

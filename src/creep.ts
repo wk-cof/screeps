@@ -14,7 +14,7 @@ export class MyCreep implements IMyCreep {
     protected routine:Function[];
     protected energySources:Structure[];
 
-    public constructor(private creep:Creep, energySources?:Structure[]) {
+    public constructor(protected creep:Creep, energySources?:Structure[]) {
         if (energySources) {
             this.energySources = energySources;
         }

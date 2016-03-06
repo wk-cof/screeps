@@ -7,7 +7,8 @@ export enum CreepTypes{
     carrier,
     zealot,
     marine,
-    scout
+    scout,
+    claimer
 }
 
 interface IBodyPartsObject {
@@ -134,9 +135,9 @@ export class CreepAssembler {
                 }
             case CreepTypes.builder:
                 return {
-                    work: 1,
+                    work: 2,
                     carry: 2,
-                    move: 3
+                    move: 4
                 };
             case CreepTypes.worker:
                 return {
@@ -175,8 +176,13 @@ export class CreepAssembler {
                 };
             case CreepTypes.marine:
                 return {
-                    ranged_attack: 3,
-                    move: 2
+                    move: 2,
+                    ranged_attack: 3
+                };
+            case CreepTypes.claimer:
+                return {
+                    move: 1,
+                    claim: 1
                 };
             default:
                 return {

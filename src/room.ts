@@ -10,13 +10,15 @@ import {MyFlag} from "flag";
 import {ControllerUpgrader} from "builder";
 import {LinkTransfer} from "link";
 import {MyCreep} from "creep";
+import {MyClaimer} from "claimer";
 
 export class MyRoom {
     //------ Private data ----------------------------------------------------------------------------------------------
     private spawns:Spawn[] = [];
     private creeps:Creep[] = [];
     private sources:Source[] = [];
-    private flags:MyFlag[] = [];
+    private sourceFlags:MyFlag[] = [];
+    private claimFlags:MyFlag[] = [];
 
     private room:Room;
     private roomMemory:RoomMemory;
@@ -85,7 +87,13 @@ export class MyRoom {
     }
 
     public setRoomFlags(flags) {
-        this.flags = flags;
+        this.sourceFlags =  _.filter(flags, (flag:MyFlag) => {
+            return flag.isSourceFlag();
+        });
+
+        this.claimFlags = _.filter(flags, (flag:MyFlag) => {
+            return flag.isClaimFlag();
+        });
     }
 
     public  toSerial() {
@@ -100,7 +108,7 @@ export class MyRoom {
     private creepManagement(){
         // order creeps around
         // find all full extensions
-        let energySources:Structure[] = this.creeps[0].room.find<Extension>(FIND_MY_STRUCTURES, {
+        let energySources:Structure[] = this.spawns[0].room.find<Extension>(FIND_MY_STRUCTURES, {
             filter: (object:Structure) => {
                 return object.structureType === STRUCTURE_EXTENSION &&
                     (<Extension>object).energy === (<Extension>object).energyCapacity;
@@ -108,7 +116,7 @@ export class MyRoom {
         });
 
         // find all extensions that need energy
-        let energyDestinations:Structure[] = this.creeps[0].room.find<Extension>(FIND_MY_STRUCTURES, {
+        let energyDestinations:Structure[] = this.spawns[0].room.find<Extension>(FIND_MY_STRUCTURES, {
             filter: (object:Structure) => {
                 return object.structureType === STRUCTURE_EXTENSION &&
                     (<Extension>object).energy < (<Extension>object).energyCapacity;
@@ -132,7 +140,7 @@ export class MyRoom {
             try {
                 switch (creep.memory['role']) {
                     case CreepTypes.upgrader:
-                        let upgrader = new ControllerUpgrader(creep, energySources);
+                        let upgrader = new ControllerUpgrader(creep, this.spawns);
                         upgrader.runRoutine();
                         break;
                     case CreepTypes.builder:
@@ -140,7 +148,7 @@ export class MyRoom {
                         builder.runRoutine();
                         break;
                     case CreepTypes.carrier:
-                        let carrier = new MyCarrier(creep, energySources);
+                        let carrier = new MyCarrier(creep, [this.room.storage]);
                         carrier.runRoutine();
                         break;
                     case CreepTypes.zealot:
@@ -152,14 +160,18 @@ export class MyRoom {
                     case CreepTypes.flagMiner:
                         //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
                         let miner = new FlagMiner((<FlagMinerCreep>creep), energyDestinations);
-                        miner.mine(this.flags);
+                        miner.mine(this.sourceFlags);
+                        break;
+                    case CreepTypes.claimer:
+                        let claimer = new MyClaimer(creep, this.claimFlags);
+                        claimer.runRoutine();
                         break;
                     default:
                         break;
                 }
             }
             catch (e) {
-                console.log(`creep ${JSON.stringify(creep)} errored out. Error: ${JSON.stringify(e)}`);
+                console.log(`creep ${JSON.stringify(creep.name)} errored out. Error: ${JSON.stringify(e)}`);
             }
         }
     }

@@ -3,7 +3,7 @@ enum FlagTypes {
     unknown = 1,
     source, // src-$roomName-$mineToRoomName-$workerCap-$index
     link,   //
-    claim   // clm-$index
+    claim   // $parentRoomName-$index
 }
 
 export class MyFlag {
@@ -63,8 +63,10 @@ export class MyFlag {
             case 'purple':
                 this.flag.memory = {
                     flagType: FlagTypes.claim,
-                    order: parseInt(flagNameTokens[0]) || Number.MAX_VALUE
+                    parentRoom: flagNameTokens[0] || null,
+                    order: parseInt(flagNameTokens[1]) || Number.MAX_VALUE
                 };
+                break;
             default:
                 this.flag.memory = {
                     flagType: FlagTypes.unknown,
@@ -84,6 +86,10 @@ export class MyFlag {
 
     public isLinkFlag() {
         return this.flagType == FlagTypes.link;
+    }
+
+    public isClaimFlag() {
+        return this.flagType == FlagTypes.claim;
     }
 
     public getParentRoomName():string {
