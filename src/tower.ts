@@ -10,7 +10,6 @@ export class MyTower implements IMyTower {
     public constructor(private tower:Tower) {
     }
 
-    private creepHealThreshold = 0.7;
     private maxHealRange = 15;
 
     private roadRepairThreshold = 0.3;

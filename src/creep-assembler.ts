@@ -146,9 +146,9 @@ export class CreepAssembler {
                 };
             case CreepTypes.upgrader:
                 return {
-                    work: 1,
-                    carry: 1,
-                    move: 2
+                    work: 2,
+                    carry: 2,
+                    move: 4
                 };
             case CreepTypes.flagMiner:
                 return {

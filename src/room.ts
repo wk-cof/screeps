@@ -75,6 +75,29 @@ export class MyRoom {
         if (status === ERR_NOT_FOUND) {
             this.buildFromQueue(this.spawns[0]);
         }
+        this.creepManagement();
+
+        if (!Memory.rooms) {
+            Memory.rooms = {};
+        }
+        this.saveActiveCreepMemory();
+        Memory.rooms[this.roomName] = this.roomMemory;//this.toSerial();
+    }
+
+    public setRoomFlags(flags) {
+        this.flags = flags;
+    }
+
+    public  toSerial() {
+        return <RoomMemory>JSON.stringify(this.roomMemory);
+    }
+
+    public fromSerial() {
+
+    }
+
+    //------ Private methods -------------------------------------------------------------------------------------------
+    private creepManagement(){
         // order creeps around
         // find all full extensions
         let energySources:Structure[] = this.creeps[0].room.find<Extension>(FIND_MY_STRUCTURES, {
@@ -108,10 +131,6 @@ export class MyRoom {
             let creep:Creep = this.creeps[idx];
             try {
                 switch (creep.memory['role']) {
-                    //case CreepTypes.worker:
-                    //    let harvester = new MyHarvester(creep);
-                    //    //harvester.mine();
-                    //    break;
                     case CreepTypes.upgrader:
                         let upgrader = new ControllerUpgrader(creep, energySources);
                         upgrader.runRoutine();
@@ -130,7 +149,6 @@ export class MyRoom {
                         //zealot.runRoutine(spawnObject);
                         //heal(creep, spawnObject, 1400);
                         break;
-                    //case CreepTypes.builder:
                     case CreepTypes.flagMiner:
                         //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
                         let miner = new FlagMiner((<FlagMinerCreep>creep), energyDestinations);
@@ -144,26 +162,8 @@ export class MyRoom {
                 console.log(`creep ${JSON.stringify(creep)} errored out. Error: ${JSON.stringify(e)}`);
             }
         }
-        if (!Memory.rooms) {
-            Memory.rooms = {};
-        }
-        this.saveActiveCreepMemory();
-        Memory.rooms[this.roomName] = this.roomMemory;//this.toSerial();
     }
 
-    public setRoomFlags(flags) {
-        this.flags = flags;
-    }
-
-    public  toSerial() {
-        return <RoomMemory>JSON.stringify(this.roomMemory);
-    }
-
-    public fromSerial() {
-
-    }
-
-    //------ Private methods -------------------------------------------------------------------------------------------
     /**
      * Creates an empty instance of room memory
      * @returns {RoomMemory}

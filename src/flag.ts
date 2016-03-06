@@ -1,8 +1,9 @@
 import {CreepTypes} from "creep-assembler";
 enum FlagTypes {
     unknown = 1,
-    source,
-    link
+    source, // src-$roomName-$mineToRoomName-$workerCap-$index
+    link,   //
+    claim   // clm-$index
 }
 
 export class MyFlag {
@@ -10,7 +11,7 @@ export class MyFlag {
     protected flagType:FlagTypes;
 
     //------ Public Data  ----------------------------------------------------------------------------------------------
-    order: number;
+    order:number;
     //------ Constructors ----------------------------------------------------------------------------------------------
     constructor(private flag:Flag) {
         if (!this.flag) {
@@ -38,32 +39,37 @@ export class MyFlag {
             return;
         }
         let flagNameTokens = this.flag.name.split('-');
-        if (flagNameTokens[0] === 'src') {
-            this.flagType = FlagTypes.source;
-            let source = <Source>this.flag.pos.lookFor('source')[0];
-            let sourceFlagMemory:SourceFlagMemory = {
-                flagType: FlagTypes.source,
-                roomName: flagNameTokens[1] || null,
-                parentRoom: flagNameTokens[2] || null,
-                workerCap: parseInt(flagNameTokens[3]) || 0,
-                order: flagNameTokens[4] || Number.MAX_VALUE,
-                sourceID: _.isObject(source) ? source.id : null
-            };
-            this.flag.memory = sourceFlagMemory;
-        }
-        else if (flagNameTokens[0] === 'lnk') {
-
-            let linkFlagMemory = {
-                flagType: FlagTypes.link,
-                order: parseInt(flagNameTokens[1]) || 0
-            };
-            this.flag.memory = linkFlagMemory;
-        }
-        else {
-            this.flag.memory = {
-                flagType: FlagTypes.unknown,
-                order: Number.MAX_VALUE
-            };
+        switch (this.flag.color) {
+            case 'brown':
+                this.flagType = FlagTypes.source;
+                let source = <Source>this.flag.pos.lookFor('source')[0];
+                let sourceFlagMemory:SourceFlagMemory = {
+                    flagType: FlagTypes.source,
+                    roomName: flagNameTokens[1] || null,
+                    parentRoom: flagNameTokens[2] || null,
+                    workerCap: parseInt(flagNameTokens[3]) || 0,
+                    order: flagNameTokens[4] || Number.MAX_VALUE,
+                    sourceID: _.isObject(source) ? source.id : null
+                };
+                this.flag.memory = sourceFlagMemory;
+                break;
+            case 'yellow':
+                let linkFlagMemory = {
+                    flagType: FlagTypes.link,
+                    order: parseInt(flagNameTokens[1]) || 0
+                };
+                this.flag.memory = linkFlagMemory;
+                break;
+            case 'purple':
+                this.flag.memory = {
+                    flagType: FlagTypes.claim,
+                    order: parseInt(flagNameTokens[0]) || Number.MAX_VALUE
+                };
+            default:
+                this.flag.memory = {
+                    flagType: FlagTypes.unknown,
+                    order: Number.MAX_VALUE
+                };
         }
     }
 
@@ -94,7 +100,7 @@ export class MyFlag {
             return false;
         }
         let flagMiners = _.filter<CreepMemory>(roomMemory.active, (creepMemory:CreepMemory) => {
-            if (!(creepMemory.role === CreepTypes.flagMiner) ) {
+            if (!(creepMemory.role === CreepTypes.flagMiner)) {
                 return false;
             }
             return (<FlagMinerMemory>creepMemory).flagName === this.flag.name;
