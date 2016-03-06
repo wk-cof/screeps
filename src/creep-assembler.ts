@@ -134,27 +134,27 @@ export class CreepAssembler {
                 }
             case CreepTypes.builder:
                 return {
-                    work: 2,
+                    work: 1,
                     carry: 2,
-                    move: 1
+                    move: 3
                 };
             case CreepTypes.worker:
                 return {
-                    work: 6,
+                    work: 1,
                     carry: 2,
-                    move: 1
+                    move: 2
                 };
             case CreepTypes.upgrader:
                 return {
-                    work: 10,
-                    carry: 2,
-                    move: 4
+                    work: 1,
+                    carry: 1,
+                    move: 2
                 };
             case CreepTypes.flagMiner:
                 return {
-                    work: 2,
-                    carry: 6,
-                    move: 7
+                    work: 1,
+                    carry: 1,
+                    move: 2
                 };
             case CreepTypes.linkUpgrader:
                 return {

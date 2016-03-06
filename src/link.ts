@@ -41,7 +41,7 @@ export class MyLink {
         if (linkFlag.isLinkFlag()) {
             this.linkMemory = {
                 id: this.link.id,
-                rank: (<LinkFlagMemory>flag.memory).linkOrder
+                rank: flag.memory.order
             };
             Memory.links[this.link.id] = this.linkMemory;
         }

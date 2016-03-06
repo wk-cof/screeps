@@ -1,7 +1,6 @@
 import {CreepAssembler} from "creep-assembler";
 import {Queue} from "misc";
 import {CreepTypes} from "creep-assembler";
-import {MyHarvester} from "harvester";
 import {Builder} from "builder";
 import {MyCarrier} from "carrier";
 import {Fighter} from "fighter";
@@ -10,6 +9,7 @@ import {Config} from "config";
 import {MyFlag} from "flag";
 import {ControllerUpgrader} from "builder";
 import {LinkTransfer} from "link";
+import {MyCreep} from "creep";
 
 export class MyRoom {
     //------ Private data ----------------------------------------------------------------------------------------------
@@ -46,7 +46,6 @@ export class MyRoom {
             this.roomMemory.active = this.findRoomCreeps();
         }
         else {
-            //console.log('getting data from memory');
             this.roomMemory = Memory.rooms[roomName];
         }
         this.getDataFromMemory();
@@ -69,50 +68,80 @@ export class MyRoom {
             console.log(err);
         }
 
-        console.log(this.room.name);
         let linkTransfer = new LinkTransfer(this.room.name);
         linkTransfer.transfer();
 
         let status = this.buildFromPriorityQueue(this.spawns[0]);
-        console.log('attempting to build from priority queue, ' + status);
         if (status === ERR_NOT_FOUND) {
             this.buildFromQueue(this.spawns[0]);
         }
         // order creeps around
+        // find all full extensions
+        let energySources:Structure[] = this.creeps[0].room.find<Extension>(FIND_MY_STRUCTURES, {
+            filter: (object:Structure) => {
+                return object.structureType === STRUCTURE_EXTENSION &&
+                    (<Extension>object).energy === (<Extension>object).energyCapacity;
+            }
+        });
+
+        // find all extensions that need energy
+        let energyDestinations:Structure[] = this.creeps[0].room.find<Extension>(FIND_MY_STRUCTURES, {
+            filter: (object:Structure) => {
+                return object.structureType === STRUCTURE_EXTENSION &&
+                    (<Extension>object).energy < (<Extension>object).energyCapacity;
+            }
+        });
+
+        if (this.room.storage) {
+            energySources.push(this.room.storage);
+        }
+
+        _.each(this.spawns, (spawn:Spawn) => {
+            if (spawn.energy < spawn.energyCapacity) {
+                energyDestinations.push(spawn)
+            }
+            energySources.push(spawn);
+
+        });
+
         for (let idx in this.creeps) {
             let creep:Creep = this.creeps[idx];
-            switch (creep.memory['role']) {
-                case CreepTypes.worker:
-                    let harvester = new MyHarvester(creep);
-                    console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    //harvester.mine(linkTransfer.fromLink);
-                    break;
-                case CreepTypes.upgrader:
-                    //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    let upgrader = new ControllerUpgrader(creep, [this.roomStorage.id]);
-                    upgrader.runRoutine();
-                    break;
-                case CreepTypes.builder:
-                    let builder = new Builder(creep, [this.roomStorage.id]);
-                    builder.runRoutine();
-                    break;
-                case CreepTypes.carrier:
-                    let carrier = new MyCarrier(creep, [this.roomStorage.id]);
-                    carrier.runRoutine();
-                    break;
-                case CreepTypes.zealot:
-                    //let zealot = new Fighter(creep);
-                    //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    //zealot.runRoutine(spawnObject);
-                    //heal(creep, spawnObject, 1400);
-                    break;
-                case CreepTypes.flagMiner:
-                    //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                    let miner = new FlagMiner((<FlagMinerCreep>creep));
-                    miner.mine(this.flags, this.room.storage);//spawns[0]);
-                    break;
-                default:
-                    break;
+            try {
+                switch (creep.memory['role']) {
+                    //case CreepTypes.worker:
+                    //    let harvester = new MyHarvester(creep);
+                    //    //harvester.mine();
+                    //    break;
+                    case CreepTypes.upgrader:
+                        let upgrader = new ControllerUpgrader(creep, energySources);
+                        upgrader.runRoutine();
+                        break;
+                    case CreepTypes.builder:
+                        let builder = new Builder(creep, energySources);
+                        builder.runRoutine();
+                        break;
+                    case CreepTypes.carrier:
+                        let carrier = new MyCarrier(creep, energySources);
+                        carrier.runRoutine();
+                        break;
+                    case CreepTypes.zealot:
+                        //let zealot = new Fighter(creep);
+                        //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
+                        //zealot.runRoutine(spawnObject);
+                        //heal(creep, spawnObject, 1400);
+                        break;
+                    //case CreepTypes.builder:
+                    case CreepTypes.flagMiner:
+                        //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
+                        let miner = new FlagMiner((<FlagMinerCreep>creep), energyDestinations);
+                        miner.mine(this.flags);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (e) {
+                console.log(`creep ${JSON.stringify(creep)} errored out. Error: ${JSON.stringify(e)}`);
             }
         }
         if (!Memory.rooms) {

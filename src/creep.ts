@@ -12,49 +12,48 @@ export class MyCreep implements IMyCreep {
     protected buildThreshold = 199;
     protected creepMemory:CreepMemory;
     protected routine:Function[];
-    protected energySourceIds:string[];
+    protected energySources:Structure[];
 
-    public constructor(private creep:Creep, energySourceIds?:string[]) {
-        if (energySourceIds) {
-            this.energySourceIds = energySourceIds;
+    public constructor(private creep:Creep, energySources?:Structure[]) {
+        if (energySources) {
+            this.energySources = energySources;
         }
-        if (_.isObject(creep)){
+        if (_.isObject(creep)) {
             this.creepMemory = creep.memory;
         }
     }
 
     //------ Private methods -------------------------------------------------------------------------------------------
-    protected getEnergyFromSources():number {
-        for (let idx in this.energySourceIds) {
-            let structure = Game.getObjectById<Structure>(this.energySourceIds[idx]);
-            if (structure) {
-                let getEnergy = false;
-                switch (structure.structureType) {
-                    case STRUCTURE_STORAGE:
-                        getEnergy = (<Storage>structure).store.energy < (<Storage>structure).storeCapacity;
-                        break;
-                    case STRUCTURE_LINK:
-                        getEnergy = (<Link>structure).energy < (<Link>structure).energyCapacity * 0.5;
-                        break;
-                    case STRUCTURE_EXTENSION:
-                        getEnergy = (<Extension>structure).energy < (<Extension>structure).energyCapacity;
-                        break;
-                    case STRUCTURE_SPAWN:
-                        getEnergy = (<Spawn>structure).energy < (<Spawn>structure).energyCapacity;
-                        break;
-                    case STRUCTURE_TOWER:
-                        getEnergy = (<Tower>structure).energy < (<Tower>structure).energyCapacity;
-                        break;
-                    case undefined:
-                        //probably a creep
-                        // TODO: Handle creeps
-                        break;
-                    default:
-                        break;
-                }
-                if (getEnergy) {
-                    return this.getEnergy(structure);
-                }
+    protected getEnergyFromClosestSource():number {
+        let closestEnergySrc:Structure = this.creep.pos.findClosestByRange(this.energySources);
+
+        if (closestEnergySrc) {
+            let getEnergy = false;
+            switch (closestEnergySrc.structureType) {
+                case STRUCTURE_STORAGE:
+                    getEnergy = (<Storage>closestEnergySrc).store.energy <= (<Storage>closestEnergySrc).storeCapacity;
+                    break;
+                case STRUCTURE_LINK:
+                    getEnergy = (<Link>closestEnergySrc).energy <= (<Link>closestEnergySrc).energyCapacity * 0.5;
+                    break;
+                case STRUCTURE_EXTENSION:
+                    getEnergy = (<Extension>closestEnergySrc).energy <= (<Extension>closestEnergySrc).energyCapacity;
+                    break;
+                case STRUCTURE_SPAWN:
+                    getEnergy = (<Spawn>closestEnergySrc).energy <= (<Spawn>closestEnergySrc).energyCapacity;
+                    break;
+                case STRUCTURE_TOWER:
+                    getEnergy = (<Tower>closestEnergySrc).energy <= (<Tower>closestEnergySrc).energyCapacity;
+                    break;
+                case undefined:
+                    //probably a creep
+                    // TODO: Handle creeps
+                    break;
+                default:
+                    break;
+            }
+            if (getEnergy) {
+                return this.getEnergy(closestEnergySrc);
             }
 
         }

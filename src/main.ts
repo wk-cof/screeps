@@ -4,6 +4,9 @@ import {MyFlag} from "flag";
 
 module.exports.loop = function () {
     Memory.turnNumber = (Memory.turnNumber + 1) % 100;
+    if (!Memory.rooms) {
+        Memory.rooms = {};
+    }
     // parse flags
     let sourceFlags:MyFlag[] = [];
     try {
@@ -12,6 +15,10 @@ module.exports.loop = function () {
             if (flag.isSourceFlag()) {
                 sourceFlags.push(flag);
             }
+        });
+        // sort flags by order (order will preserve after filtering
+        sourceFlags = _.sortBy(sourceFlags, (sourceFlag) => {
+            return sourceFlag.order;
         });
     }
     catch(err) {
@@ -23,6 +30,7 @@ module.exports.loop = function () {
         let roomFlags = _.filter(sourceFlags, (flag:MyFlag) => {
             return flag.isSourceFlag() && flag.getParentRoomName() === roomObject.name;
         });
+        // filter flags by order
         let room = new MyRoom(roomObject.name);
         room.setRoomFlags(roomFlags);
         room.runRoutine();

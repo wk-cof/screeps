@@ -14,14 +14,14 @@ export class Builder extends MyCreep implements IBuilder {
     private wallMaxLife = 15000;
     private wallMaxLife = 15000;
 
-    constructor(private creep:Creep, energySourceIds?:string[]) {
-        super(creep, energySourceIds);
+    constructor(private creep:Creep, energySources:Structure[]) {
+        super(creep, energySources);
     }
     //------ Public Methods --------------------------------------------------------------------------------------------
     public runRoutine():number {
         if (this.creep.carry.energy === 0) {
             this.routine = [
-                this.getEnergyFromSources
+                this.getEnergyFromClosestSource
             ];
         }
         else {
@@ -102,8 +102,8 @@ export class Builder extends MyCreep implements IBuilder {
 }
 
 export class ControllerUpgrader extends MyCreep {
-    constructor(private creep:Creep, energySourceIds:string[]) {
-        super(creep, energySourceIds);
+    constructor(private creep:Creep, energySources:Structure[]) {
+        super(creep, energySources);
     }
 
     private upgradeController():number {
@@ -117,7 +117,7 @@ export class ControllerUpgrader extends MyCreep {
     public runRoutine() {
         if (this.creep.carry.energy === 0) {
             this.routine = [
-                this.getEnergyFromSources
+                this.getEnergyFromClosestSource
             ];
         }
         else {

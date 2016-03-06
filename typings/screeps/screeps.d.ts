@@ -675,16 +675,13 @@ interface FlagMinerMemory extends CreepMemory {
 
 interface FlagMemory {
     flagType: number;
+    order: number;
 }
 
 interface SourceFlagMemory extends FlagMemory {
     parentRoom: string;
     workerCap: number;
     roomName: string;
-}
-
-interface LinkFlagMemory extends FlagMemory {
-    linkOrder: number;
 }
 
 interface RoomMemory {

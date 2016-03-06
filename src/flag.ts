@@ -9,6 +9,8 @@ export class MyFlag {
     //------ Private data ----------------------------------------------------------------------------------------------
     protected flagType:FlagTypes;
 
+    //------ Public Data  ----------------------------------------------------------------------------------------------
+    order: number;
     //------ Constructors ----------------------------------------------------------------------------------------------
     constructor(private flag:Flag) {
         if (!this.flag) {
@@ -18,6 +20,7 @@ export class MyFlag {
         // flags have memory by default. check if it was filled by me
         if (!this.flag.memory || !this.flag.memory.flagType) {
             this.parseName();
+            this.order = this.flag.memory.order;
         }
         this.flagType = this.flag.memory.flagType;
     }
@@ -29,7 +32,8 @@ export class MyFlag {
     private parseName() {
         if (!this.flag.name) {
             this.flag.memory = {
-                flagType: FlagTypes.unknown
+                flagType: FlagTypes.unknown,
+                order: Number.MAX_VALUE
             };
             return;
         }
@@ -42,21 +46,23 @@ export class MyFlag {
                 roomName: flagNameTokens[1] || null,
                 parentRoom: flagNameTokens[2] || null,
                 workerCap: parseInt(flagNameTokens[3]) || 0,
+                order: flagNameTokens[4] || Number.MAX_VALUE,
                 sourceID: _.isObject(source) ? source.id : null
             };
             this.flag.memory = sourceFlagMemory;
         }
         else if (flagNameTokens[0] === 'lnk') {
 
-            let linkFlagMemory: LinkFlagMemory = {
+            let linkFlagMemory = {
                 flagType: FlagTypes.link,
-                linkOrder: parseInt(flagNameTokens[1]) || 0
+                order: parseInt(flagNameTokens[1]) || 0
             };
             this.flag.memory = linkFlagMemory;
         }
         else {
             this.flag.memory = {
-                flagType: FlagTypes.unknown
+                flagType: FlagTypes.unknown,
+                order: Number.MAX_VALUE
             };
         }
     }

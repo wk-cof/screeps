@@ -13,8 +13,8 @@ export class MyCarrier extends MyCreep implements IMyCarrier {
      * @param creep
      * @param {string}energySourceIds ID of a structure or a creep
      */
-    public constructor(private creep:Creep, energySourceIds:string[]) {
-        super(creep, energySourceIds);
+    public constructor(private creep:Creep, energySources:Structure[]) {
+        super(creep, energySources);
         this.buildThreshold = 220;
     }
 
@@ -23,7 +23,7 @@ export class MyCarrier extends MyCreep implements IMyCarrier {
         if (this.creep.carry.energy === 0) {
             this.routine = [
                 this.pickUpResources,
-                this.getEnergyFromSources
+                this.getEnergyFromClosestSource
             ];
         }
         else {
