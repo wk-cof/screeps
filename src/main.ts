@@ -36,7 +36,7 @@ module.exports.loop = function () {
             room.runRoutine();
         }
         catch (e) {
-            console.log(`room ${roomObject.name} encountered a problem. Error: ${JSON.stringify(arguments)}`);
+            console.log(`room ${roomObject.name} encountered a problem. Error: ${JSON.stringify(e)}`);
         }
 
     });

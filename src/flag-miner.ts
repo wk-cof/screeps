@@ -3,41 +3,11 @@ import {IMyCreep} from "creep";
 import {Builder} from "builder";
 import {MyFlag} from "flag";
 
-//export interface IMyHarvester extends IMyCreep {
-//    mine(spawn:Spawn): boolean;
-//    mineToClosestLink(): boolean;
-//}
-
-//export class MyHarvester extends MyCreep implements IMyHarvester {
-//    public constructor(private creep:Creep) {
-//        super(creep);
-//    }
-//
-//    public mine(source, dest:Spawn|Link|Storage) {
-//        if (this.creep.carry.energy === this.creep.carryCapacity) {
-//            this.doOrMoveTo(this.creep.transferEnergy, target);
-//        }
-//
-//        if (this.creep.carry.energy < this.creep.carryCapacity) {
-//            let closestSource = this.findClosestByRange(FIND_SOURCES);
-//            this.doOrMoveTo(this.creep.harvest, closestSource);
-//        }
-//        return true;
-//    }
-//
-    //public mineToClosestLink() {
-    //    let closestLink = <Link>(<IMyCreep>this).findClosestByRange(FIND_MY_STRUCTURES,
-    //        (object:Link) => object.structureType === STRUCTURE_LINK);
-    //
-    //    return this.mine(closestLink);
-    //}
-//
-//}
-
 export class FlagMiner extends MyCreep {
     constructor(private creep:FlagMinerCreep,
-                private energyDestinations:Structure[]) {
+                energyDestinations:Structure[]) {
         super(creep);
+        this.energyDestinations = energyDestinations;
     }
 
     public mine(flags:MyFlag[]) {

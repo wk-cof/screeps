@@ -12,12 +12,16 @@ export class MyTower implements IMyTower {
 
     private maxHealRange = 15;
 
-    private roadRepairThreshold = 0.3;
+    private roadRepairThreshold = 0.5;
     private maxRepairRange = 15;
 
     public runRoutine() {
         // De Morgan law ftw :)
-        return !(!this.defendRoom() && !this.healCreeps() && !this.repairRoads() && !this.reinforce(STRUCTURE_WALL));
+        console.log('running routine');
+        return !(!this.defendRoom() &&
+            !this.healCreeps() &&
+            !this.repairRoads() &&
+            !this.reinforce(STRUCTURE_WALL));
     }
 
     public defendRoom() {

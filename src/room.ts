@@ -4,13 +4,15 @@ import {CreepTypes} from "creep-assembler";
 import {Builder} from "builder";
 import {MyCarrier} from "carrier";
 import {Fighter} from "fighter";
-import {FlagMiner} from "harvester";
+import {FlagMiner} from "flag-miner";
 import {Config} from "config";
 import {MyFlag} from "flag";
 import {ControllerUpgrader} from "builder";
 import {LinkTransfer} from "link";
 import {MyCreep} from "creep";
 import {MyClaimer} from "claimer";
+import {MyTower} from "tower";
+import {MySettler} from "settler";
 
 export class MyRoom {
     //------ Private data ----------------------------------------------------------------------------------------------
@@ -19,6 +21,7 @@ export class MyRoom {
     private sources:Source[] = [];
     private sourceFlags:MyFlag[] = [];
     private claimFlags:MyFlag[] = [];
+    private towers:MyTower[] = [];
 
     private room:Room;
     private roomMemory:RoomMemory;
@@ -31,15 +34,13 @@ export class MyRoom {
         this.room = Game.rooms[roomName];
         this.roomStorage = this.room.storage || {};
         if (!this.room) {
-            console.log(`Room ${roomName} not found.`);
-            return;
+            throw `Room ${roomName} not found.`;
         }
         this.roomConfig = Config.rooms[roomName];
         if (!this.roomConfig) {
-            console.log(`${roomName} doesn't have a config.`);
-            return;
+            throw `${roomName} doesn't have a config.`;
         }
-        //// parse the room object from memory;
+        // parse the room object from memory;
         if (!Memory.rooms[roomName]) {
             //if (true) {
             console.log('Creating new room data');
@@ -77,6 +78,7 @@ export class MyRoom {
         if (status === ERR_NOT_FOUND) {
             this.buildFromQueue(this.spawns[0]);
         }
+        this.runTowersRoutine();
         this.creepManagement();
 
         if (!Memory.rooms) {
@@ -135,6 +137,13 @@ export class MyRoom {
 
         });
 
+        _.each(this.roomMemory.towers, (towerId:string) => {
+            let tower = Game.getObjectById<Tower>(towerId);
+            if (tower && tower.energy < tower.energyCapacity) {
+                energyDestinations.push(tower);
+            }
+        });
+
         for (let idx in this.creeps) {
             let creep:Creep = this.creeps[idx];
             try {
@@ -166,6 +175,9 @@ export class MyRoom {
                         let claimer = new MyClaimer(creep, this.claimFlags);
                         claimer.runRoutine();
                         break;
+                    case CreepTypes.settler:
+                        let settler = new MySettler(creep, this.claimFlags);
+                        settler.runRoutine();
                     default:
                         break;
                 }
@@ -367,6 +379,17 @@ export class MyRoom {
                 _.defaults(this.roomMemory.active[idx], creep.memory);
             }
         }
+    }
+
+    private runTowersRoutine() {
+        _.each(this.roomMemory.towers, (towerId:string) => {
+            let tower = Game.getObjectById<Tower>(towerId);
+            if (tower) {
+                let myTower = new MyTower(tower);
+                this.towers.push(myTower);
+                myTower.runRoutine();
+            }
+        });
     }
 
     //private getSources(type:CreepTypes) {

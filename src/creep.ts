@@ -13,6 +13,7 @@ export class MyCreep implements IMyCreep {
     protected creepMemory:CreepMemory;
     protected routine:Function[];
     protected energySources:Structure[];
+    protected energyDestinations:Structure[];
 
     public constructor(protected creep:Creep, energySources?:Structure[]) {
         if (energySources) {

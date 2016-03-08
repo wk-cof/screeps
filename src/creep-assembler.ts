@@ -8,7 +8,8 @@ export enum CreepTypes{
     zealot,
     marine,
     scout,
-    claimer
+    claimer,
+    settler
 }
 
 interface IBodyPartsObject {
@@ -147,9 +148,9 @@ export class CreepAssembler {
                 };
             case CreepTypes.upgrader:
                 return {
-                    work: 2,
-                    carry: 2,
-                    move: 4
+                    work: 3,
+                    carry: 3,
+                    move: 6
                 };
             case CreepTypes.flagMiner:
                 return {
@@ -183,6 +184,12 @@ export class CreepAssembler {
                 return {
                     move: 1,
                     claim: 1
+                };
+            case CreepTypes.settler:
+                return {
+                    move: 4,
+                    carry: 2,
+                    work: 2
                 };
             default:
                 return {

@@ -11,7 +11,7 @@ export interface IBuilder extends IMyCreep {
 
 export class Builder extends MyCreep implements IBuilder {
 
-    private wallMaxLife = 300000;
+    private wallMaxLife = 900000;
 
     constructor(private creep:Creep, energySources:Structure[]) {
         super(creep, energySources);
@@ -63,7 +63,7 @@ export class Builder extends MyCreep implements IBuilder {
     }
 
 
-    private buildOnNearestConstructionSite():number {
+    protected buildOnNearestConstructionSite():number {
         let closestTarget = this.findClosestByRange<ConstructionSite>(FIND_CONSTRUCTION_SITES);
         if (closestTarget) {
             return this.buildOrMoveTo(closestTarget);
