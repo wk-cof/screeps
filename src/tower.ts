@@ -17,7 +17,6 @@ export class MyTower implements IMyTower {
 
     public runRoutine() {
         // De Morgan law ftw :)
-        console.log('running routine');
         return !(!this.defendRoom() &&
             !this.healCreeps() &&
             !this.repairRoads() &&

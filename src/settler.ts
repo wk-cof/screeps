@@ -9,11 +9,11 @@ export class MySettler extends Builder {
 
     public runRoutine() {
         let destFlag = this.claimFlags[0].getFlag();
-        console.log('dest ' + JSON.stringify(destFlag));
         if (!destFlag) {
             return;
         }
         if (this.creep.room.name === destFlag.roomName) {
+                //if (this.creep.carry.energy === 0) {
                 if (this.creep.carry.energy < this.creep.carryCapacity) {
                     this.routine = [
                         this.mine
@@ -43,6 +43,10 @@ export class MySettler extends Builder {
     private mine() {
         let target = this.findClosestByRange(FIND_SOURCES);
         this.doOrMoveTo(this.creep.harvest, target);
+    }
+
+    private upgradeController() {
+        this.doOrMoveTo(this.creep.upgradeController, this.creep.room.controller);
     }
 
 }

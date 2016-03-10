@@ -19,9 +19,10 @@ export class MyRoom {
     private spawns:Spawn[] = [];
     private creeps:Creep[] = [];
     private sources:Source[] = [];
+    private towers:Tower[] = [];
+
     private sourceFlags:MyFlag[] = [];
     private claimFlags:MyFlag[] = [];
-    private towers:MyTower[] = [];
 
     private room:Room;
     private roomMemory:RoomMemory;
@@ -89,7 +90,7 @@ export class MyRoom {
     }
 
     public setRoomFlags(flags) {
-        this.sourceFlags =  _.filter(flags, (flag:MyFlag) => {
+        this.sourceFlags = _.filter(flags, (flag:MyFlag) => {
             return flag.isSourceFlag();
         });
 
@@ -107,7 +108,7 @@ export class MyRoom {
     }
 
     //------ Private methods -------------------------------------------------------------------------------------------
-    private creepManagement(){
+    private creepManagement() {
         // order creeps around
         // find all full extensions
         let energySources:Structure[] = this.spawns[0].room.find<Extension>(FIND_MY_STRUCTURES, {
@@ -125,10 +126,6 @@ export class MyRoom {
             }
         });
 
-        if (this.room.storage) {
-            energySources.push(this.room.storage);
-        }
-
         _.each(this.spawns, (spawn:Spawn) => {
             if (spawn.energy < spawn.energyCapacity) {
                 energyDestinations.push(spawn)
@@ -137,12 +134,19 @@ export class MyRoom {
 
         });
 
-        _.each(this.roomMemory.towers, (towerId:string) => {
-            let tower = Game.getObjectById<Tower>(towerId);
+        _.each(this.towers, (tower:Tower) => {
             if (tower && tower.energy < tower.energyCapacity) {
                 energyDestinations.push(tower);
             }
         });
+
+        if (this.room.storage) {
+            energySources.push(this.room.storage);
+            if (energyDestinations.length === 0) {
+                energyDestinations.push(this.room.storage);
+            }
+        }
+
 
         for (let idx in this.creeps) {
             let creep:Creep = this.creeps[idx];
@@ -255,6 +259,7 @@ export class MyRoom {
         // towers
         for (let idx in this.roomMemory.towers) {
             let tower = <Tower>Game.getObjectById(this.roomMemory.towers[idx]);
+            this.towers.push(tower);
             // TODO: if tower that's supposed to be there doesn't exist, rebuild it
         }
     }
@@ -382,11 +387,9 @@ export class MyRoom {
     }
 
     private runTowersRoutine() {
-        _.each(this.roomMemory.towers, (towerId:string) => {
-            let tower = Game.getObjectById<Tower>(towerId);
+        _.each(this.towers, (tower:Tower) => {
             if (tower) {
                 let myTower = new MyTower(tower);
-                this.towers.push(myTower);
                 myTower.runRoutine();
             }
         });
