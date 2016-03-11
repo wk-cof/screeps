@@ -12,7 +12,7 @@ export enum CreepTypes{
     settler
 }
 
-interface IBodyPartsObject {
+export interface IBodyPartsObject {
     move: number,
     work?: number,
     carry?: number,
@@ -25,7 +25,6 @@ interface IBodyPartsObject {
 export class CreepAssembler {
 
     public constructor() {
-
     }
 
     private static isLegalCreepName = (name) => {
@@ -94,8 +93,8 @@ export class CreepAssembler {
      * @param creepType Type of the creep in the list
      * @returns {string[]} Body Part array.
      */
-    public static getBodyParts(creepType:CreepTypes) {
-        let bodyPartsObject = CreepAssembler.getBodyPartsObject(creepType) || [];
+    public static getBodyParts(creepType:CreepTypes, economy:number) {
+        let bodyPartsObject = CreepAssembler.getBodyPartsObject(creepType, economy) || [];
         return _.reduce(bodyPartsObject, (result, value, key) => {
             while (value > 0) {
                 result.push(key);
@@ -105,11 +104,11 @@ export class CreepAssembler {
         }, []);
     }
 
-    public static buildCreep = (name:string, type:CreepTypes, spawnName:string) => {
+    public static buildCreep = (name:string, type:CreepTypes, spawnName:string, economy:number) => {
         console.log('Attempting to build a creep: ' + name + '; type: ' + type);
         // assign body parts based on type
 
-        let bodyParts = CreepAssembler.getBodyParts(type);
+        let bodyParts = CreepAssembler.getBodyParts(type, economy);
         if (_.isObject(CreepAssembler.buildCreepInterface(bodyParts, spawnName, name, {role: type}))) {
             console.log('Successfully Created a new creep: ' + name + ' with body parts: ' + bodyParts.toString());
             return true;
@@ -117,28 +116,32 @@ export class CreepAssembler {
         return false;
     };
 
-    public static buildCreepAutoName = (type:CreepTypes, spawnName:string) => {
+    public static buildCreepAutoName = (type:CreepTypes, spawnName:string, economy:number) => {
         let templateName = CreepAssembler.getCreepStringName(type);
 
         let newName = CreepAssembler.findLegalCreepName(type);
-        return CreepAssembler.buildCreep(newName, type, spawnName);
+        return CreepAssembler.buildCreep(newName, type, spawnName, economy);
     };
 
     public static getCreepStringName(type:CreepTypes):string {
         return CreepTypes[type];
     }
 
-    private static getBodyPartsObject(type:CreepTypes):IBodyPartsObject {
+    private static getBodyPartsObject(type:CreepTypes, economy:number):IBodyPartsObject {
+        let halfEcon = Math.ceil(economy / 2);
         switch (type) {
             case CreepTypes.scout:
                 return {
                     move: 1
-                }
+                };
+            //public getBodyParts(economy:number):IBodyPartsObject {
+
+            //}
             case CreepTypes.builder:
                 return {
-                    work: 2,
-                    carry: 2,
-                    move: 4
+                    move: halfEcon * 2,
+                    work: halfEcon,
+                    carry: halfEcon
                 };
             case CreepTypes.worker:
                 return {
@@ -148,26 +151,26 @@ export class CreepAssembler {
                 };
             case CreepTypes.upgrader:
                 return {
-                    work: 3,
-                    carry: 3,
-                    move: 6
+                    move: economy * 2,
+                    work: economy,
+                    carry: economy
                 };
             case CreepTypes.flagMiner:
                 return {
-                    work: 1,
-                    carry: 1,
-                    move: 2
+                    move: halfEcon * 2,
+                    work: halfEcon,
+                    carry: halfEcon
                 };
             case CreepTypes.linkUpgrader:
                 return {
-                    work: 5,
-                    carry: 1,
-                    move: 1
+                    work: economy * 2,
+                    carry: 2,
+                    move: 2 + economy*2
                 };
             case CreepTypes.carrier:
                 return {
-                    carry: 3,
-                    move: 2
+                    carry: halfEcon,
+                    move: halfEcon
                 };
             case CreepTypes.zealot:
                 return {
@@ -183,13 +186,13 @@ export class CreepAssembler {
             case CreepTypes.claimer:
                 return {
                     move: 1,
-                    claim: 1
+                    claim: economy > 2 ? 1 : 0
                 };
             case CreepTypes.settler:
                 return {
-                    move: 4,
-                    carry: 2,
-                    work: 2
+                    move: economy*2,
+                    carry: economy,
+                    work: economy
                 };
             default:
                 return {

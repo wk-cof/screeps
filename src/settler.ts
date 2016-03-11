@@ -1,6 +1,7 @@
 import {MyCreep} from "creep";
 import {MyFlag} from "flag";
 import {Builder} from "builder";
+import {IBodyPartsObject} from "creep-assembler";
 export class MySettler extends Builder {
     constructor(creep:Creep,
                 private claimFlags:MyFlag[]) {

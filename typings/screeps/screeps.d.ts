@@ -690,6 +690,7 @@ interface RoomMemory {
     priorityQueue:CreepMemory[];
     building: CreepMemory[];
     spawns:string[];
+    extensions:string[];
     sources:string[];
     towers:string[];
     links:string[];

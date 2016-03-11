@@ -68,7 +68,7 @@ export class MyTower implements IMyTower {
     public reinforce(structureType:string) {
         var target = this.tower.room.find(FIND_STRUCTURES, {
             filter: (object) => {
-                return object.structureType == structureType && object.hits < 1000;
+                return object.structureType == structureType && object.hits < 900000;
             }
         });
         if (target.length) {

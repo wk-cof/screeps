@@ -30,6 +30,7 @@ export class MyCarrier extends MyCreep implements IMyCarrier {
             this.routine = [
                 this.transferEnergyToSpawns,
                 this.transferToClosestAvailableExtension,
+                this.transferToClosestAvailableLink,
                 this.transferEnergyToTowers,
                 this.transferEnergyToStorage
             ];

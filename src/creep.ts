@@ -1,3 +1,4 @@
+import {IBodyPartsObject} from "creep-assembler";
 export interface IMyCreep {
     getEnergyFromSpawn:(spawn:Spawn) => boolean;
     getEnergy:(source:Storage|Spawn|Link|Tower|Creep) => number;
@@ -35,7 +36,7 @@ export class MyCreep implements IMyCreep {
                     getEnergy = (<Storage>closestEnergySrc).store.energy <= (<Storage>closestEnergySrc).storeCapacity;
                     break;
                 case STRUCTURE_LINK:
-                    getEnergy = (<Link>closestEnergySrc).energy <= (<Link>closestEnergySrc).energyCapacity * 0.5;
+                    getEnergy = true;//(<Link>closestEnergySrc).energy <= (<Link>closestEnergySrc).energyCapacity * 0.5;
                     break;
                 case STRUCTURE_EXTENSION:
                     getEnergy = (<Extension>closestEnergySrc).energy <= (<Extension>closestEnergySrc).energyCapacity;
@@ -84,6 +85,17 @@ export class MyCreep implements IMyCreep {
 
         if (extension) {
             return this.doOrMoveTo(this.creep.transferEnergy, extension);
+        }
+        return ERR_NOT_FOUND;
+    }
+
+    protected transferToClosestAvailableLink():number {
+        //console.log('transferring energy to extension');
+        let link:Link = this.findClosestByRange(FIND_MY_STRUCTURES,
+            (object:Link) => object.structureType === STRUCTURE_LINK && (object.energy < object.energyCapacity*0.8));
+
+        if (link) {
+            return this.doOrMoveTo(this.creep.transferEnergy, link);
         }
         return ERR_NOT_FOUND;
     }

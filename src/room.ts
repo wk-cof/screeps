@@ -17,9 +17,11 @@ import {MySettler} from "settler";
 export class MyRoom {
     //------ Private data ----------------------------------------------------------------------------------------------
     private spawns:Spawn[] = [];
+    private extensions:Extension[] = [];
     private creeps:Creep[] = [];
     private sources:Source[] = [];
     private towers:Tower[] = [];
+    private links:Link[] = [];
 
     private sourceFlags:MyFlag[] = [];
     private claimFlags:MyFlag[] = [];
@@ -30,6 +32,7 @@ export class MyRoom {
     private roomStorage:Storage;
     private roomConfig:Config;
 
+    private economy:number;
     //------ Constructors ----------------------------------------------------------------------------------------------
     public constructor(private roomName:string) {
         this.room = Game.rooms[roomName];
@@ -46,13 +49,16 @@ export class MyRoom {
             //if (true) {
             console.log('Creating new room data');
             this.roomMemory = this.constructEmptyRoom();
-            this.findObjectsInRoom();
+            this.findObjectsInRoom(true);
             this.roomMemory.active = this.findRoomCreeps();
         }
         else {
             this.roomMemory = Memory.rooms[roomName];
+            this.findObjectsInRoom(false);
         }
         this.getDataFromMemory();
+        this.economy = this.assessEconomy();
+        //console.log(this.economy);
     }
 
     //------ Public Methods --------------------------------------------------------------------------------------------
@@ -119,30 +125,41 @@ export class MyRoom {
         });
 
         // find all extensions that need energy
-        let energyDestinations:Structure[] = this.spawns[0].room.find<Extension>(FIND_MY_STRUCTURES, {
-            filter: (object:Structure) => {
-                return object.structureType === STRUCTURE_EXTENSION &&
-                    (<Extension>object).energy < (<Extension>object).energyCapacity;
-            }
-        });
+        let energyDestinations:Structure[] = [];
+        //    this.spawns[0].room.find<Extension>(FIND_MY_STRUCTURES, {
+        //    filter: (object:Structure) => {
+        //        return object.structureType === STRUCTURE_EXTENSION &&
+        //            (<Extension>object).energy < (<Extension>object).energyCapacity;
+        //    }
+        //});
 
         _.each(this.spawns, (spawn:Spawn) => {
             if (spawn.energy < spawn.energyCapacity) {
                 energyDestinations.push(spawn)
             }
-            energySources.push(spawn);
-
+            if (spawn.energy > 50) {
+                energySources.push(spawn);
+            }
         });
 
-        _.each(this.towers, (tower:Tower) => {
-            if (tower && tower.energy < tower.energyCapacity) {
-                energyDestinations.push(tower);
+        //_.each(this.towers, (tower:Tower) => {
+        //    if (tower && tower.energy < tower.energyCapacity) {
+        //        energyDestinations.push(tower);
+        //    }
+        //});
+
+        _.each(this.links, (link:Link) => {
+            if (link) {
+                if (link.energy > 50 * this.economy) {
+                    energySources.push(link);
+                }
             }
         });
 
         if (this.room.storage) {
             energySources.push(this.room.storage);
-            if (energyDestinations.length === 0) {
+            // TODO: change this when implementing minerals
+            if (energyDestinations.length === 0 && this.room.storage.store.energy < this.room.storage.storeCapacity) {
                 energyDestinations.push(this.room.storage);
             }
         }
@@ -153,7 +170,9 @@ export class MyRoom {
             try {
                 switch (creep.memory['role']) {
                     case CreepTypes.upgrader:
-                        let upgrader = new ControllerUpgrader(creep, this.spawns);
+                    case CreepTypes.linkUpgrader:
+                        let upgSoures = this.spawns.concat(this.links);
+                        let upgrader = new ControllerUpgrader(creep, upgSoures);
                         upgrader.runRoutine();
                         break;
                     case CreepTypes.builder:
@@ -204,20 +223,45 @@ export class MyRoom {
             priorityQueue: [],
             links: [],
             sources: [],
+            extensions: [],
             spawns: [],
             towers: []
         };
     }
 
-    private findObjectsInRoom() {
-        let spawns = this.room.find(FIND_MY_SPAWNS);
-        this.roomMemory.spawns = _.pluck(spawns, 'id');
+// TODO: use memory to get the structures
+    private findObjectsInRoom(save:boolean) {
+        //// spawns
+        //for (let idx in this.roomMemory.spawns) {
+        //    let spawn = <Spawn>Game.getObjectById(this.roomMemory.spawns[idx]);
+        //    this.spawns.push(spawn);
+        //}
+        //
+        //// sources
+        //for (let idx in this.roomMemory.sources) {
+        //    let source = <Source>Game.getObjectById(this.roomMemory.sources[idx]);
+        //    this.sources.push(source);
+        //}
+        //
+        //// towers
+        //for (let idx in this.roomMemory.towers) {
+        //    let tower = <Tower>Game.getObjectById(this.roomMemory.towers[idx]);
+        //    this.towers.push(tower);
+        //    // TODO: if tower that's supposed to be there doesn't exist, rebuild it
+        //}
+        this.spawns = this.room.find(FIND_MY_SPAWNS);
+        this.extensions = this.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
+        this.towers = this.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+        this.links = this.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LINK}});
+        this.sources = this.room.find(FIND_SOURCES);
 
-        let towers = this.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
-        this.roomMemory.towers = _.pluck(towers, 'id');
 
-        let links = this.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LINK}});
-        this.roomMemory.links = _.pluck(links, 'id');
+        if (save) {
+            this.roomMemory.spawns = _.pluck(this.spawns, 'id');
+            this.roomMemory.extensions = _.pluck(this.extensions, 'id');
+            this.roomMemory.towers = _.pluck(this.towers, 'id');
+            this.roomMemory.links = _.pluck(this.links, 'id');
+        }
     }
 
     private findRoomCreeps():CreepMemory[] {
@@ -240,27 +284,7 @@ export class MyRoom {
             }
             else {
                 this.creeps.push(creep);
-                //creep.memory = this.roomMemory.active[idx];
             }
-        }
-
-        // spawns
-        for (let idx in this.roomMemory.spawns) {
-            let spawn = <Spawn>Game.getObjectById(this.roomMemory.spawns[idx]);
-            this.spawns.push(spawn);
-        }
-
-        // sources
-        for (let idx in this.roomMemory.sources) {
-            let source = <Source>Game.getObjectById(this.roomMemory.sources[idx]);
-            this.sources.push(source);
-        }
-
-        // towers
-        for (let idx in this.roomMemory.towers) {
-            let tower = <Tower>Game.getObjectById(this.roomMemory.towers[idx]);
-            this.towers.push(tower);
-            // TODO: if tower that's supposed to be there doesn't exist, rebuild it
         }
     }
 
@@ -270,8 +294,8 @@ export class MyRoom {
      * return {number} Status of construction.
      */
     private canCreateCreep(spawn:Spawn, creepMemory:CreepMemory):number {
-        if (creepMemory) {
-            return spawn.canCreateCreep(CreepAssembler.getBodyParts(creepMemory.role));
+        if (creepMemory && spawn) {
+            return spawn.canCreateCreep(CreepAssembler.getBodyParts(creepMemory.role, this.economy));
         }
         return ERR_INVALID_ARGS;
     }
@@ -320,7 +344,7 @@ export class MyRoom {
             parentRoom: spawn.room.name,
             role: creepToConstruct.role
         };
-        let status = spawn.createCreep(CreepAssembler.getBodyParts(creepToConstruct.role), creepName, creepMemory);
+        let status = spawn.createCreep(CreepAssembler.getBodyParts(creepToConstruct.role, this.economy), creepName, creepMemory);
 
         // if creep is created, the return is it's name
         if (_.isString(status)) {
@@ -395,15 +419,36 @@ export class MyRoom {
         });
     }
 
-    //private getSources(type:CreepTypes) {
-    //
-    //    switch (type) {
-    //        case CreepTypes.upgrader: // TODO: implement upgrader mining to a link
-    //            return
-    //        case CreepTypes.worker:
-    //            break;
-    //        default:
-    //
-    //    }
-    //}
+    private assessEconomy() {
+        let extensionCount = this.extensions.length;
+        // Controller level 0-1
+        if (extensionCount < 5) {
+            return 1;
+        }
+        // Controller level 2
+        if (extensionCount < 10) {
+            return 2;
+        }
+        // Controller level 3
+        if (extensionCount < 20) {
+            return 3;
+        }
+        // Controller level 4
+        if (extensionCount < 30) {
+            return 4;
+        }
+        // Controller level 5
+        if (extensionCount < 40) {
+            return 5;
+        }
+        // Controller level 0-1
+        if (extensionCount < 50) {
+            return 6;
+        }
+        // Controller level 0-1
+        if (extensionCount < 60) {
+            return 7;
+        }
+        return 8;
+    }
 }

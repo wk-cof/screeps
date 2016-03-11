@@ -38,7 +38,6 @@ export class Builder extends MyCreep implements IBuilder {
             actionIndex++;
         }
         return actionResult;
-
     }
 
     //------ Private methods -------------------------------------------------------------------------------------------
