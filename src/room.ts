@@ -67,7 +67,7 @@ export class MyRoom {
             this.checkBuildingCreeps();
 
             // rebuild creeps if necessary
-            _.each(this.roomConfig, (creepCount, creepName) => {
+            _.each(this.roomConfig['creeps'], (creepCount, creepName) => {
                 if (this.needsRebuilding(CreepTypes[creepName])) {
                     this.enqueueCreep(CreepTypes[creepName]);
                 }
@@ -150,7 +150,7 @@ export class MyRoom {
 
         _.each(this.links, (link:Link) => {
             if (link) {
-                if (link.energy > 50 * this.economy) {
+                if (link.energy > 99) {
                     energySources.push(link);
                 }
             }
@@ -164,7 +164,6 @@ export class MyRoom {
             }
         }
 
-
         for (let idx in this.creeps) {
             let creep:Creep = this.creeps[idx];
             try {
@@ -172,7 +171,7 @@ export class MyRoom {
                     case CreepTypes.upgrader:
                     case CreepTypes.linkUpgrader:
                         let upgSoures = this.spawns.concat(this.links);
-                        let upgrader = new ControllerUpgrader(creep, upgSoures);
+                        let upgrader = new ControllerUpgrader(creep, energySources);
                         upgrader.runRoutine();
                         break;
                     case CreepTypes.builder:
@@ -367,7 +366,7 @@ export class MyRoom {
         };
 
         // if creep is a priority creep, put it in the priority queue
-        if (this.roomConfig['priorityList'] && this.roomConfig['priorityList'].indexOf(type) !== -1) {
+        if (this.roomConfig['creeps']['priorityList'] && this.roomConfig['creeps']['priorityList'].indexOf(type) !== -1) {
             this.roomMemory.priorityQueue.push(newCreepMemory);
         }
         else {
@@ -395,7 +394,7 @@ export class MyRoom {
         let totalCreeps = this.getBuildingCreepsCount(type) +
             this.getActiveCreepsCount(type) +
             this.getQueuedCreepsCount(type);
-        return totalCreeps < this.roomConfig[CreepAssembler.getCreepStringName(type)];
+        return totalCreeps < this.roomConfig['creeps'][CreepAssembler.getCreepStringName(type)];
     }
 
     /**
@@ -413,7 +412,7 @@ export class MyRoom {
     private runTowersRoutine() {
         _.each(this.towers, (tower:Tower) => {
             if (tower) {
-                let myTower = new MyTower(tower);
+                let myTower = new MyTower(tower, this.roomConfig['towers']);
                 myTower.runRoutine();
             }
         });

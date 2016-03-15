@@ -7,18 +7,17 @@ export class MyClaimer extends MyCreep {
     }
 
     public runRoutine() {
+        if (!this.claimFlags || !this.claimFlags.length) {
+            return ERR_INVALID_TARGET;
+        }
         let destFlag = this.claimFlags[0].getFlag();
-        console.log('dest ' + JSON.stringify(destFlag));
         if (!destFlag) {
-            return;
+            return ERR_INVALID_TARGET;
         }
         if (this.creep.room.name === destFlag.roomName) {
-            this.doOrMoveTo(this.creep.claimController, this.creep.room.controller);
+            return this.doOrMoveTo(this.creep.claimController, this.creep.room.controller);
         }
-        else {
-            console.log(this.creep.moveTo(destFlag.pos));
-        }
-        //let target = this.claimFlags[0].getFlag().room.controller;
-        //
+
+        return this.creep.moveTo(destFlag.pos);
     }
 }

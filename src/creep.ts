@@ -92,7 +92,7 @@ export class MyCreep implements IMyCreep {
     protected transferToClosestAvailableLink():number {
         //console.log('transferring energy to extension');
         let link:Link = this.findClosestByRange(FIND_MY_STRUCTURES,
-            (object:Link) => object.structureType === STRUCTURE_LINK && (object.energy < object.energyCapacity*0.8));
+            (object:Link) => object.structureType === STRUCTURE_LINK && (object.energy < object.energyCapacity * 0.5));
 
         if (link) {
             return this.doOrMoveTo(this.creep.transferEnergy, link);

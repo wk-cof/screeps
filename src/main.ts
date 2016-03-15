@@ -38,7 +38,6 @@ module.exports.loop = function () {
         catch (e) {
             console.log(`room ${roomObject.name} encountered a problem. Error: ${JSON.stringify(e)}`);
         }
-
     });
 
 };
