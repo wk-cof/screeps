@@ -117,12 +117,13 @@ export class MyRoom {
     private creepManagement() {
         // order creeps around
         // find all full extensions
-        let energySources:Structure[] = this.spawns[0].room.find<Extension>(FIND_MY_STRUCTURES, {
-            filter: (object:Structure) => {
-                return object.structureType === STRUCTURE_EXTENSION &&
-                    (<Extension>object).energy === (<Extension>object).energyCapacity;
-            }
-        });
+        let energySources:Structure[] = [];
+        //this.spawns[0].room.find<Extension>(FIND_MY_STRUCTURES, {
+        //    filter: (object:Structure) => {
+        //        return object.structureType === STRUCTURE_EXTENSION &&
+        //            (<Extension>object).energy === (<Extension>object).energyCapacity;
+        //    }
+        //});
 
         // find all extensions that need energy
         let energyDestinations:Structure[] = [];
@@ -153,15 +154,27 @@ export class MyRoom {
                 if (link.energy > 99) {
                     energySources.push(link);
                 }
+                if (link.energy < link.energyCapacity) {
+                    energyDestinations.push(link);
+                }
             }
         });
 
         if (this.room.storage) {
             energySources.push(this.room.storage);
             // TODO: change this when implementing minerals
-            if (energyDestinations.length === 0 && this.room.storage.store.energy < this.room.storage.storeCapacity) {
+            if (this.room.storage.store.energy < this.room.storage.storeCapacity) {
                 energyDestinations.push(this.room.storage);
             }
+        }
+        else {
+            let extensions = this.spawns[0].room.find<Extension>(FIND_MY_STRUCTURES, {
+                filter: (object:Structure) => {
+                    return object.structureType === STRUCTURE_EXTENSION &&
+                        (<Extension>object).energy < (<Extension>object).energyCapacity;
+                }
+            });
+            energyDestinations = energyDestinations.concat(extensions);
         }
 
         for (let idx in this.creeps) {
@@ -183,9 +196,9 @@ export class MyRoom {
                         carrier.runRoutine();
                         break;
                     case CreepTypes.zealot:
-                        //let zealot = new Fighter(creep);
+                        let zealot = new Fighter(creep);
                         //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                        //zealot.runRoutine(spawnObject);
+                        zealot.runRoutine();
                         //heal(creep, spawnObject, 1400);
                         break;
                     case CreepTypes.flagMiner:

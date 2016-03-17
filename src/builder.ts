@@ -1,5 +1,6 @@
 import {MyCreep} from "creep";
 import {IMyCreep} from "creep";
+import {Config} from "config";
 
 export interface IBuilder extends IMyCreep {
     //buildOnNearestConstructionSite(spawn:Spawn): void;
@@ -11,7 +12,7 @@ export interface IBuilder extends IMyCreep {
 
 export class Builder extends MyCreep implements IBuilder {
 
-    private wallMaxLife = 900000;
+    private wallMaxLife: number;
 
     constructor(private creep:Creep, energySources:Structure[]) {
         super(creep, energySources);
@@ -80,9 +81,9 @@ export class Builder extends MyCreep implements IBuilder {
         return ERR_NOT_FOUND;
     }
 
-    private reinforce(structureType:string):number {
+    private reinforce(structureType:string, maxHp:number):number {
         var target = this.findClosestByRange(FIND_STRUCTURES, (object) => {
-            return object.structureType == structureType && object.hits < this.wallMaxLife;
+            return object.structureType == structureType && object.hits < maxHp;
         });
         if (target) {
             return this.repairOrMoveTo(target);
@@ -91,11 +92,11 @@ export class Builder extends MyCreep implements IBuilder {
     }
 
     private reinforceWalls():number {
-        return this.reinforce(STRUCTURE_WALL);
+        return this.reinforce(STRUCTURE_WALL, Config.rooms[this.creep.room.name]['towers']['wallHpMax']);
     }
 
     private reinforceRamparts():number {
-        return this.reinforce(STRUCTURE_RAMPART);
+        return this.reinforce(STRUCTURE_RAMPART, Config.rooms[this.creep.room.name]['towers']['rampartHpMax']);
     }
 }
 

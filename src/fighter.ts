@@ -12,7 +12,10 @@ export class Fighter extends MyCreep {
         this.routine = [
 
         ];
-        if (!this.attackNearestCreep()) {
+        if (this.creep.room.name !== this.flag.room.name) {
+            this.creep.moveTo(this.flag);
+        }
+        else if (!this.attackNearestCreep()) {
             this.creep.moveTo(this.flag);
         }
     }

@@ -174,9 +174,9 @@ export class CreepAssembler {
                 };
             case CreepTypes.zealot:
                 return {
-                    tough: 5,
-                    attack: 5,
-                    move: 3
+                    tough: halfEcon,
+                    move: halfEcon * 2,
+                    attack: halfEcon
                 };
             case CreepTypes.marine:
                 return {
@@ -185,7 +185,7 @@ export class CreepAssembler {
                 };
             case CreepTypes.claimer:
                 return {
-                    move: 1,
+                    move: 5,
                     claim: economy > 2 ? 1 : 0
                 };
             case CreepTypes.settler:

@@ -14,8 +14,16 @@ export class MySettler extends Builder {
             return;
         }
         if (this.creep.room.name === destFlag.roomName) {
-                //if (this.creep.carry.energy === 0) {
-                if (this.creep.carry.energy < this.creep.carryCapacity) {
+            //if (this.creep.carry.energy === 0) {
+            if (this.creep.carry.energy === this.creep.carryCapacity) {
+                this.routine = [
+                    this.buildOnNearestConstructionSite
+                ];
+            }
+            else if (this.creep.carry.energy < this.creep.carryCapacity && this.creep.carry.energy > 0) {
+                let sources = this.findClosestByRange(FIND_SOURCES);
+                // if near the source, then mine
+                if (this.creep.pos.isNearTo(sources)) {
                     this.routine = [
                         this.mine
                     ];
@@ -25,13 +33,19 @@ export class MySettler extends Builder {
                         this.buildOnNearestConstructionSite
                     ];
                 }
-                let actionResult = ERR_NOT_FOUND;
-                let actionIndex = 0;
-                while (!(actionResult === OK) && actionIndex < this.routine.length) {
-                    actionResult = this.routine[actionIndex].call(this);
-                    actionIndex++;
-                }
-                return actionResult;
+            }
+            else {
+                this.routine = [
+                    this.mine
+                ];
+            }
+            let actionResult = ERR_NOT_FOUND;
+            let actionIndex = 0;
+            while (!(actionResult === OK) && actionIndex < this.routine.length) {
+                actionResult = this.routine[actionIndex].call(this);
+                actionIndex++;
+            }
+            return actionResult;
 
         }
         else {
