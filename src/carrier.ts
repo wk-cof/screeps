@@ -32,6 +32,7 @@ export class MyCarrier extends MyCreep implements IMyCarrier {
                 this.transferToClosestAvailableExtension,
                 this.transferToClosestAvailableLink,
                 this.transferEnergyToTowers,
+                this.transferEnergyToTerminal,
                 this.transferEnergyToStorage
             ];
         }
@@ -64,9 +65,23 @@ export class MyCarrier extends MyCreep implements IMyCarrier {
     private transferEnergyToStorage() {
         let storage = this.creep.room.storage;
         if (storage) {
-            this.transferEnergyTo(storage);
+            return this.transferEnergyTo(storage);
         }
+        return ERR_INVALID_TARGET;
     }
+
+    private transferEnergyToTerminal() {
+        let room = this.creep.room;
+        let terminal = room.terminal;
+        if (!terminal || !room.storage) {
+            return ERR_INVALID_TARGET;
+        }
+        if (room.storage.store.energy > room.storage.storeCapacity * 0.7) {
+            return this.transferEnergyTo(terminal);
+        }
+        return ERR_NOT_ENOUGH_ENERGY;
+    }
+
 
     private transferEnergyToSpawns() {
         let closestSpawn = this.findClosestByRange<Spawn>(FIND_MY_SPAWNS, (spawn:Spawn) => {

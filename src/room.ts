@@ -92,7 +92,7 @@ export class MyRoom {
             Memory.rooms = {};
         }
         this.saveActiveCreepMemory();
-        Memory.rooms[this.roomName] = this.roomMemory;//this.toSerial();
+        Memory.rooms[this.roomName] = this.roomMemory;
     }
 
     public setRoomFlags(flags) {
@@ -105,34 +105,14 @@ export class MyRoom {
         });
     }
 
-    public  toSerial() {
-        return <RoomMemory>JSON.stringify(this.roomMemory);
-    }
-
-    public fromSerial() {
-
-    }
-
     //------ Private methods -------------------------------------------------------------------------------------------
     private creepManagement() {
         // order creeps around
         // find all full extensions
         let energySources:Structure[] = [];
-        //this.spawns[0].room.find<Extension>(FIND_MY_STRUCTURES, {
-        //    filter: (object:Structure) => {
-        //        return object.structureType === STRUCTURE_EXTENSION &&
-        //            (<Extension>object).energy === (<Extension>object).energyCapacity;
-        //    }
-        //});
 
         // find all extensions that need energy
         let energyDestinations:Structure[] = [];
-        //    this.spawns[0].room.find<Extension>(FIND_MY_STRUCTURES, {
-        //    filter: (object:Structure) => {
-        //        return object.structureType === STRUCTURE_EXTENSION &&
-        //            (<Extension>object).energy < (<Extension>object).energyCapacity;
-        //    }
-        //});
 
         _.each(this.spawns, (spawn:Spawn) => {
             if (spawn.energy < spawn.energyCapacity) {
@@ -142,12 +122,6 @@ export class MyRoom {
                 energySources.push(spawn);
             }
         });
-
-        //_.each(this.towers, (tower:Tower) => {
-        //    if (tower && tower.energy < tower.energyCapacity) {
-        //        energyDestinations.push(tower);
-        //    }
-        //});
 
         _.each(this.links, (link:Link) => {
             if (link) {
@@ -160,11 +134,26 @@ export class MyRoom {
             }
         });
 
+        // if the room has a storage, put everything  in it, otherwise, put resources into the extensions and towers directly.
         if (this.room.storage) {
             energySources.push(this.room.storage);
             // TODO: change this when implementing minerals
             if (this.room.storage.store.energy < this.room.storage.storeCapacity) {
                 energyDestinations.push(this.room.storage);
+            }
+            // if storage is full, transfer energy to terminal, otherwise, make it a source.
+            if (this.room.terminal) {
+                console.log(this.room.name, ' has terminal');
+                if (this.room.storage.store.energy > this.room.storage.storeCapacity * 0.7) {
+                    if (this.room.terminal.store.energy < this.room.terminal.storeCapacity) {
+                        console.log('pushing to destinations');
+                        energyDestinations.push(this.room.terminal);
+                    }
+                }
+                else if (this.room.terminal.store.energy > 0){
+                    console.log('pushing to sources');
+                    energySources.push(this.room.terminal)
+                }
             }
         }
         else {
@@ -175,7 +164,14 @@ export class MyRoom {
                 }
             });
             energyDestinations = energyDestinations.concat(extensions);
+            _.each(this.towers, (tower:Tower) => {
+                if (tower.energy < (tower.energyCapacity - 100)) {
+                    energyDestinations.push(tower);
+                }
+            });
         }
+
+
 
         for (let idx in this.creeps) {
             let creep:Creep = this.creeps[idx];

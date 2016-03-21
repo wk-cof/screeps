@@ -9,7 +9,7 @@ export class MyTower implements IMyTower {
     private rampartHpMax: number;
     private wallHpMax: number;
     private roadRepairThreshold = 0.5;
-    private maxRange = 15;
+    private maxRange = 25;
 
     public constructor(private tower:Tower, maxValues: any) {
         this.rampartHpMax = maxValues.rampartHpMax;

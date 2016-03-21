@@ -361,6 +361,11 @@ interface Room {
      * An object with survival game info if available
      */
     survivalInfo: SurvivalGameInfo;
+
+    /**
+     * The Terminal structure of this room, if present, otherwise undefined.
+     */
+    terminal: Terminal;
     /**
      * Create new ConstructionSite at the specified location.
      * @param x The X position.
@@ -569,9 +574,26 @@ interface Wall extends Structure {
 interface Storage extends Structure {
     store: {energy: number };
     storeCapacity: number;
-    transferEnergy(target:Creep, amount:number): number;
+    transfer(target:Creep, resourceType: string, amount:number): number;
 }
 
+interface Terminal extends Structure {
+    store: {energy: number };
+    storeCapacity: number;
+    /**
+     * Sends resources between rooms.
+     * Sends resource to a Terminal in another room with the specified name.
+     * If the target Terminal's storage is full, the resources are dropped on the ground.
+     * Each transaction requires additional energy according to this formula: ceil(0.2 * amount * linearDistanceBetweenRooms).
+     * For example, sending 100 resource units from W1N1 to W2N3 will consume 40 energy units.
+     * You can track your incoming and outgoing transactions and estimate range cost between rooms using the Game.market object.
+     */
+    send(resourceType:string, amount:number, destination:string, description?:string):number;
+    /**
+     * Transfer resource from this terminal to a creep. The target has to be at adjacent square.
+     */
+    transfer(target:Creep, resourceType: string, amount:number): number;
+}
 
 interface Tower extends Structure {
     energy: number;
@@ -733,7 +755,8 @@ declare var STRUCTURE_SPAWN:string,
     STRUCTURE_CONTROLLER:string,
     STRUCTURE_LINK:string,
     STRUCTURE_STORAGE:string,
-    STRUCTURE_TOWER:string;
+    STRUCTURE_TOWER:string,
+    STRUCTURE_TERMINAL:string;
 
 declare var FIND_CREEPS:number,
     FIND_MY_CREEPS:number,
@@ -781,3 +804,12 @@ declare var MOVE:string,
     TOUGH:string,
     HEAL:string,
     CLAIM:string;
+
+declare var RESOURCE_ENERGY:string,
+    RESOURCE_HYDROGEN:string,
+    RESOURCE_OXYGEN:string,
+    RESOURCE_UTRIUM:string,
+    RESOURCE_KEANIUM:string,
+    RESOURCE_LEMERGIUM:string,
+    RESOURCE_ZYNTHIUM:string,
+    RESOURCE_CATALYST:string;
