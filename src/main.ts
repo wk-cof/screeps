@@ -39,5 +39,7 @@ module.exports.loop = function () {
             console.log(`room ${roomObject.name} encountered a problem. Error: ${JSON.stringify(e)}`);
         }
     });
-
 };
+
+// logic for sending energy
+// Game.rooms['E22N11'].terminal.send(RESOURCE_ENERGY, 30000, 'E25N11', 'take my energy, please!');

@@ -7,15 +7,11 @@ export interface IMyCarrier extends IMyCreep {
 
 
 export class MyCarrier extends MyCreep implements IMyCarrier {
+    private energyDestinations:Structure[];
     //------ Constructors ----------------------------------------------------------------------------------------------
-    /**
-     *
-     * @param creep
-     * @param {string}energySourceIds ID of a structure or a creep
-     */
-    public constructor(private creep:Creep, energySources:Structure[]) {
-        super(creep, energySources);
-        this.buildThreshold = 220;
+    public constructor(private creep:Creep, energy) {
+        this.energyDestinations = energy.energyDestinations;
+        super(creep, energy.energySources);
     }
 
     //------ Public Methods --------------------------------------------------------------------------------------------
@@ -28,12 +24,7 @@ export class MyCarrier extends MyCreep implements IMyCarrier {
         }
         else {
             this.routine = [
-                this.transferEnergyToSpawns,
-                this.transferToClosestAvailableExtension,
-                this.transferToClosestAvailableLink,
-                this.transferEnergyToTowers,
-                this.transferEnergyToTerminal,
-                this.transferEnergyToStorage
+                this.transferEnergyToClosestDest
             ];
         }
         let actionResult = ERR_NOT_FOUND;
@@ -46,6 +37,11 @@ export class MyCarrier extends MyCreep implements IMyCarrier {
     }
 
     //------ Private methods -------------------------------------------------------------------------------------------
+    private transferEnergyToClosestDest() {
+        let closestEnergyDest:Structure = this.creep.pos.findClosestByRange(this.energyDestinations);
+        return this.transferEnergyTo(closestEnergyDest);
+    }
+
     private transferEnergyTo(target:Structure|Creep):number {
         return this.doOrMoveTo(this.creep.transferEnergy, target);
     }

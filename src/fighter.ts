@@ -9,15 +9,18 @@ export class Fighter extends MyCreep {
     }
 
     public runRoutine() {
-        this.routine = [
-
-        ];
-        if (this.creep.room.name !== this.flag.room.name) {
+        //this.routine = [
+        //
+        //];
+        //if (this.creep.room.name !== this.flag.room.name) {
             this.creep.moveTo(this.flag);
-        }
-        else if (!this.attackNearestCreep()) {
-            this.creep.moveTo(this.flag);
-        }
+        //}
+        // else {
+        //     var nearestSpawn = this.findClosestByRange(FIND_HOSTILE_STRUCTURES);
+        // if (nearestSpawn) {
+        //     return this.doOrMoveTo(this.creep.attack, nearestSpawn);
+        // }
+        // }
     }
 
     public findHostileCreepsInRange(range:number):Creep[] {

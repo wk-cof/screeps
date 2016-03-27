@@ -106,100 +106,153 @@ export class MyRoom {
     }
 
     //------ Private methods -------------------------------------------------------------------------------------------
-    private creepManagement() {
-        // order creeps around
-        // find all full extensions
-        let energySources:Structure[] = [];
+    /**
+     * This function figures out which objects in the room serve as sources vs destinations
+     */
+    private roomEnergy() {
+        // All creeps will use same sources and destinations except for carriers.
+        // Carriers need to redistribute the energy, hence they need special rules.
+        let nrgSrc:Structure[] = [];
+        let nrgDest:Structure[] = [];
 
-        // find all extensions that need energy
-        let energyDestinations:Structure[] = [];
+        let carrierSrc:Structure[] = [];
+        let carrierDest:Structure[] = [];
 
-        _.each(this.spawns, (spawn:Spawn) => {
-            if (spawn.energy < spawn.energyCapacity) {
-                energyDestinations.push(spawn)
-            }
-            if (spawn.energy > 50) {
-                energySources.push(spawn);
-            }
-        });
-
-        _.each(this.links, (link:Link) => {
-            if (link) {
-                if (link.energy > 99) {
-                    energySources.push(link);
-                }
-                if (link.energy < link.energyCapacity) {
-                    energyDestinations.push(link);
-                }
-            }
-        });
-
-        // if the room has a storage, put everything  in it, otherwise, put resources into the extensions and towers directly.
         if (this.room.storage) {
-            energySources.push(this.room.storage);
-            // TODO: change this when implementing minerals
-            if (this.room.storage.store.energy < this.room.storage.storeCapacity) {
-                energyDestinations.push(this.room.storage);
+            let totalReources = _.sum(this.room.storage.store);
+            let storageEnergy = this.room.storage.store.energy;
+            // if there's a non-empty storage, add it as a source
+            if (storageEnergy > 50) {
+                nrgSrc.push(this.room.storage);
+                carrierSrc.push(this.room.storage);
             }
-            // if storage is full, transfer energy to terminal, otherwise, make it a source.
-            if (this.room.terminal) {
-                console.log(this.room.name, ' has terminal');
-                if (this.room.storage.store.energy > this.room.storage.storeCapacity * 0.7) {
-                    if (this.room.terminal.store.energy < this.room.terminal.storeCapacity) {
-                        console.log('pushing to destinations');
-                        energyDestinations.push(this.room.terminal);
+            if( totalReources < this.room.storage.storeCapacity) {
+                nrgDest.push(this.room.storage);
+            }
+
+            // spawns
+            _.each(this.spawns, (spawn:Spawn) => {
+                if (spawn.energy < spawn.energyCapacity - 50) {
+                    nrgDest.push(spawn);
+                    carrierDest.push(spawn);
+                }
+            });
+
+            // links
+            _.each(this.links, (link:Link) => {
+                if (link) {
+                    if (link.energy > 99) {
+                        nrgSrc.push(link);
+                    }
+                    if (link.energy < link.energyCapacity) {
+                        nrgDest.push(link);
+                    }
+
+                    if (link.energy < link.energyCapacity/2) {
+                        carrierDest.push(link);
                     }
                 }
-                else if (this.room.terminal.store.energy > 0){
-                    console.log('pushing to sources');
-                    energySources.push(this.room.terminal)
+            });
+
+            // terminals
+            if (this.room.terminal) {
+                if (storageEnergy > this.room.storage.storeCapacity * 0.7) {
+                    if (this.room.terminal.store.energy < this.room.terminal.storeCapacity) {
+                        nrgDest.push(this.room.terminal);
+                        carrierDest.push(this.room.terminal);
+                    }
+                }
+                else if (this.room.terminal.store.energy > 0) {
+                    nrgSrc.push(this.room.terminal);
+                    carrierSrc = [this.room.terminal];
                 }
             }
+
+            // extensions
+            _.each(this.extensions, (extension:Extension) => {
+                if (extension.energy < extension.energyCapacity) {
+                    carrierDest.push(extension);
+                }
+            });
         }
         else {
-            let extensions = this.spawns[0].room.find<Extension>(FIND_MY_STRUCTURES, {
-                filter: (object:Structure) => {
-                    return object.structureType === STRUCTURE_EXTENSION &&
-                        (<Extension>object).energy < (<Extension>object).energyCapacity;
+            // spawns
+            _.each(this.spawns, (spawn:Spawn) => {
+                if (spawn.energy < spawn.energyCapacity) {
+                    nrgDest.push(spawn);
+                }
+                if (spawn.energy > 50) {
+                    nrgSrc.push(spawn);
+                }
+
+                if (spawn. energy < 100) {
+                    carrierDest.push(spawn);
+                }
+                else if (spawn.energy > 199) {
+                    carrierSrc.push(spawn);
                 }
             });
-            energyDestinations = energyDestinations.concat(extensions);
-            _.each(this.towers, (tower:Tower) => {
-                if (tower.energy < (tower.energyCapacity - 100)) {
-                    energyDestinations.push(tower);
+
+            // extensions
+            _.each(this.extensions, (extension:Extension) => {
+                if (extension.energy < extension.energyCapacity) {
+                    carrierDest.push(extension);
+                    nrgDest.push(extension);
+                }
+                else {
+                    nrgSrc.push(extension);
                 }
             });
         }
 
+        // towers
+        _.each(this.towers, (tower:Tower) => {
+            if (tower.energy < (tower.energyCapacity - 100)) {
+                carrierDest.push(tower);
+            }
+        });
 
+        if (carrierDest.length === 0 && this.room.storage) {
+            carrierDest.push(this.room.storage);
+        }
 
+        return {
+            creeps: {
+                energySources: nrgSrc,
+                energyDestinations: nrgDest
+            },
+            carriers: {
+                energySources: carrierSrc,
+                energyDestinations: carrierDest
+            }
+        }
+    }
+
+    private creepManagement() {
+        let energy = this.roomEnergy();
         for (let idx in this.creeps) {
             let creep:Creep = this.creeps[idx];
             try {
                 switch (creep.memory['role']) {
                     case CreepTypes.upgrader:
                     case CreepTypes.linkUpgrader:
-                        let upgSoures = this.spawns.concat(this.links);
-                        let upgrader = new ControllerUpgrader(creep, energySources);
+                        let upgrader = new ControllerUpgrader(creep, energy.creeps.energySources);
                         upgrader.runRoutine();
                         break;
                     case CreepTypes.builder:
-                        let builder = new Builder(creep, energySources);
+                        let builder = new Builder(creep, energy.creeps.energySources);
                         builder.runRoutine();
                         break;
                     case CreepTypes.carrier:
-                        let carrier = new MyCarrier(creep, [this.room.storage]);
+                        let carrier = new MyCarrier(creep, energy.carriers);
                         carrier.runRoutine();
                         break;
                     case CreepTypes.zealot:
                         let zealot = new Fighter(creep);
-                        //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
                         zealot.runRoutine();
-                        //heal(creep, spawnObject, 1400);
                         break;
                     case CreepTypes.flagMiner:
-                        //console.log(`I'm a ${CreepAssembler.getCreepStringName(creep.memory['role'])}`);
-                        let miner = new FlagMiner((<FlagMinerCreep>creep), energyDestinations);
+                        let miner = new FlagMiner((<FlagMinerCreep>creep), energy.creeps.energyDestinations);
                         miner.mine(this.sourceFlags);
                         break;
                     case CreepTypes.claimer:

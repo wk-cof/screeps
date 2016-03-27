@@ -14,10 +14,10 @@ Turns out renewing creeps is not very cost effective. Better to just recreate th
 ## ToDo
 
 ### Pending
-* Automate road building from the spawn to the resources
 * Increase reusePath option in the Creep.moveTo method to help save CPU.
 * implement mining in the same room
 * implement logic for finding sources and destinations in the room.
+* read room objects from memory. Only update the objects once in a while.
 
 ### Done
 * Figure out how to use extensions to store more energy.
