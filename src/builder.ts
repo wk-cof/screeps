@@ -133,3 +133,25 @@ export class ControllerUpgrader extends MyCreep {
         return actionResult;
     }
 }
+
+// super upgrader will get the energy from the link and upgrade on the same tick.
+export class SuperControllerUpgrader extends MyCreep {
+    constructor(private creep:Creep, energySources:Structure[]) {
+        super(creep, energySources);
+    }
+
+    public runRoutine():number {
+        // always go to the controller first
+        if (!this.creep.pos.isNearTo(this.creep.room.controller)) {
+            return this.creep.moveTo(this.creep.room.controller);
+        }
+        let status = OK;
+        if (this.creep.carry.energy === 0) {
+            status = this.getEnergyFromClosestSource();
+        }
+        if (status === OK) {
+            return this.creep.upgradeController(this.creep.room.controller);
+        }
+        throw `Something went wrong with superUpgarder. status code: ${status}`;
+    }
+}

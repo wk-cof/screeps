@@ -13,6 +13,7 @@ import {MyCreep} from "creep";
 import {MyClaimer} from "claimer";
 import {MyTower} from "tower";
 import {MySettler} from "settler";
+import {SuperControllerUpgrader} from "./builder";
 
 export class MyRoom {
     //------ Private data ----------------------------------------------------------------------------------------------
@@ -238,6 +239,10 @@ export class MyRoom {
                     case CreepTypes.linkUpgrader:
                         let upgrader = new ControllerUpgrader(creep, energy.creeps.energySources);
                         upgrader.runRoutine();
+                        break;
+                    case CreepTypes.superLinkUpgrader:
+                        let superUpgrader = new SuperControllerUpgrader(creep, this.links);
+                        superUpgrader.runRoutine();
                         break;
                     case CreepTypes.builder:
                         let builder = new Builder(creep, energy.creeps.energySources);
@@ -502,14 +507,15 @@ export class MyRoom {
         if (extensionCount < 40) {
             return 5;
         }
-        // Controller level 0-1
+        // Controller level 6
         if (extensionCount < 50) {
             return 6;
         }
-        // Controller level 0-1
+        // Controller level 7
         if (extensionCount < 60) {
             return 7;
         }
+        // Controller level 8
         return 8;
     }
 }
