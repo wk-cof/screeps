@@ -30,35 +30,7 @@ export class MyCreep implements IMyCreep {
         let closestEnergySrc:Structure = this.creep.pos.findClosestByRange(this.energySources);
 
         if (closestEnergySrc) {
-            //let getEnergy = false;
-            //switch (closestEnergySrc.structureType) {
-            //    case STRUCTURE_STORAGE:
-            //    case STRUCTURE_TERMINAL:
-            //        getEnergy = (<Storage>closestEnergySrc).store.energy <= (<Storage>closestEnergySrc).storeCapacity;
-            //        break;
-            //    case STRUCTURE_LINK:
-            //        getEnergy = (<Link>closestEnergySrc).energy <= (<Link>closestEnergySrc).energyCapacity;
-            //        break;
-            //    case STRUCTURE_EXTENSION:
-            //        getEnergy = (<Extension>closestEnergySrc).energy <= (<Extension>closestEnergySrc).energyCapacity;
-            //        break;
-            //    case STRUCTURE_SPAWN:
-            //        getEnergy = (<Spawn>closestEnergySrc).energy <= (<Spawn>closestEnergySrc).energyCapacity;
-            //        break;
-            //    case STRUCTURE_TOWER:
-            //        getEnergy = (<Tower>closestEnergySrc).energy <= (<Tower>closestEnergySrc).energyCapacity;
-            //        break;
-            //    case undefined:
-            //        //probably a creep
-            //        // TODO: Handle creeps
-            //        break;
-            //    default:
-            //        break;
-            //}
-            //if (getEnergy) {
-                return this.getEnergy(closestEnergySrc);
-            //}
-
+            return this.getEnergy(closestEnergySrc);
         }
         return ERR_NOT_FOUND;
     }
