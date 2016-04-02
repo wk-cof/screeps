@@ -13,7 +13,7 @@ import {MyCreep} from "creep";
 import {MyClaimer} from "claimer";
 import {MyTower} from "tower";
 import {MySettler} from "settler";
-import {SuperControllerUpgrader} from "./builder";
+import {SuperControllerUpgrader} from "builder";
 
 export class MyRoom {
     //------ Private data ----------------------------------------------------------------------------------------------

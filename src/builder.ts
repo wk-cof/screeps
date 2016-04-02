@@ -145,13 +145,12 @@ export class SuperControllerUpgrader extends MyCreep {
         if (!this.creep.pos.isNearTo(this.creep.room.controller)) {
             return this.creep.moveTo(this.creep.room.controller);
         }
-        let status = OK;
-        if (this.creep.carry.energy === 0) {
+        let status;
+        status = this.creep.upgradeController(this.creep.room.controller);
+        if (this.creep.carry.energy <= this.creep.getActiveBodyparts('work')) {
             status = this.getEnergyFromClosestSource();
         }
-        if (status === OK) {
-            return this.creep.upgradeController(this.creep.room.controller);
-        }
-        throw `Something went wrong with superUpgarder. status code: ${status}`;
+
+        return status;
     }
 }

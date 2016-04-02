@@ -198,7 +198,7 @@ export class CreepAssembler {
             case CreepTypes.superLinkUpgrader:
                 return {
                     work: 25,
-                    carry: 1,
+                    carry: 4,
                     move: 13
                 };
             default:
