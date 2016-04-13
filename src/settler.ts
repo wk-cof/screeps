@@ -14,10 +14,22 @@ export class MySettler extends Builder {
             return;
         }
         if (this.creep.room.name === destFlag.roomName) {
-            //if (this.creep.carry.energy === 0) {
+            // heal
+            //if (this.creep.ticksToLive < 200) {
+            //    let closestSpawn = this.findClosestByRange(FIND_MY_SPAWNS);
+            //    if (closestSpawn) {
+            //        if(this.creep.pos.isNearTo(closestSpawn)) {
+            //            return (closestSpawn.renewCreep(this.creep));
+            //        }
+            //        else {
+            //            return this.creep.moveTo(closestSpawn);
+            //        }
+            //    }
+            //}
             if (this.creep.carry.energy === this.creep.carryCapacity) {
                 this.routine = [
-                    this.buildOnNearestConstructionSite
+                    this.buildOnNearestConstructionSite,
+                    this.upgradeController
                 ];
             }
             else if (this.creep.carry.energy < this.creep.carryCapacity && this.creep.carry.energy > 0) {
@@ -30,12 +42,15 @@ export class MySettler extends Builder {
                 }
                 else {
                     this.routine = [
-                        this.buildOnNearestConstructionSite
+                        this.buildOnNearestConstructionSite,
+                        this.upgradeController
                     ];
                 }
             }
             else {
+
                 this.routine = [
+                    this.pickUpResources,
                     this.mine
                 ];
             }
@@ -58,6 +73,14 @@ export class MySettler extends Builder {
     private mine() {
         let target = this.findClosestByRange(FIND_SOURCES);
         this.doOrMoveTo(this.creep.harvest, target);
+    }
+
+    private pickUpResources():number {
+        let resources = <any>this.creep.pos.findInRange(FIND_DROPPED_RESOURCES, 20);
+        if (resources.length && resources[0].amount > 10) {
+            return this.doOrMoveTo(this.creep.pickup, resources[0]);
+        }
+        return ERR_NOT_FOUND;
     }
 
     private upgradeController() {
