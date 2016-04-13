@@ -191,9 +191,10 @@ export class CreepAssembler {
                 };
             case CreepTypes.settler:
                 return {
-                    move: economy*2,
+                    move: economy*2+1,
                     carry: economy,
-                    work: economy
+                    work: economy,
+                    attack: 1
                 };
             case CreepTypes.superLinkUpgrader:
                 return {

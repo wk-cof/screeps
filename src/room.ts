@@ -82,9 +82,11 @@ export class MyRoom {
         let linkTransfer = new LinkTransfer(this.room.name);
         linkTransfer.transfer();
 
-        let status = this.buildFromPriorityQueue(this.spawns[0]);
-        if (status === ERR_NOT_FOUND) {
-            this.buildFromQueue(this.spawns[0]);
+        for (let idx in this.spawns) {
+            let status = this.buildFromPriorityQueue(this.spawns[idx]);
+            if (status === ERR_NOT_FOUND) {
+                this.buildFromQueue(this.spawns[0]);
+            }
         }
         this.runTowersRoutine();
         this.creepManagement();

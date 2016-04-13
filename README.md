@@ -18,6 +18,8 @@ Turns out renewing creeps is not very cost effective. Better to just recreate th
 * implement mining in the same room
 * implement logic for finding sources and destinations in the room.
 * read room objects from memory. Only update the objects once in a while.
+* implement moving and taking an action at the same time
+* transfer energy to a link near the storage to avoid excessive creep travel. 
 
 ### Done
 * Figure out how to use extensions to store more energy.
@@ -41,6 +43,7 @@ Turns out renewing creeps is not very cost effective. Better to just recreate th
 * implement priority queue
 * implement mining sources and destinations on room-based level.
 * build different creeps based on how many extensions I have.
+* build from multiple spawns
 
 ## Notes
 
