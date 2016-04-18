@@ -202,6 +202,12 @@ export class CreepAssembler {
                     carry: 4,
                     move: 13
                 };
+            case CreepTypes.superLinkUpgrader:
+                return {
+                    work: 25,
+                    carry: 4,
+                    move: 13
+                };
             default:
                 return {
                     work: 1,
