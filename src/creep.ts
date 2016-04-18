@@ -73,35 +73,19 @@ export class MyCreep implements IMyCreep {
         return ERR_NOT_FOUND;
     }
 
-    protected doOrMoveTo(action:Function, target:Structure|Creep|ConstructionSite|Source):number {
-        //if (this.creep.pos.isNearTo(target) === false) {
-        //    this.creep.moveTo(target);
-        //}
-        //return action.call(this.creep, target);
-        if (this.creep.pos.isNearTo(target)) {
-            return action.call(this.creep, target);
-        }
-        else {
-            return this.creep.moveTo(target);
-        }
-    }
-
     /**
-     * Updated version of doOrMoveTo that allows to move and do an action at the same time.
+     *
      * @param action Action to perform
      * @param target Target on which to perform action
      * @param distance Optional parameter to specify the distance at which to start performing action. Default is 1
      */
-    protected doOrMoveTo2(action:Function, target:Structure|Creep|ConstructionSite|Source, distance?:number):number {
+    protected doOrMoveTo(action:Function, target:Structure|Creep|ConstructionSite|Source, distance?:number):number {
         if (!distance) {
             distance = 1;
         }
         let rangeToTarget = this.creep.pos.getRangeTo(target);
+
         if (rangeToTarget <= distance) {
-            return action.call(this.creep, target);
-        }
-        if (rangeToTarget <= (distance+1)) {
-            this.creep.moveTo(target);
             return action.call(this.creep, target);
         }
         return this.creep.moveTo(target);

@@ -1,4 +1,4 @@
-import {Config} from "./config";
+import {Config} from "config";
 export interface IMyTower {
     runRoutine():number;
 }
@@ -35,10 +35,17 @@ export class MyTower implements IMyTower {
     }
 
     private defendRoom() {
-        let hostiles:Creep[] = this.tower.room.find<Creep>(FIND_HOSTILE_CREEPS);
+        let whitelist = Config.whitelist;
+        let hostiles:Creep[] = this.tower.room.find<Creep>(FIND_HOSTILE_CREEPS, {
+            filter: (creep:Creep) => {
+                return Config.whitelist.indexOf(creep.owner.username) === -1;
+            }
+        });
         if (hostiles.length > 0) {
             var username = hostiles[0].owner.username;
-            Game.notify('User ' + username + ' spotted in room ' + this.tower.room.name, 1);
+            if (username !== 'Invader') {
+                Game.notify('User ' + username + ' spotted in room ' + this.tower.room.name, 1);
+            }
             return this.tower.attack(hostiles[0]);
         }
         return ERR_NOT_FOUND;

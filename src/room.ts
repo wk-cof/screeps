@@ -85,7 +85,7 @@ export class MyRoom {
         for (let idx in this.spawns) {
             let status = this.buildFromPriorityQueue(this.spawns[idx]);
             if (status === ERR_NOT_FOUND) {
-                this.buildFromQueue(this.spawns[0]);
+                this.buildFromQueue(this.spawns[idx]);
             }
         }
         this.runTowersRoutine();
@@ -371,7 +371,7 @@ export class MyRoom {
     private checkBuildingCreeps() {
         for (let idx in this.roomMemory.building) {
             let creepMemory = this.roomMemory.building[idx];
-            if (!creepMemory.id) {
+            if (!creepMemory.id && Game.creeps[creepMemory.name]) {
                 let id = Game.creeps[creepMemory.name].id;
                 console.log(`creep ${creepMemory.name} is missing an id. Creep's new id is: ${id}.`);
                 creepMemory.id = id;

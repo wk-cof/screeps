@@ -42,31 +42,10 @@ export class Builder extends MyCreep implements IBuilder {
     }
 
     //------ Private methods -------------------------------------------------------------------------------------------
-    /**
-     * building is different from the rest of the actions since it can be performed from several tiles away.
-     * TODO: Find a better way to estimate the distance in order to avoid unnecessary build calls
-     */
-    protected buildOrMoveTo(buildTarget:ConstructionSite):number {
-        let buildStatus = this.creep.build(buildTarget);
-        if (buildStatus === ERR_NOT_IN_RANGE) {
-            return this.creep.moveTo(buildTarget);
-        }
-        return buildStatus;
-    }
-
-    protected repairOrMoveTo(buildTarget:Structure):number {
-        let buildStatus = this.creep.repair(buildTarget);
-        if (buildStatus === ERR_NOT_IN_RANGE) {
-            return this.creep.moveTo(buildTarget);
-        }
-        return buildStatus;
-    }
-
-
     protected buildOnNearestConstructionSite():number {
         let closestTarget = this.findClosestByRange<ConstructionSite>(FIND_CONSTRUCTION_SITES);
         if (closestTarget) {
-            return this.buildOrMoveTo(closestTarget);
+            return this.doOrMoveTo(this.creep.build, closestTarget, 3);
         }
         return ERR_NOT_FOUND;
     }
@@ -76,7 +55,7 @@ export class Builder extends MyCreep implements IBuilder {
             (object:Structure) => (object.structureType === STRUCTURE_ROAD && (object.hits < object.hitsMax / 3)));
 
         if (closestRoad) {
-            return this.doOrMoveTo(this.creep.repair, closestRoad);
+            return this.doOrMoveTo(this.creep.repair, closestRoad, 3);
         }
         return ERR_NOT_FOUND;
     }
@@ -86,7 +65,7 @@ export class Builder extends MyCreep implements IBuilder {
             return object.structureType == structureType && object.hits < maxHp;
         });
         if (target) {
-            return this.repairOrMoveTo(target);
+            return this.doOrMoveTo(this.creep.repair, target, 3);
         }
         return ERR_NOT_FOUND;
     }
@@ -108,7 +87,7 @@ export class ControllerUpgrader extends MyCreep {
     private upgradeController():number {
         let target = this.creep.room.controller;
         if (target) {
-            return this.doOrMoveTo(this.creep.upgradeController, target);
+            return this.doOrMoveTo(this.creep.upgradeController, target, 3);
         }
         return ERR_NOT_FOUND;
     }

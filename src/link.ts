@@ -14,7 +14,7 @@ export class MyLink {
     public getRank():number {
         // get the rank from memory
         if (!Memory.links) {
-            Memory.links = [];
+            Memory.links = {};
         }
 
         if (!Memory.links[this.link.id]) {
@@ -23,6 +23,11 @@ export class MyLink {
         }
         else if (!this.linkMemory) {
             this.readMemory();
+        }
+        if (!this.linkMemory) {
+            Memory.links[this.link.id] = undefined;
+            this.createMemory();
+            return 999;
         }
 
         return this.linkMemory.rank;
@@ -44,6 +49,9 @@ export class MyLink {
                 rank: flag.memory.order
             };
             Memory.links[this.link.id] = this.linkMemory;
+        }
+        else {
+            console.log(JSON.stringify(flag) +  ' is NOT A  LINK FLAG');
         }
     }
 

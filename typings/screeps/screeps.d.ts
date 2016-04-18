@@ -677,11 +677,16 @@ interface PathStep {
     dy: number;
     direction: string;
 }
+
+interface LinkMemoryObject {
+    [index:string]:LinkMemory;
+}
+
 interface Memory {
     rooms: {[name: string]: RoomMemory};
     turnNumber: number;
     creeps: CreepMemory[];
-    links: LinkMemory[];
+    links: LinkMemoryObject;
 }
 interface CreepMemory {
     id: string;
