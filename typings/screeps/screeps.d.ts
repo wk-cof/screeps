@@ -1,7 +1,7 @@
 /**
  * A site of a structure which is currently under construction.
  */
-interface ConstructionSite {
+interface ConstructionSite extends RoomObject{
     /**
      * A unique object identificator. You can use Game.getObjectById method to retrieve an object instance by its id.
      */
@@ -15,10 +15,6 @@ interface ConstructionSite {
      */
     owner: Owner;
     /**
-     * An object representing the position of this structure in the room.
-     */
-    pos: RoomPosition;
-    /**
      * The current construction progress.
      */
     progress: number;
@@ -26,10 +22,6 @@ interface ConstructionSite {
      * The total construction progress needed for the structure to be built.
      */
     progressTotal: number;
-    /**
-     * The link to the Room object of this structure.
-     */
-    room: Room;
     /**
      * One of the following constants: STRUCTURE_EXTENSION, STRUCTURE_RAMPART, STRUCTURE_ROAD, STRUCTURE_SPAWN, STRUCTURE_WALL, STRUCTURE_LINK
      */
@@ -43,7 +35,7 @@ interface ConstructionSite {
 /**
  * Creeps are your units. Creeps can move, harvest energy, construct structures, attack another creeps, and perform other actions.
  */
-interface Creep {
+interface Creep extends RoomObject{
     /**
      * An array describing the creep’s body. Each element contains the following properties:
      * type: string
@@ -94,14 +86,6 @@ interface Creep {
      * An object with the creep’s owner info
      */
     owner: Owner;
-    /**
-     * An object representing the position of this creep in a room.
-     */
-    pos: RoomPosition;
-    /**
-     * The link to the Room object of this creep.
-     */
-    room: Room;
     /**
      * Whether this creep is still being spawned.
      */
@@ -183,7 +167,7 @@ interface Energy {
 /**
  * A flag. Flags can be used to mark particular spots in a room. Flags are visible to their owners only.
  */
-interface Flag {
+interface Flag extends RoomObject{
     /**
      * A unique object identificator. You can use Game.getObjectById method to retrieve an object instance by its id.
      */
@@ -200,14 +184,6 @@ interface Flag {
      * Flag’s name. You can choose the name while creating a new flag, and it cannot be changed later. This name is a hash key to access the spawn via the Game.flags object.
      */
     name: string;
-    /**
-     * An object representing the position of this structure in the room.
-     */
-    pos: RoomPosition;
-    /**
-     * The link to the Room object. May not be available in case a flag is placed in a room which you do not have access to.
-     */
-    room: Room;
     /**
      * The name of the room in which this flag is in. This property is deprecated and will be removed soon. Use pos.roomName instead.
      */
@@ -361,7 +337,6 @@ interface Room {
      * An object with survival game info if available
      */
     survivalInfo: SurvivalGameInfo;
-
     /**
      * The Terminal structure of this room, if present, otherwise undefined.
      */
@@ -501,83 +476,202 @@ interface RoomPosition {
     look(): LookAtResult;
     lookFor<T>(type:string): T[];
 }
-interface Source {
+interface Source extends RoomObject{
     energy: number;
     energyCapacity: number;
     id: string;
-    pos: RoomPosition;
-    room: Room;
     ticksToRegeneration: number;
 }
-interface Spawn {
-    energy: number;
-    energyCapacity: number;
+
+interface RoomObject {
+    /**
+     * An object representing the position of this structure in the room.
+     */
+    pos: RoomPosition;
+    /**
+     * The link to the Room object of this structure.
+     */
+    room: Room;
+}
+
+interface Mineral extends RoomObject {
+    /**
+     * The remaining amount of resources
+     */
+    mineralAmount:number;
+    /**
+     * The resource type, one of the RESOURCE_* constants.
+     */
+    mineralType:number;
+    /**
+     * A unique object identificator. You can use Game.getObjectById method to retrieve an object instance by its id.
+     */
+    id:string;
+    /**
+     * The remaining time after which the deposit will be refilled.
+     */
+    ticksToRegeneration:number;
+}
+
+interface Resource extends RoomObject {
+    /**
+     * The amount of resource units containing.
+     */
+    amount:number;
+    /**
+     * A unique object identificator. You can use Game.getObjectById method to retrieve an object instance by its id.
+     */
+    id:string;
+    /**
+     * One of the RESOURCE_* constants.
+     */
+    resourceType:string;
+}
+
+
+
+interface Structure extends RoomObject {
     hits: number;
     hitsMax: number;
     id: string;
-    memory: SpawnMemory;
-    my: boolean;
-    name: string;
-    owner: Owner;
-    pos: RoomPosition;
-    room: Room;
-    structureType: string;
-    spawning: {name: string, needTime: number, remainingTime: number};
-    canCreateCreep(body:string[], name?:string): number;
-    createCreep(body:string[], name?:string, memory?:any): number;
-    destroy(): number;
-    notifyWhenAttacked(enabled:boolean): number;
-    renewCreep(target:Creep): number;
-    transferEnergy(target:Creep, amount?:number): number;
-}
-interface Structure {
-    hits: number;
-    hitsMax: number;
-    id: string;
-    my: boolean;
-    owner: Owner;
-    pos: RoomPosition;
-    room: Room;
     structureType: string;
     destroy(): number;
+    /**
+     * Check whether this structure can be used. If the room controller level is not enough,
+     * then this method will return false, and the structure will be highlighted with red in the game.
+     */
+    isActive(): boolean;
     notifyWhenAttacked(enabled:boolean): number;
 }
-interface Extension extends Structure {
-    energy: number;
-    energyCapacity: number;
-    transferEnergy(target:Creep, amount:number): number;
+interface OwnedStructure extends Structure {
+    my: boolean;
+    owner: Owner;
 }
-interface Link extends Structure {
-    cooldown: number;
-    energy: number;
-    energyCapacity: number;
-    transferEnergy(target:Creep|Link, amount:number): number;
-}
-interface KeeperLair extends Structure {
-    ticksToSpawn: number;
-}
-interface Controller extends Structure {
+// ----------------------------------- Owned Structures
+interface Controller extends OwnedStructure {
     level: number;
     progress: number;
     progressTotal: number;
+    reservation: {
+        username: string,
+        ticksToEnd: number
+    };
     ticksToDowngrade: number;
+    upgradeBlocked: number;
+    unclaim(): number;
 }
-interface Rampart extends Structure {
+interface Extension extends OwnedStructure {
+    energy: number;
+    energyCapacity: number;
+    transferEnergy(target:Creep, amount?:number): number;
+}
+interface Extractor extends OwnedStructure {}
+interface KeeperLair extends OwnedStructure {
+    ticksToSpawn: number;
+}
+interface Lab extends OwnedStructure {
+    /**
+     * The amount of game ticks the lab has to wait until the next reaction is possible.
+     */
+    cooldown: number;
+    /**
+     * The amount of energy containing in the lab. Energy is used for boosting creeps.
+     */
+    energy: number;
+    /**
+     * The total amount of energy the lab can contain.
+     */
+    energyCapacity: number;
+    /**
+     * The amount of mineral resources containing in the lab.
+     */
+    mineralAmount: number;
+    /**
+     * The type of minerals containing in the lab. Labs can contain only one mineral type at the same time.
+     */
+    mineralType: string;
+    /**
+     * The total amount of minerals the lab can contain.
+     */
+    mineralCapacity: number;
+    /**
+     * Boosts creep body part using the containing mineral compound. The creep has to be at adjacent square to the lab.
+     */
+    boostCreep(creep:Creep, bodyPartsCount?:number):number;
+    /**
+     * Produce mineral compounds using reagents from two another labs. The same input labs can be used by many output labs.
+     */
+    runReaction(lab1:Lab, lab2:Lab): number;
+    /**
+     * Transfer resource from this structure to a creep.
+     * The target has to be at adjacent square.
+     * You can transfer resources to your creeps from hostile structures as well.
+     */
+    transfer(target:Creep, resourceType:number, amount?:number);
+}
+interface Link extends OwnedStructure {
+    cooldown: number;
+    energy: number;
+    energyCapacity: number;
+    transferEnergy(target:Creep|Link, amount?:number): number;
+}
+interface Nuker extends OwnedStructure {
+    energy:number;
+    energyCapacity:number;
+    ghodium:number;
+    ghodiumCapacity:number;
+    cooldown:number;
+    launchNuke(pos:RoomPosition):number;
+}
+interface Observer extends OwnedStructure {
+    /**
+     * Provide visibility into a distant room from your script. The target room object will be available on the next tick.
+     */
+    observeRoom(roomName:string):number;
+}
+interface PowerBank extends OwnedStructure {
+    power:number;
+    ticksToDecay:number;
+}
+interface PowerSpawn extends OwnedStructure {
+    energy:number;
+    energyCapacity:number;
+    power:number;
+    powerCapacity:number;
+    /**
+     * Create a power creep. This method is under development.
+     */
+    createPowerCreep(name):number;
+    /**
+     * Register power resource units into your account. Registered power allows to develop power creeps skills.
+     */
+    processPower():number;
+    /**
+     * Transfer the energy from this structure to a creep. You can transfer resources to your creeps from hostile structures as well.
+     */
+    transferEnergy(target, [amount]):number;
+}
+interface Rampart extends OwnedStructure {
     ticksToDecay: number;
 }
-interface Road extends Structure {
-    ticksToDecay: number;
+interface Spawn extends OwnedStructure {
+    energy: number;
+    energyCapacity: number;
+    memory: SpawnMemory;
+    name: string;
+    spawning: {name: string, needTime: number, remainingTime: number};
+    canCreateCreep(body:string[], name?:string): number;
+    createCreep(body:string[], name?:string, memory?:any): number;
+    recycleCreep(target:Creep);
+    renewCreep(target:Creep): number;
+    transferEnergy(target:Creep, amount?:number): number;
 }
-interface Wall extends Structure {
-    ticksToLive: number;
-}
-interface Storage extends Structure {
+interface Storage extends OwnedStructure {
     store: {energy: number };
     storeCapacity: number;
     transfer(target:Creep, resourceType: string, amount:number): number;
 }
-
-interface Terminal extends Structure {
+interface Terminal extends OwnedStructure {
     store: {energy: number };
     storeCapacity: number;
     /**
@@ -594,7 +688,6 @@ interface Terminal extends Structure {
      */
     transfer(target:Creep, resourceType: string, amount:number): number;
 }
-
 interface Tower extends Structure {
     energy: number;
     energyCapacity: number;
@@ -617,6 +710,14 @@ interface Tower extends Structure {
     repair(target:Structure): number;
     transferEnergy(target:Creep, amount:number): number;
 }
+// -------------------------------------------------------
+interface Road extends Structure {
+    ticksToDecay: number;
+}
+interface Wall extends Structure {
+    ticksToLive: number;
+}
+
 interface BodyPartDefinition {
     type: string;
     hits: number;
