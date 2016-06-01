@@ -10,7 +10,8 @@ export enum CreepTypes{
     scout,
     claimer,
     settler,
-    superLinkUpgrader
+    superLinkUpgrader,
+    mineralMiner
 }
 
 export interface IBodyPartsObject {
@@ -195,12 +196,6 @@ export class CreepAssembler {
                     carry: economy,
                     work: economy,
                     attack: 1
-                };
-            case CreepTypes.superLinkUpgrader:
-                return {
-                    work: 25,
-                    carry: 4,
-                    move: 13
                 };
             case CreepTypes.superLinkUpgrader:
                 return {

@@ -59,6 +59,12 @@ export class MyRoom {
         }
         this.getDataFromMemory();
         this.economy = this.assessEconomy();
+
+        // this patch specifically address the situation where the room can't build a new carrier creep because it costs more than the
+        // available energy in the room.
+        if (this.economy > 6 && this.roomMemory.active.length === 0 && this.room.energyAvailable === 300) {
+            this.economy = 6;
+        }
         //console.log(this.economy);
     }
 
