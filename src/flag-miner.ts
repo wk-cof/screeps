@@ -31,7 +31,7 @@ export class FlagMiner extends MyCreep {
             }
             else {
                 let target = this.creep.pos.findClosestByRange(this.energyDestinations);
-                this.doOrMoveTo(this.creep.transferEnergy, target);
+                this.doOrMoveTo(_.curryRight(this.creep.transfer)(undefined)(RESOURCE_ENERGY), target);
             }
         }
     }

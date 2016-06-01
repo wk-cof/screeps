@@ -43,50 +43,7 @@ export class MyCarrier extends MyCreep implements IMyCarrier {
     }
 
     private transferEnergyTo(target:Structure|Creep):number {
-        return this.doOrMoveTo(this.creep.transferEnergy, target);
-    }
-
-    private transferEnergyToTowers():number {
-        //console.log('transferring energy to tower');
-        let closestTower = this.findClosestByRange<Tower>(FIND_MY_STRUCTURES, (structure:Structure) => {
-            return structure.structureType === STRUCTURE_TOWER &&
-                (<Tower>structure).energy < (<Tower>structure).energyCapacity;
-        });
-        if (closestTower) {
-            return this.doOrMoveTo(this.creep.transferEnergy, closestTower);
-        }
-        return ERR_INVALID_TARGET;
-    }
-
-    private transferEnergyToStorage() {
-        let storage = this.creep.room.storage;
-        if (storage) {
-            return this.transferEnergyTo(storage);
-        }
-        return ERR_INVALID_TARGET;
-    }
-
-    private transferEnergyToTerminal() {
-        let room = this.creep.room;
-        let terminal = room.terminal;
-        if (!terminal || !room.storage) {
-            return ERR_INVALID_TARGET;
-        }
-        if (room.storage.store.energy > room.storage.storeCapacity * 0.7) {
-            return this.transferEnergyTo(terminal);
-        }
-        return ERR_NOT_ENOUGH_ENERGY;
-    }
-
-
-    private transferEnergyToSpawns() {
-        let closestSpawn = this.findClosestByRange<Spawn>(FIND_MY_SPAWNS, (spawn:Spawn) => {
-            return spawn.energy < spawn.energyCapacity;
-        });
-        if (closestSpawn) {
-            return this.transferEnergyTo(closestSpawn);
-        }
-        return ERR_NOT_FOUND;
+        return this.doOrMoveTo(_.curryRight(this.creep.transfer)(undefined)(RESOURCE_ENERGY), target);
     }
 
     private pickUpResources():number {

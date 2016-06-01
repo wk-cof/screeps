@@ -1,11 +1,11 @@
 import {IBodyPartsObject} from "creep-assembler";
 export interface IMyCreep {
-    getEnergyFromSpawn:(spawn:Spawn) => boolean;
+    //getEnergyFromSpawn:(spawn:Spawn) => boolean;
     getEnergy:(source:Storage|Spawn|Link|Tower|Creep) => number;
     doOrMoveTo:(action:Function, target:Structure|Creep|ConstructionSite) => number;
     findClosestByRange:(structureType:number, filterFunction?:Function) => Structure;
     findAllInTheRoom:(findConstant:number) => any[];
-    transferToClosestAvailableExtension:() => number;
+    //transferToClosestAvailableExtension:() => number;
 
 }
 
@@ -35,42 +35,22 @@ export class MyCreep implements IMyCreep {
         return ERR_NOT_FOUND;
     }
 
-    protected getEnergyFromSpawn(source:Spawn|Link) {
-        if (this.creep.pos.isNearTo(source) === false) {
-            this.creep.moveTo(source);
-        }
-        else if (source.energy > this.buildThreshold) {
-            source.transferEnergy(this.creep)
-        }
-    }
-
     protected getEnergy(source:Structure|Creep) {
         if (this.creep.pos.isNearTo(source) === false) {
             this.creep.moveTo(source);
         }
-        return (<any>source).transferEnergy(this.creep);
+        if ( (<Structure>source).structureType === STRUCTURE_STORAGE || (<Structure>source).structureType === STRUCTURE_TERMINAL) {
+            return (<any>source).transfer(this.creep, RESOURCE_ENERGY);
+        } else {
+            return (<any>source).transferEnergy(this.creep);
+        }
     }
 
-    protected transferToClosestAvailableExtension():number {
-        //console.log('transferring energy to extension');
-        let extension:Extension = this.findClosestByRange(FIND_MY_STRUCTURES,
-            (object:Extension) => object.structureType === STRUCTURE_EXTENSION && (object.energy < object.energyCapacity));
-
-        if (extension) {
-            return this.doOrMoveTo(this.creep.transferEnergy, extension);
+    protected storeEnergy(dest:Structure|Creep){
+        if (this.creep.pos.isNearTo(dest) === false) {
+            return this.creep.moveTo(dest);
         }
-        return ERR_NOT_FOUND;
-    }
-
-    protected transferToClosestAvailableLink():number {
-        //console.log('transferring energy to extension');
-        let link:Link = this.findClosestByRange(FIND_MY_STRUCTURES,
-            (object:Link) => object.structureType === STRUCTURE_LINK && (object.energy < object.energyCapacity * 0.5));
-
-        if (link) {
-            return this.doOrMoveTo(this.creep.transferEnergy, link);
-        }
-        return ERR_NOT_FOUND;
+        return this.creep.transfer(dest, RESOURCE_ENERGY);
     }
 
     /**
