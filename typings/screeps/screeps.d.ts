@@ -191,7 +191,7 @@ interface Flag {
     /**
      * Flag color. One of the following constants: COLOR_WHITE, COLOR_GREY, COLOR_RED, COLOR_PURPLE, COLOR_BLUE, COLOR_CYAN, COLOR_GREEN, COLOR_YELLOW, COLOR_ORANGE, COLOR_BROWN
      */
-    color: string;
+    color: number;
     /**
      * A shorthand to Memory.flags[flag.name]. You can use it for quick access the flag's specific memory data object.
      */
@@ -222,7 +222,7 @@ interface Flag {
      * @param color One of the following constants: COLOR_WHITE, COLOR_GREY, COLOR_RED, COLOR_PURPLE, COLOR_BLUE, COLOR_CYAN, COLOR_GREEN, COLOR_YELLOW, COLOR_ORANGE, COLOR_BROWN
      * @returns Result Code: OK, ERR_INVALID_ARGS
      */
-    setColor(color:string): number;
+    setColor(color:number): number;
     /**
      * Set new position of the flag.
      * @param x The X position in the room.
@@ -818,3 +818,15 @@ declare var RESOURCE_ENERGY:string,
     RESOURCE_LEMERGIUM:string,
     RESOURCE_ZYNTHIUM:string,
     RESOURCE_CATALYST:string;
+
+declare var COLOR_RED:number,
+    COLOR_PURPLE:number,
+    COLOR_BLUE:number,
+    COLOR_CYAN:number,
+    COLOR_GREEN:number,
+    COLOR_YELLOW:number,
+    COLOR_ORANGE:number,
+    COLOR_BROWN:number,
+    COLOR_GREY:number,
+    COLOR_WHITE:number;
+

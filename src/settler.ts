@@ -13,7 +13,7 @@ export class MySettler extends Builder {
         if (!destFlag) {
             return;
         }
-        if (this.creep.room.name === destFlag.roomName) {
+        if (this.creep.room.name === destFlag.room.name) {
             // heal
             //if (this.creep.ticksToLive < 200) {
             //    let closestSpawn = this.findClosestByRange(FIND_MY_SPAWNS);

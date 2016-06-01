@@ -14,7 +14,7 @@ export class MyClaimer extends MyCreep {
         if (!destFlag) {
             return ERR_INVALID_TARGET;
         }
-        if (this.creep.room.name === destFlag.roomName) {
+        if (this.creep.room.name === destFlag.room.name) {
             return this.doOrMoveTo(this.creep.claimController, this.creep.room.controller);
         }
 

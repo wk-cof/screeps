@@ -40,7 +40,7 @@ export class MyFlag {
         }
         let flagNameTokens = this.flag.name.split('-');
         switch (this.flag.color) {
-            case 'brown':
+            case COLOR_BROWN:
                 this.flagType = FlagTypes.source;
                 let source = <Source>this.flag.pos.lookFor('source')[0];
                 let sourceFlagMemory:SourceFlagMemory = {
@@ -53,14 +53,14 @@ export class MyFlag {
                 };
                 this.flag.memory = sourceFlagMemory;
                 break;
-            case 'yellow':
+            case COLOR_YELLOW:
                 let linkFlagMemory = {
                     flagType: FlagTypes.link,
                     order: parseInt(flagNameTokens[1]) || 0
                 };
                 this.flag.memory = linkFlagMemory;
                 break;
-            case 'purple':
+            case COLOR_PURPLE:
                 this.flag.memory = {
                     flagType: FlagTypes.claim,
                     parentRoom: flagNameTokens[0] || null,
