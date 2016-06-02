@@ -300,6 +300,8 @@ interface GameMap {
      */
     isRoomProtected(roomName:string): boolean
 }
+
+// ------ Room ----------------------------------------
 /**
  * An object representing the room in which your units and structures are in. It can be used to look around, find paths, etc. Every object in the room contains its linked Room instance in the room property.
  */
@@ -476,13 +478,8 @@ interface RoomPosition {
     look(): LookAtResult;
     lookFor<T>(type:string): T[];
 }
-interface Source extends RoomObject{
-    energy: number;
-    energyCapacity: number;
-    id: string;
-    ticksToRegeneration: number;
-}
 
+// ------ RoomObject ----------------------------------
 interface RoomObject {
     /**
      * An object representing the position of this structure in the room.
@@ -493,7 +490,12 @@ interface RoomObject {
      */
     room: Room;
 }
-
+interface Source extends RoomObject{
+    energy: number;
+    energyCapacity: number;
+    id: string;
+    ticksToRegeneration: number;
+}
 interface Mineral extends RoomObject {
     /**
      * The remaining amount of resources
@@ -512,7 +514,6 @@ interface Mineral extends RoomObject {
      */
     ticksToRegeneration:number;
 }
-
 interface Resource extends RoomObject {
     /**
      * The amount of resource units containing.
@@ -528,8 +529,7 @@ interface Resource extends RoomObject {
     resourceType:string;
 }
 
-
-
+// ------ Structures ----------------------------------
 interface Structure extends RoomObject {
     hits: number;
     hitsMax: number;
@@ -543,11 +543,28 @@ interface Structure extends RoomObject {
     isActive(): boolean;
     notifyWhenAttacked(enabled:boolean): number;
 }
+interface Container extends Structure {
+    store:Object;
+    storeCapacity:number;
+
+    transfer(target:Creep, resourceType:string, amount?:number):number;
+}
+interface Portal extends Structure {
+    destination:RoomPosition;
+    ticksToDecay:number;
+}
+interface Road extends Structure {
+    ticksToDecay: number;
+}
+interface Wall extends Structure {
+    ticksToLive: number;
+}
+
+// ------- Owned Structures ---------------------------
 interface OwnedStructure extends Structure {
     my: boolean;
     owner: Owner;
 }
-// ----------------------------------- Owned Structures
 interface Controller extends OwnedStructure {
     level: number;
     progress: number;
@@ -710,13 +727,8 @@ interface Tower extends Structure {
     repair(target:Structure): number;
     transferEnergy(target:Creep, amount:number): number;
 }
-// -------------------------------------------------------
-interface Road extends Structure {
-    ticksToDecay: number;
-}
-interface Wall extends Structure {
-    ticksToLive: number;
-}
+// -----------------------------------------------------
+
 
 interface BodyPartDefinition {
     type: string;
@@ -844,7 +856,7 @@ declare enum Direction {
 declare var Game:Game;
 declare var Memory:Memory;
 
-// Globals
+// ------ Globals -------------------------------------
 declare var STRUCTURE_SPAWN:string,
     STRUCTURE_EXTENSION:string,
     STRUCTURE_ROAD:string,
