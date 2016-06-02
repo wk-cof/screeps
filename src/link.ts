@@ -1,4 +1,4 @@
-import {MyFlag} from "flag";
+import {MyFlag} from "./flag";
 
 export class MyLink {
     // Energy will flow towards the lower rank. Energy doesn't flow between same ranks.

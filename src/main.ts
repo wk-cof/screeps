@@ -1,5 +1,5 @@
-import {MyRoom} from 'room';
-import {MyFlag} from "flag";
+import {MyRoom} from "./room";
+import {MyFlag} from "./flag";
 //var config = require('config');
 
 module.exports.loop = function () {

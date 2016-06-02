@@ -15,13 +15,14 @@ export enum CreepTypes{
 }
 
 export interface IBodyPartsObject {
-    move: number,
-    work?: number,
-    carry?: number,
-    attack?: number,
-    ranged_attack?: number,
-    tough?: number,
+    move: number;
+    attack?: number;
+    carry?: number;
+    claim?: number;
     heal?: number;
+    ranged_attack?: number;
+    tough?: number;
+    work?: number;
 }
 
 export class CreepAssembler {
@@ -97,7 +98,7 @@ export class CreepAssembler {
      */
     public static getBodyParts(creepType:CreepTypes, economy:number) {
         let bodyPartsObject = CreepAssembler.getBodyPartsObject(creepType, economy) || [];
-        return _.reduce(bodyPartsObject, (result, value, key) => {
+        return _.reduce(<any>bodyPartsObject, (result, value:number, key) => {
             while (value > 0) {
                 result.push(key);
                 value--;

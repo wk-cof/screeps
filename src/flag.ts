@@ -1,9 +1,19 @@
-import {CreepTypes} from "creep-assembler";
+import {CreepTypes} from "./creep-assembler";
 enum FlagTypes {
     unknown = 1,
     source, // src-$roomName-$mineToRoomName-$workerCap-$index
     link,   //
     claim   // $parentRoomName-$index
+}
+
+interface SourceFlagMemory extends FlagMemory {
+    parentRoom: string;
+    roomName: string;
+    workerCap: number;
+};
+
+interface ClaimFlagMemory extends FlagMemory {
+    parentRoom: string;
 }
 
 export class MyFlag {
@@ -45,11 +55,11 @@ export class MyFlag {
                 let source = <Source>this.flag.pos.lookFor('source')[0];
                 let sourceFlagMemory:SourceFlagMemory = {
                     flagType: FlagTypes.source,
-                    roomName: flagNameTokens[1] || null,
-                    parentRoom: flagNameTokens[2] || null,
-                    workerCap: parseInt(flagNameTokens[3]) || 0,
-                    order: flagNameTokens[4] || Number.MAX_VALUE,
-                    sourceID: _.isObject(source) ? source.id : null
+                    order: parseInt(flagNameTokens[4]) || Number.MAX_VALUE,
+                    parentRoom: flagNameTokens[2],
+                    roomName: flagNameTokens[1],
+                    //sourceID: <string>(_.isObject(source) ? source.id : undefined),
+                    workerCap: parseInt(flagNameTokens[3]) || 0
                 };
                 this.flag.memory = sourceFlagMemory;
                 break;
@@ -61,11 +71,12 @@ export class MyFlag {
                 this.flag.memory = linkFlagMemory;
                 break;
             case COLOR_PURPLE:
-                this.flag.memory = {
+                let claimFlagMemory:ClaimFlagMemory = {
                     flagType: FlagTypes.claim,
                     parentRoom: flagNameTokens[0] || null,
                     order: parseInt(flagNameTokens[1]) || Number.MAX_VALUE
                 };
+                this.flag.memory = claimFlagMemory;
                 break;
             default:
                 this.flag.memory = {

@@ -1,5 +1,5 @@
-import {IMyCreep} from "creep";
-import {MyCreep} from "creep";
+import {IMyCreep} from "./creep";
+import {MyCreep} from "./creep";
 
 export interface IMyCarrier extends IMyCreep {
     runRoutine(spawn:Spawn):number;
@@ -7,11 +7,10 @@ export interface IMyCarrier extends IMyCreep {
 
 
 export class MyCarrier extends MyCreep implements IMyCarrier {
-    private energyDestinations:Structure[];
     //------ Constructors ----------------------------------------------------------------------------------------------
-    public constructor(private creep:Creep, energy) {
-        this.energyDestinations = energy.energyDestinations;
+    public constructor(creep:Creep, energy:any) {
         super(creep, energy.energySources);
+        this.energyDestinations = energy.energyDestinations;
     }
 
     //------ Public Methods --------------------------------------------------------------------------------------------
@@ -38,7 +37,7 @@ export class MyCarrier extends MyCreep implements IMyCarrier {
 
     //------ Private methods -------------------------------------------------------------------------------------------
     private transferEnergyToClosestDest() {
-        let closestEnergyDest:Structure = this.creep.pos.findClosestByRange(this.energyDestinations);
+        let closestEnergyDest:Structure = this.creep.pos.findClosestByRange<Structure>(this.energyDestinations);
         return this.transferEnergyTo(closestEnergyDest);
     }
 

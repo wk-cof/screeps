@@ -1,13 +1,13 @@
-export interface IQueue<T> {
-    getLength():number;
-    isEmpty():boolean;
-    enqueue(newItem:T);
-    dequeue():T;
-    peek():T;
-    getQueue():T[];
-}
+//export interface IQueue<T> {
+//    getLength():number;
+//    isEmpty():boolean;
+//    enqueue(newItem:T);
+//    dequeue():T;
+//    peek():T;
+//    getQueue():T[];
+//}
 
-export class Queue<T> implements IQueue {
+export class Queue<T> {
     private a:T[] = [];
 
     constructor(existingQueue?:T[]) {

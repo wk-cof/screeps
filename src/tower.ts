@@ -1,4 +1,4 @@
-import {Config} from "config";
+import {Config} from "./config";
 export interface IMyTower {
     runRoutine():number;
 }
@@ -82,7 +82,7 @@ export class MyTower implements IMyTower {
     }
 
     private reinforce(structureType:string, maxHP: number) {
-        let target = this.tower.room.find(FIND_STRUCTURES, {
+        let target = this.tower.room.find<Structure>(FIND_STRUCTURES, {
             filter: (object) => {
                 return object.structureType == structureType && object.hits < maxHP;
             }

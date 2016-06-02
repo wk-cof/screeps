@@ -1,7 +1,7 @@
-import {MyCreep} from "creep";
-import {MyFlag} from "flag";
-import {Builder} from "builder";
-import {IBodyPartsObject} from "creep-assembler";
+import {MyCreep} from "./creep";
+import {MyFlag} from "./flag";
+import {Builder} from "./builder";
+import {IBodyPartsObject} from "./creep-assembler";
 export class MySettler extends Builder {
     constructor(creep:Creep,
                 private claimFlags:MyFlag[]) {
@@ -33,7 +33,7 @@ export class MySettler extends Builder {
                 ];
             }
             else if (this.creep.carry.energy < this.creep.carryCapacity && this.creep.carry.energy > 0) {
-                let sources = this.findClosestByRange(FIND_SOURCES);
+                let sources = this.findClosestByRange<Source>(FIND_SOURCES);
                 // if near the source, then mine
                 if (this.creep.pos.isNearTo(sources)) {
                     this.routine = [
@@ -71,7 +71,7 @@ export class MySettler extends Builder {
     }
 
     private mine() {
-        let target = this.findClosestByRange(FIND_SOURCES);
+        let target = this.findClosestByRange<Source>(FIND_SOURCES);
         this.doOrMoveTo(this.creep.harvest, target);
     }
 

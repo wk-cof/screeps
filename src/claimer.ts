@@ -1,5 +1,5 @@
-import {MyCreep} from "creep";
-import {MyFlag} from "flag";
+import {MyCreep} from "./creep";
+import {MyFlag} from "./flag";
 export class MyClaimer extends MyCreep {
     constructor(creep:Creep,
                 private claimFlags:MyFlag[]) {

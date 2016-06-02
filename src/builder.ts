@@ -1,20 +1,12 @@
-import {MyCreep} from "creep";
-import {IMyCreep} from "creep";
-import {Config} from "config";
+import {MyCreep} from "./creep";
+import {IMyCreep} from "./creep";
+import {Config} from "./config";
 
-export interface IBuilder extends IMyCreep {
-    //buildOnNearestConstructionSite(spawn:Spawn): void;
-    //upgradeController(spawn:Spawn): void;
-    //maintainRoads(spawn:Spawn): void;
-    //reinforce(energySource:Spawn|Link|Storage, structureType:string): boolean;
-    runRoutine();
-}
-
-export class Builder extends MyCreep implements IBuilder {
+export class Builder extends MyCreep {
 
     private wallMaxLife: number;
 
-    constructor(private creep:Creep, energySources:Structure[]) {
+    constructor(creep:Creep, energySources:Structure[]) {
         super(creep, energySources);
     }
     //------ Public Methods --------------------------------------------------------------------------------------------
@@ -61,7 +53,7 @@ export class Builder extends MyCreep implements IBuilder {
     }
 
     private reinforce(structureType:string, maxHp:number):number {
-        var target = this.findClosestByRange(FIND_STRUCTURES, (object) => {
+        var target = this.findClosestByRange<Structure>(FIND_STRUCTURES, (object) => {
             return object.structureType == structureType && object.hits < maxHp;
         });
         if (target) {
@@ -80,7 +72,7 @@ export class Builder extends MyCreep implements IBuilder {
 }
 
 export class ControllerUpgrader extends MyCreep {
-    constructor(private creep:Creep, energySources:Structure[]) {
+    constructor(creep:Creep, energySources:Structure[]) {
         super(creep, energySources);
     }
 
@@ -115,7 +107,7 @@ export class ControllerUpgrader extends MyCreep {
 
 // super upgrader will get the energy from the link and upgrade on the same tick.
 export class SuperControllerUpgrader extends MyCreep {
-    constructor(private creep:Creep, energySources:Structure[]) {
+    constructor(creep:Creep, energySources:Structure[]) {
         super(creep, energySources);
     }
 

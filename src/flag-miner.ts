@@ -1,10 +1,10 @@
-import {MyCreep} from "creep";
-import {IMyCreep} from "creep";
-import {Builder} from "builder";
-import {MyFlag} from "flag";
+import {MyCreep} from "./creep";
+import {IMyCreep} from "./creep";
+import {Builder} from "./builder";
+import {MyFlag} from "./flag";
 
 export class FlagMiner extends MyCreep {
-    constructor(private creep:FlagMinerCreep,
+    constructor(protected creep:FlagMinerCreep,
                 energyDestinations:Structure[]) {
         super(creep);
         this.energyDestinations = energyDestinations;
@@ -25,7 +25,7 @@ export class FlagMiner extends MyCreep {
         else {
             //TODO: This solution is not very maintainable. Can't easily reoder creep to mine to a different dest.
             let flag = Game.flags[creepMemory.flagName];
-            let underlyingSource = flag.pos.lookFor('source')[0];
+            let underlyingSource = flag.pos.lookFor<Source>('source')[0];
             if (this.creep.carry.energy < this.creep.carryCapacity) {
                 this.doOrMoveTo(this.creep.harvest, underlyingSource);
             }

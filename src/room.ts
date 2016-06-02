@@ -1,19 +1,19 @@
-import {CreepAssembler} from "creep-assembler";
-import {Queue} from "misc";
-import {CreepTypes} from "creep-assembler";
-import {Builder} from "builder";
-import {MyCarrier} from "carrier";
-import {Fighter} from "fighter";
-import {FlagMiner} from "flag-miner";
-import {Config} from "config";
-import {MyFlag} from "flag";
-import {ControllerUpgrader} from "builder";
-import {LinkTransfer} from "link";
-import {MyCreep} from "creep";
-import {MyClaimer} from "claimer";
-import {MyTower} from "tower";
-import {MySettler} from "settler";
-import {SuperControllerUpgrader} from "builder";
+import {Builder} from "./builder";
+import {ControllerUpgrader} from "./builder";
+import {SuperControllerUpgrader} from "./builder";
+import {MyCarrier} from "./carrier";
+import {MyClaimer} from "./claimer";
+import {Config} from "./config";
+import {MyCreep} from "./creep";
+import {CreepAssembler} from "./creep-assembler";
+import {CreepTypes} from "./creep-assembler";
+import {Fighter} from "./fighter";
+import {MyFlag} from "./flag";
+import {FlagMiner} from "./flag-miner";
+import {LinkTransfer} from "./link";
+import {Queue} from "./misc";
+import {MySettler} from "./settler";
+import {MyTower} from "./tower";
 
 export class MyRoom {
     //------ Private data ----------------------------------------------------------------------------------------------
@@ -30,14 +30,12 @@ export class MyRoom {
     private room:Room;
     private roomMemory:RoomMemory;
 
-    private roomStorage:Storage;
     private roomConfig:Config;
 
     private economy:number;
     //------ Constructors ----------------------------------------------------------------------------------------------
     public constructor(private roomName:string) {
         this.room = Game.rooms[roomName];
-        this.roomStorage = this.room.storage || {};
         if (!this.room) {
             throw `Room ${roomName} not found.`;
         }
@@ -128,7 +126,7 @@ export class MyRoom {
         let carrierDest:Structure[] = [];
 
         if (this.room.storage) {
-            let totalReources = _.sum(this.room.storage.store);
+            let totalReources = _.sum(<any>this.room.storage.store);
             let storageEnergy = this.room.storage.store.energy;
             // if there's a non-empty storage, add it as a source
             if (storageEnergy > 50) {
@@ -323,11 +321,11 @@ export class MyRoom {
         //    this.towers.push(tower);
         //    // TODO: if tower that's supposed to be there doesn't exist, rebuild it
         //}
-        this.spawns = this.room.find(FIND_MY_SPAWNS);
-        this.extensions = this.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
-        this.towers = this.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
-        this.links = this.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LINK}});
-        this.sources = this.room.find(FIND_SOURCES);
+        this.spawns = this.room.find<Spawn>(FIND_MY_SPAWNS);
+        this.extensions = this.room.find<Extension>(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
+        this.towers = this.room.find<Tower>(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+        this.links = this.room.find<Link>(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LINK}});
+        this.sources = this.room.find<Source>(FIND_SOURCES);
 
 
         if (save) {
@@ -382,7 +380,7 @@ export class MyRoom {
                 console.log(`creep ${creepMemory.name} is missing an id. Creep's new id is: ${id}.`);
                 creepMemory.id = id;
             }
-            let creep:Creep = Game.getObjectById(creepMemory.id);
+            let creep:Creep = Game.getObjectById<Creep>(creepMemory.id);
             if (creep && !creep.spawning) {
                 // time for baby creep to leave the nest
                 this.roomMemory.building.splice(idx, 1);

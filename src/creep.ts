@@ -1,10 +1,10 @@
-import {IBodyPartsObject} from "creep-assembler";
+import {IBodyPartsObject} from "./creep-assembler";
 export interface IMyCreep {
     //getEnergyFromSpawn:(spawn:Spawn) => boolean;
-    getEnergy:(source:Storage|Spawn|Link|Tower|Creep) => number;
-    doOrMoveTo:(action:Function, target:Structure|Creep|ConstructionSite) => number;
-    findClosestByRange:(structureType:number, filterFunction?:Function) => Structure;
-    findAllInTheRoom:(findConstant:number) => any[];
+    //getEnergy:(source:Storage|Spawn|Link|Tower|Creep) => number;
+    //doOrMoveTo:(action:Function, target:Structure|Creep|ConstructionSite) => number;
+    //findClosestByRange:(structureType:number, filterFunction?:Function) => Structure;
+    //findAllInTheRoom:(findConstant:number) => any[];
     //transferToClosestAvailableExtension:() => number;
 
 }
@@ -13,10 +13,9 @@ export class MyCreep implements IMyCreep {
     protected buildThreshold = 199;
     protected creepMemory:CreepMemory;
     protected routine:Function[];
-    protected energySources:Structure[];
     protected energyDestinations:Structure[];
 
-    public constructor(protected creep:Creep, energySources?:Structure[]) {
+    public constructor(protected creep:Creep, protected energySources?:Structure[]) {
         if (energySources) {
             this.energySources = energySources;
         }
@@ -73,15 +72,15 @@ export class MyCreep implements IMyCreep {
 
     protected findClosestByRange<T>(findConstant:number, filterFunction?:Function):T {
         if (filterFunction) {
-            return this.creep.pos.findClosestByRange(findConstant, {
+            return this.creep.pos.findClosestByRange<T>(findConstant, {
                 filter: filterFunction
             });
         }
-        return this.creep.pos.findClosestByRange(findConstant);
+        return this.creep.pos.findClosestByRange<T>(findConstant);
     }
 
     // cast it to the correct type when finding something in particular.
-    protected findAllInTheRoom<T>(findConstant:number, filterFunction?:Function):T {
+    protected findAllInTheRoom<T>(findConstant:number, filterFunction?:Function):T[] {
         if (filterFunction) {
             return this.creep.room.find<T>(findConstant, {
                 filter: filterFunction

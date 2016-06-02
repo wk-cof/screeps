@@ -18,6 +18,7 @@ gulp.task('compile', ['clean'], function () {
             target: 'ES5',
             module: 'commonjs'
         }))
+        .pipe(plugins.replace(/require\("\.\/(.+)"\);/g,'require("$1");'))
         .pipe(gulp.dest('dist'));
 
 });
